@@ -4528,29 +4528,16 @@ async def ceo_registration(message: Message):
 
 @dp.message_handler(state=CeoRegistration.step2)
 async def ceo_reg_step2(message: Message, state: FSMContext):
-    if CodeWord.objects.filter(code_words=message.text).exists():
+    code_word = CodeWord.objects.get(code_words=message.text)
+
+    if code_word:
         rieltor = Rieltors.objects.get(user_id=message.from_user.id)
         if DB_Worker.ceo_create(rieltor):
             await message.answer(
-                'Поздравляю! Ты зарегистрирован как руководитель!'
+                'Поздравляю! Ты зарегистрирован как руководитель!'                
+                + ' Приглашай своих сотрудников пользоваться ботом!'
             )
-            CodeWord.objects.get(code_words=message.text).delete()
-            rieltors = Rieltors.objects.filter(agency_name=rieltor.agency_name)
-            if rieltors:
-                if DB_Worker.workers_create(str(message.from_user.id), rieltors):
-                    await message.answer(
-                        'Вы можете просматривать сотрудников:'
-                    )
-                    names = []
-                    for item in rieltors:
-                        if item.user_id != str(message.from_user.id):
-                            names.append(item.name)
-                    await message.answer(
-                        ', '.join(names)
-                    )
-                else:
-                    await message.answer('Ошибка. Сообщи об этом @davletelvir')
-        else:
+        el
             await message.answer('Ошибка. Сообщи об этом @davletelvir')
     else:
         await message.answer(
