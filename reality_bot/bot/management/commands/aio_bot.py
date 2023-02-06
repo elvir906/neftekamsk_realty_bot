@@ -4528,13 +4528,13 @@ async def ceo_registration(message: Message):
 
 @dp.message_handler(state=CeoRegistration.step2)
 async def ceo_reg_step2(message: Message, state: FSMContext):
-    code_word = CodeWord.objects.get(code_words=message.text)
+    code_word = CodeWord.objects.filter(code_words=message.text)
 
-    if code_word:
+    if code_word.exists():
         rieltor = Rieltors.objects.get(user_id=message.from_user.id)
         if DB_Worker.ceo_create(rieltor):
             await message.answer(
-                'Поздравляю! Ты зарегистрирован как руководитель!'                
+                'Поздравляю! Ты зарегистрирован как руководитель!'
                 + ' Приглашай своих сотрудников пользоваться ботом!'
             )
         else:
