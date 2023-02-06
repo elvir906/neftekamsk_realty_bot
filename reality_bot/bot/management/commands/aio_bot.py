@@ -4537,7 +4537,7 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
                 'Поздравляю! Ты зарегистрирован как руководитель!'                
                 + ' Приглашай своих сотрудников пользоваться ботом!'
             )
-        el
+        else:
             await message.answer('Ошибка. Сообщи об этом @davletelvir')
     else:
         await message.answer(
