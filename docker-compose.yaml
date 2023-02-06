@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  base:
+    container_name: pgsql_container
+    image: postgres:13.5-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/db_data/
+    env_file:
+      - reality_bot/.env
+    ports:
+      - 5432:5432
+  backend:
+    build:
+      context: .
+      dockerfile: reality_bot/Dockerfile
+    volumes:
+      - static_value:/app/static/
+    depends_on:
+      - base
+    env_file:
+      - reality_bot/.env
+  nginx:
+    image: nginx:1.21.3-alpine
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+      - static_value:/var/html/static/
+
+    depends_on:
+      - backend
+
+volumes:
+  static_value:
+  postgres_data:
