@@ -199,14 +199,18 @@ class DB_Worker():
                 username=state_data.get('username'),
                 phone_number=state_data.get('phone_number')
             )
-            # выставляю руководителей(я) к зареганному риелтору
+            # выставляю к руководителю зарегистрированного риелтора
             ceo_list = Ceo.objects.filter(agency_name=state_data.get('agency_name'))
             if ceo_list.exists():
                 for item in ceo_list:
                     worker_list = list(item.workers)
                     worker_list.append(state_data.get('user_id'))
-                    item.workers = worker_list
-                    item.save()
+                if '' in worker_list:
+                    worker_list.remove('')
+                item.workers = worker_list
+                item.save()
+            else:
+                print('not exist')
             return True
         except Exception as e:
             logging.error(f'{e}')
@@ -218,6 +222,7 @@ class DB_Worker():
                 user_id=rieltor.user_id,
                 name=rieltor.name,
                 agency_name=rieltor.agency_name,
+                workers=['']
             )
             return True
         except Exception as e:

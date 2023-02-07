@@ -48,8 +48,7 @@ class Ceo(models.Model):
     )
     workers = ArrayField(
         models.CharField(max_length=20),
-        blank=True,
-        null=True
+        blank=True
     )
 
     class Meta:

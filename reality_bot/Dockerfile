@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3
 WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r /app/requirements.txt

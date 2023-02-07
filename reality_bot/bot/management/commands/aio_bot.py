@@ -67,18 +67,26 @@ async def start(message: Message):
 
 @dp.message_handler(commands=['registration'])
 async def entering_name(message: Message, state: FSMContext):
-    if Rieltors.objects.filter(user_id=message.from_user.id).exists():
+    if message.from_user.username is None:
         await message.answer(
-            'Вы уже зарегистрированы в системе'
+            'У вас в настройках профиля не указан username (имя пользователя). '
+            + 'Откройте настройки telegram и заполните это поле.'
+            + ' После этого заново нажмите на команду 👉 /registration'
         )
         await state.finish()
     else:
-        await message.answer(
-            '✏ Давай знакомиться! Я бот База. А тебя как зовут?\n'
-            + 'Напиши. Подойдёт любой формат: Имя, Имя Отчество, Имя Фамилия\n\n'
-            + '🙅‍♂️ Для отмены напиши "Стоп"'
-        )
-        await Registration.step1.set()
+        if Rieltors.objects.filter(user_id=message.from_user.id).exists():
+            await message.answer(
+                'Вы уже зарегистрированы в системе'
+            )
+            await state.finish()
+        else:
+            await message.answer(
+                '✏ Давай знакомиться! Я бот База. А тебя как зовут?\n'
+                + 'Напиши. Подойдёт любой формат: Имя, Имя Отчество, Имя Фамилия\n\n'
+                + '🙅‍♂️ Для отмены напиши "Стоп"'
+            )
+            await Registration.step1.set()
 
 
 @dp.message_handler(state=Registration.step1)
@@ -4071,18 +4079,23 @@ async def base_update(message: Message, state: FSMContext):
 
 @dp.message_handler(commands=['deletebuyer'])
 async def delete_buyer(message: Message):
-    DB_Worker.command_counting()
-    user_id = message.from_user.id
-    if BuyerDB.objects.filter(user_id=user_id).exists():
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            '✏ Выбери покупатея, которого вы хотите удалить',
-            reply_markup=keyboards.buyer_list_keyboard(searching_user_id=user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await DeleteBuyer.step2.set()
     else:
-        await message.answer(
-            ' У тебя нет клиентов в базе'
-        )
+        DB_Worker.command_counting()
+        user_id = message.from_user.id
+        if BuyerDB.objects.filter(user_id=user_id).exists():
+            await message.answer(
+                '✏ Выбери покупатея, которого вы хотите удалить',
+                reply_markup=keyboards.buyer_list_keyboard(searching_user_id=user_id)
+            )
+            await DeleteBuyer.step2.set()
+        else:
+            await message.answer(
+                ' У тебя нет клиентов в базе'
+            )
 
 
 @dp.callback_query_handler(state=DeleteBuyer.step2)
@@ -4150,19 +4163,24 @@ async def my_buyers(message: Message):
 
 @dp.message_handler(commands=['obj4mybuyer'])
 async def obj_for_my_buyer(message: Message):
-    DB_Worker.command_counting()
-    user_id = message.from_user.id
-    queryset = BuyerDB.objects.filter(user_id=user_id)
-    if queryset.exists():
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            '✏ Выбери покупатея, для которого ты хочешь посмотреть подходящие объекты',
-            reply_markup=keyboards.buyer_list_keyboard(searching_user_id=user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await ObjForBuyer.step2.set()
     else:
-        await message.answer(
-            ' У тебя нет клиентов в базе'
-        )
+        DB_Worker.command_counting()
+        user_id = message.from_user.id
+        queryset = BuyerDB.objects.filter(user_id=user_id)
+        if queryset.exists():
+            await message.answer(
+                '✏ Выбери покупатея, для которого ты хочешь посмотреть подходящие объекты',
+                reply_markup=keyboards.buyer_list_keyboard(searching_user_id=user_id)
+            )
+            await ObjForBuyer.step2.set()
+        else:
+            await message.answer(
+                ' У тебя нет клиентов в базе'
+            )
 
 
 @dp.callback_query_handler(state=ObjForBuyer.step2)
@@ -4292,18 +4310,23 @@ async def searching_for_buyer(
 
 @dp.message_handler(commands=['mycompbuyers'])
 async def my_company_buyers(message: Message):
-    DB_Worker.command_counting()
-    user_id = message.from_user.id
-    if Ceo.objects.filter(user_id=user_id).exists():
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Выбери сотрудника',
-            reply_markup=keyboards.worker_list(user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await WorkersBuyers.step2.set()
     else:
-        await message.answer(
-            '❗ Этот раздел доступен только руководителю агентства. Ты не руководитель агентства'
-        )
+        DB_Worker.command_counting()
+        user_id = message.from_user.id
+        if Ceo.objects.filter(user_id=user_id).exists():
+            await message.answer(
+                'Выбери сотрудника',
+                reply_markup=keyboards.worker_list(user_id)
+            )
+            await WorkersBuyers.step2.set()
+        else:
+            await message.answer(
+                '❗ Этот раздел доступен только руководителю агентства. Ты не руководитель агентства'
+            )
 
 
 @dp.callback_query_handler(state=WorkersBuyers.step2)
@@ -4351,18 +4374,23 @@ async def worker_buyers(
 
 @dp.message_handler(commands=['mycompobjects'])
 async def my_company_obj(message: Message):
-    DB_Worker.command_counting()
-    user_id = message.from_user.id
-    if Ceo.objects.filter(user_id=user_id).exists():
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Выбери сотрудника',
-            reply_markup=keyboards.worker_list(user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await WorkersObjects.step2.set()
     else:
-        await message.answer(
-            '❗ Этот раздел доступен только руководителю агентства. Ты не руководитель агентства'
-        )
+        DB_Worker.command_counting()
+        user_id = message.from_user.id
+        if Ceo.objects.filter(user_id=user_id).exists():
+            await message.answer(
+                'Выбери сотрудника',
+                reply_markup=keyboards.worker_list(user_id)
+            )
+            await WorkersObjects.step2.set()
+        else:
+            await message.answer(
+                '❗ Этот раздел доступен только руководителю агентства. Ты не руководитель агентства'
+            )
 
 
 @dp.callback_query_handler(state=WorkersObjects.step2)
@@ -4460,18 +4488,23 @@ async def worker_objects(
 
 @dp.message_handler(commands=['archive'])
 async def archive(message: Message):
-    DB_Worker.command_counting()
-    user_id = message.from_user.id
-    if Ceo.objects.filter(user_id=user_id).exists():
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Выбери сотрудника',
-            reply_markup=keyboards.worker_list(user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await ArchiveObjects.step2.set()
     else:
-        await message.answer(
-            '❗ Этот раздел доступен только руководителю агентства. Ты не руководитель агентства'
-        )
+        DB_Worker.command_counting()
+        user_id = message.from_user.id
+        if Ceo.objects.filter(user_id=user_id).exists():
+            await message.answer(
+                'Выбери сотрудника',
+                reply_markup=keyboards.worker_list(user_id)
+            )
+            await ArchiveObjects.step2.set()
+        else:
+            await message.answer(
+                '❗ Этот раздел доступен только руководителю агентства. Ты не руководитель агентства'
+            )
 
 
 @dp.callback_query_handler(state=ArchiveObjects.step2)
@@ -4514,16 +4547,21 @@ async def arcjive_objects(
 
 @dp.message_handler(commands=['ceoregistration'])
 async def ceo_registration(message: Message):
-    DB_Worker.command_counting()
-    if Ceo.objects.filter(user_id=message.from_user.id).exists():
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Ты уже зарегистрирован как руководитель'
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        await message.answer(
-            'Введите кодовое слово'
-        )
-        await CeoRegistration.step2.set()
+        DB_Worker.command_counting()
+        if Ceo.objects.filter(user_id=message.from_user.id).exists():
+            await message.answer(
+                'Ты уже зарегистрирован как руководитель'
+            )
+        else:
+            await message.answer(
+                'Введите кодовое слово'
+            )
+            await CeoRegistration.step2.set()
 
 
 @dp.message_handler(state=CeoRegistration.step2)
@@ -4531,19 +4569,47 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
     code_word = CodeWord.objects.filter(code_words=message.text)
 
     if code_word.exists():
-        rieltor = Rieltors.objects.get(user_id=message.from_user.id)
+        code_word.delete()
+
+        rieltor = Rieltors.objects.get(user_id=message.from_user.id) #текущий пользователь регистрирующийся на руководителя
+        rieltors = Rieltors.objects.filter(agency_name=rieltor.agency_name).exclude(user_id=message.from_user.id)
+
+        cond_ceo = False
+        cond_workers = False
+
         if DB_Worker.ceo_create(rieltor):
+            cond_ceo = True
+
+        if rieltors.exists():
+            rieltors_list = []
+            for item in rieltors:
+                if item.user_id != rieltor.user_id:
+                    rieltors_list.append(item.name)
+            rieltors_string = ', '.join(rieltors_list)
+            if DB_Worker.workers_create(ceo_id=rieltor.user_id, rieltors=rieltors):
+                cond_workers = True
+
+        if cond_ceo and cond_workers:
+            await message.answer(
+                'Поздравляю! Ты зарегистрирован как руководитель!'
+                + ' Приглашай своих сотрудников пользоваться ботом!\n\n'
+                + f'Вы уже можете наблюдать за {rieltors_string}'
+            )
+        elif cond_ceo and not cond_workers:
             await message.answer(
                 'Поздравляю! Ты зарегистрирован как руководитель!'
                 + ' Приглашай своих сотрудников пользоваться ботом!'
             )
         else:
-            await message.answer('Ошибка. Сообщи об этом @davletelvir')
+            await message.answer(
+                'Ошибка! Сообщи об этом @davletelvir'
+            )
+        await state.finish()
     else:
         await message.answer(
-            'Неверное кодово слово!'
+            'Неверное кодово слово! Введите заново'
         )
-    await state.finish()
+        await CeoRegistration.step2.set()
 # -----------------------------------------------------------------------------
 # --------------------агидель--------------------------------------------------
 # -----------------------------------------------------------------------------
