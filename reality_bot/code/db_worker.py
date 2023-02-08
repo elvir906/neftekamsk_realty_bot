@@ -233,8 +233,7 @@ class DB_Worker():
         try:
             ids = []
             for item in rieltors:
-                if item.user_id != ceo_id:
-                    ids.append(item.user_id)
+                ids.append(item.user_id)
             ceo = Ceo.objects.get(user_id=ceo_id)
             ceo.workers = ids
             ceo.save()

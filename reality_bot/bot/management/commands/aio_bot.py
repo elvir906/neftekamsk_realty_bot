@@ -69,8 +69,8 @@ async def start(message: Message):
 async def entering_name(message: Message, state: FSMContext):
     if message.from_user.username is None:
         await message.answer(
-            'У вас в настройках профиля не указан username (имя пользователя). '
-            + 'Откройте настройки telegram и заполните это поле.'
+            'У вас в настройках профиля не указан username (имя пользователя).'
+            + ' Откройте настройки telegram и заполните это поле.'
             + ' После этого заново нажмите на команду 👉 /registration'
         )
         await state.finish()
@@ -82,7 +82,7 @@ async def entering_name(message: Message, state: FSMContext):
             await state.finish()
         else:
             await message.answer(
-                '✏ Давай знакомиться! Я бот BAZA. *А тебя как зовут?*\n'
+                '✏ Давай знакомиться! *Как тебя зовут?*\n'
                 + '*Напиши.* Подойдёт любой формат: Имя, Имя Отчество, Имя Фамилия\n\n'
                 + '🙅‍♂️ Для отмены напиши "Стоп"',
                 parse_mode='Markdown'
@@ -121,7 +121,7 @@ async def phone_number_entering(callback: CallbackQuery, state: FSMContext):
         await state.update_data(agency_name=callback.data)
         await callback.message.edit_text(
             message_texts.on.get('phone_number_entering_text_for_editing'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await Registration.step3.set()
 
@@ -157,7 +157,8 @@ async def registration_finish(message: Message, state: FSMContext):
             await message.answer(
                 message_texts.phone_number_entering_error(
                     phone_number=message.text
-                )
+                ),
+                parse_mode='Markdown'
             )
             logging.error(
                 f'Ошибка при вводе номера телефона {message.text}.'
@@ -972,7 +973,9 @@ async def entering_room_count(
 ):
     await state.update_data(room_count=callback.data[4])
     await callback.message.edit_text(
-        '✏ *Напиши название улицы.*\n\n'
+        '✏ *Напиши название улицы*\n\n'
+        + 'без указания наименования дорог и проездов (ул., пр., пер. и т.п.)\n\n'
+        + '❗ Пиши правильно: Комсомольский, Победы, Юбилейный, Берёзовское шоссе\n\n'
         + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
         parse_mode='Markdown'
     )
@@ -1146,7 +1149,8 @@ async def entering_price(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(price=answer)
             await message.answer(
-                message_texts.entering_description_text(category='квартиры')
+                message_texts.entering_description_text(category='квартиры'),
+                parse_mode='Markdown'
             )
             await CallbackOnStart.next()
 
@@ -1250,7 +1254,7 @@ async def entering_mortage(callback: CallbackQuery, state: FSMContext):
             await state.update_data(mortage=False)
         await callback.message.edit_text(
             message_texts.on.get('phone_number_entering_text'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await CallbackOnStart.next()
 
@@ -1279,7 +1283,8 @@ async def entering_phone_number(message: Message, state: FSMContext):
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text)
+                message_texts.phone_number_entering_error(message.text),
+                parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
             await CallbackOnStart.Q11.set()
@@ -1384,8 +1389,9 @@ async def add_room(callback: CallbackQuery, state: FSMContext):
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Напиши название улицы*\n\n'
-        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
-        parse_mode='Markdown'
+        + 'без указания наименования дорог и проездов (ул., пр., пер. и т.п.)\n\n'
+        + '❗ Пиши правильно: Комсомольский, Победы, Юбилейный, Берёзовское шоссе\n\n'
+
     )
     await RoomCallbackStates.R1.set()
 
@@ -1531,7 +1537,8 @@ async def entering_room_price(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(room_price=answer)
             await message.answer(
-                message_texts.entering_description_text(category='комнаты')
+                message_texts.entering_description_text(category='комнаты'),
+                parse_mode='Markdown'
             )
             await RoomCallbackStates.next()
 
@@ -1631,7 +1638,7 @@ async def entering_room_mortage(callback: CallbackQuery, state: FSMContext):
             await state.update_data(room_mortage=False)
         await callback.message.edit_text(
             message_texts.on.get('phone_number_entering_text'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await RoomCallbackStates.next()
 
@@ -1660,7 +1667,8 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
             await message.answer(
                 message_texts.phone_number_entering_error(
                     phone_number=message.text
-                )
+                ),
+                parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
             await RoomCallbackStates.R11.set()
@@ -2128,7 +2136,8 @@ async def entering_house_description(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(house_price=answer)
             await message.answer(
-                message_texts.entering_description_text('дома')
+                message_texts.entering_description_text('дома'),
+                parse_mode='Markdown'
             )
             await HouseCallbackStates.next()
 
@@ -2246,7 +2255,7 @@ async def entering_house_phone_number(
             await state.update_data(house_mortage=False)
         await callback.message.edit_text(
             message_texts.on.get('phone_number_entering_text'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await HouseCallbackStates.next()
 
@@ -2276,7 +2285,8 @@ async def entering_house_agency_name(
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text)
+                message_texts.phone_number_entering_error(message.text),
+                parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
             await HouseCallbackStates.H19.set()
@@ -2741,7 +2751,8 @@ async def entering_townhouse_description(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(townhouse_price=answer)
             await message.answer(
-                message_texts.entering_description_text('таунхауса')
+                message_texts.entering_description_text('таунхауса'),
+                parse_mode='Markdown'
             )
             await TownHouseCallbackStates.next()
 
@@ -2859,7 +2870,7 @@ async def entering_townhouse_phone_number(
             await state.update_data(townhouse_mortage=False)
         await callback.message.edit_text(
             message_texts.on.get('phone_number_entering_text'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await TownHouseCallbackStates.next()
 
@@ -2889,7 +2900,8 @@ async def entering_townhouse_agency_name(
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text)
+                message_texts.phone_number_entering_error(message.text),
+                parse_mode='Markdown'
             )
             logging.error(f'🧐 Ошибка при вводе номера телефона {message.text}')
             await TownHouseCallbackStates.T19.set()
@@ -3294,7 +3306,8 @@ async def entering_land_description(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(land_price=answer)
             await message.answer(
-                message_texts.entering_description_text('участка')
+                message_texts.entering_description_text('участка'),
+                parse_mode='Markdown'
             )
             await LandCallbackStates.next()
 
@@ -3412,7 +3425,7 @@ async def entering_land_phone_number(
             await state.update_data(land_mortage=False)
         await callback.message.edit_text(
             message_texts.on.get('phone_number_entering_text'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await LandCallbackStates.next()
 
@@ -3442,7 +3455,8 @@ async def entering_land_agency_name(
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text)
+                message_texts.phone_number_entering_error(message.text),
+                parse_mode='Markdown'
             )
             logging.error(f'🧐 Ошибка при вводе номера телефона {message.text}')
             await LandCallbackStates.L17.set()
@@ -3570,7 +3584,7 @@ async def entering_phone_number_for_searching(message: Message):
     for item in apartment_queryset:
         await asyncio.sleep(0.5)
         await message.answer(
-            f'🆔 {item.pk}, 🏡 *{item.room_quantity} к.кв.* '
+            f'*{item.room_quantity} к.кв.* '
             + f'{item.street_name} д.{item.number_of_house}, '
             + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
             + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
@@ -3581,7 +3595,7 @@ async def entering_phone_number_for_searching(message: Message):
     for item in room_queryset:
         await asyncio.sleep(0.5)
         await message.answer(
-            f'🆔 {item.pk}, 🏡 *Комната* {item.street_name} '
+            f'*Комната* {item.street_name} '
             + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
             + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
             disable_notification=True,
@@ -3591,7 +3605,7 @@ async def entering_phone_number_for_searching(message: Message):
     for item in house_queryset:
         await asyncio.sleep(0.5)
         await message.answer(
-            f'🆔 {item.pk}, 🏡 *Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+            f'*Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
             + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
             disable_notification=True,
             parse_mode='Markdown'
@@ -3600,7 +3614,7 @@ async def entering_phone_number_for_searching(message: Message):
     for item in townhouse_queryset:
         await asyncio.sleep(0.5)
         await message.answer(
-            f'🆔 {item.pk}, 🏡 *Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+            f'*Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
             + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
             disable_notification=True,
             parse_mode='Markdown'
@@ -3609,7 +3623,7 @@ async def entering_phone_number_for_searching(message: Message):
     for item in land_queryset:
         await asyncio.sleep(0.5)
         await message.answer(
-            f'🆔 {item.pk}, 🏡 *Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+            f'*Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
             + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
             disable_notification=True,
             parse_mode='Markdown'
@@ -3811,7 +3825,7 @@ async def add_phone_number(message: Message, state: FSMContext):
         await state.update_data(buyer_name=message.text)
         await message.answer(
             message_texts.on.get('buyer_phone_number_entering_text'),
-            parse_mode='Makdown'
+            parse_mode='Markdown'
         )
         await Buyer.category.set()
 
@@ -3836,7 +3850,8 @@ async def add_category(message: Message, state: FSMContext):
             await message.answer(
                 message_texts.phone_number_entering_error(
                     phone_number=message.text
-                )
+                ),
+                parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
             await Buyer.category.set()
@@ -4586,7 +4601,7 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
                 if item.user_id != rieltor.user_id:
                     rieltors_list.append(item.name)
             rieltors_string = ', '.join(rieltors_list)
-            if DB_Worker.workers_create(ceo_id=rieltor.user_id, rieltors=rieltors):
+            if DB_Worker.workers_create(ceo_id=rieltor.user_id, rieltors=rieltors.exclude(user_id=rieltor.user_id)):
                 cond_workers = True
 
         if cond_ceo and cond_workers:

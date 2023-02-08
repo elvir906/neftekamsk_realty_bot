@@ -153,10 +153,6 @@ class keyboards():
                     callback_data=f'{buttons_names[i]}'
                     )
             )
-        # cancel_button = 'Отменить внесение объекта'
-        # keyboard.row(
-        #     InlineKeyboardButton(cancel_button, callback_data=cancel_button)
-        # )
         return keyboard
 
     def get_rooms_count_keyboard():
@@ -514,28 +510,28 @@ class keyboards():
         callback_data_string = []
 
         for item in apartment_queryset:
-            buttons.append(f'ID {item.pk} {item.room_quantity}к.кв. '
+            buttons.append(f'{item.room_quantity}к.кв. '
                            + f'{item.street_name} {item.number_of_house} '
                            + f'- {int(item.price)} ₽')
             callback_data_string.append([item.pk, 'Apartment'])
 
         for item in room_queryset:
-            buttons.append(f'ID {item.pk} Комната {item.street_name} '
+            buttons.append(f'Комната {item.street_name} '
                            + f'{item.number_of_house} - {int(item.price)} ₽')
             callback_data_string.append([item.pk, 'Room'])
 
         for item in house_queryset:
-            buttons.append(f'ID {item.pk}  Дом {item.microregion} '
+            buttons.append(f'Дом {item.microregion} '
                            + f'{item.street_name} - {int(item.price)} ₽')
             callback_data_string.append([item.pk, 'House'])
 
         for item in townhouse_queryset:
-            buttons.append(f'ID {item.pk}  Таунхаус {item.microregion} '
+            buttons.append(f'Таунхаус {item.microregion} '
                            + f'{item.street_name} - {int(item.price)} ₽')
             callback_data_string.append([item.pk, 'TownHouse'])
 
         for item in land_queryset:
-            buttons.append(f'ID {item.pk}  Участок {item.microregion} '
+            buttons.append(f'Участок {item.microregion} '
                            + f'{item.street_name} {item.number_of_land} - '
                            + f'{int(item.price)} ₽')
             callback_data_string.append([item.pk, 'Land'])
