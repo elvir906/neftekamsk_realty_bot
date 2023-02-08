@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
 @dp.message_handler(commands=['start'])
 async def start(message: Message):
-    await message.answer(message_texts.on.get('start'))
+    await message.answer(message_texts.on.get('start'), parse_mode='Markdown')
 # -----------------------------------------------------------------------------
 # --------------------РЕГИСТРАЦИЯ----------------------------------------------
 # -----------------------------------------------------------------------------
@@ -77,14 +77,15 @@ async def entering_name(message: Message, state: FSMContext):
     else:
         if Rieltors.objects.filter(user_id=message.from_user.id).exists():
             await message.answer(
-                'Вы уже зарегистрированы в системе'
+                '❗ Вы уже зарегистрированы в системе'
             )
             await state.finish()
         else:
             await message.answer(
-                '✏ Давай знакомиться! Я бот База. А тебя как зовут?\n'
-                + 'Напиши. Подойдёт любой формат: Имя, Имя Отчество, Имя Фамилия\n\n'
-                + '🙅‍♂️ Для отмены напиши "Стоп"'
+                '✏ Давай знакомиться! Я бот BAZA. *А тебя как зовут?*\n'
+                + '*Напиши.* Подойдёт любой формат: Имя, Имя Отчество, Имя Фамилия\n\n'
+                + '🙅‍♂️ Для отмены напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await Registration.step1.set()
 
@@ -119,7 +120,8 @@ async def phone_number_entering(callback: CallbackQuery, state: FSMContext):
     else:
         await state.update_data(agency_name=callback.data)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text_for_editing')
+            message_texts.on.get('phone_number_entering_text_for_editing'),
+            parse_mode='Makdown'
         )
         await Registration.step3.set()
 
@@ -147,7 +149,7 @@ async def registration_finish(message: Message, state: FSMContext):
                     sticker="CAACAgIAAxkBAAEHTKhjxjrcni0OCgaOirMYTAeiEYMy1AACPR4AAg5kyEnoLgEu8rg2Oy0E"
                 )
                 await message.answer(
-                    f'{rieltor.name}, всё готово! Можешь начинать '
+                    f'OK, {rieltor.name}, всё готово! Можешь начинать '
                     + 'работу с нажатия на кнопку "Меню"'
                 )
             await state.finish()
@@ -227,7 +229,7 @@ async def search_objects(message: Message):
     #     )
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         await message.answer(
@@ -367,10 +369,11 @@ async def rooms(message: Message, state: FSMContext):
     except (ValueError) as e:
         await bot.send_sticker(
             chat_id=message.from_user.id,
-            sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+            sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error')
+            message_texts.on.get('limit_entering_error'),
+            parse_mode='Markdown'
         )
         logging.error(f'{e}')
         await RoomSearch.step2.set()
@@ -474,10 +477,11 @@ async def houses(message: Message, state: FSMContext):
     except (ValueError) as e:
         await bot.send_sticker(
             chat_id=message.from_user.id,
-            sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+            sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error')
+            message_texts.on.get('limit_entering_error'),
+            parse_mode='Markdown'
         )
         logging.error(f'{e}')
         await HouseSearch.step2.set()
@@ -582,10 +586,11 @@ async def townhouses(message: Message, state: FSMContext):
     except (ValueError) as e:
         await bot.send_sticker(
             chat_id=message.from_user.id,
-            sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+            sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error')
+            message_texts.on.get('limit_entering_error'),
+            parse_mode='Markdown'
         )
         logging.error(f'{e}')
         await TownHouseSearch.step2.set()
@@ -693,10 +698,11 @@ async def lands(message: Message, state: FSMContext):
     except (ValueError) as e:
         await bot.send_sticker(
             chat_id=message.from_user.id,
-            sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+            sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error')
+            message_texts.on.get('limit_entering_error'),
+            parse_mode='Markdown'
         )
         logging.error(f'{e}')
         await LandSearch.step2.set()
@@ -747,7 +753,6 @@ async def apartments(callback: CallbackQuery):
         '✏ Выбери по количеству комнат',
         reply_markup=keyboards.get_rooms_count_keyboard()
     )
-    # await ApartmentSearch.step2.set()
 
 
 @dp.callback_query_handler(text='⏪ Назад')
@@ -761,7 +766,6 @@ checked_category = {}
 
 
 @dp.callback_query_handler(
-    # state=ApartmentSearch.step2,
     text=[
         '1-комнатные', '2-комнатные',
         '3-комнатные', '4-комнатные',
@@ -798,8 +802,10 @@ async def apartment_plan_category_checking(
     key = str(callback.from_user.id)
     if answer == 'Подтвердить выбор':
         if not checked_category[key]:
-            await callback.message.edit_text('❗ Необходимо выбрать категорию', reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[]))
-            # await ApartmentSearch.step3.set()
+            await callback.message.edit_text(
+                '❗ Необходимо выбрать категорию',
+                reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[])
+            )
         else:
             await state.update_data(category=checked_category[key])
             await callback.message.edit_text('✏ До какой цены вывести объекты?')
@@ -889,24 +895,23 @@ async def apartment_search_result(
                         query_set=query_set,
                         room_count=room_count
                     )
-                    # await ApartmentSearch.step5.set()
         else:
             await message.answer('Ничего не найдено')
             await state.finish()
     except (ValueError) as e:
         await bot.send_sticker(
             chat_id=message.from_user.id,
-            sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+            sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error')
+            message_texts.on.get('limit_entering_error'),
+            parse_mode='Markdown'
         )
         logging.error(f'{e}')
         await ApartmentSearch.step4.set()
 
 
 @dp.callback_query_handler(
-    # state=ApartmentSearch.step5,
     text=['apartment_prev', 'apartment_next']
 )
 async def apartment_next(callback: CallbackQuery, state: FSMContext):
@@ -933,7 +938,6 @@ async def apartment_next(callback: CallbackQuery, state: FSMContext):
                 ),
                 parse_mode='Markdown'
             )
-        # await ApartmentSearch.step5.set()
     except IndexError:
         pass
     except ValueError:
@@ -951,8 +955,9 @@ async def add_apartment(callback: CallbackQuery, state: FSMContext):
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.'
         + '\n'
-        + '\n✏ Введи количество комнат',
-        reply_markup=keyboards.add_rooms_count_keyboard()
+        + '\n✏ *Введи количество комнат*',
+        reply_markup=keyboards.add_rooms_count_keyboard(),
+        parse_mode='Markdown'
     )
 
 
@@ -967,8 +972,9 @@ async def entering_room_count(
 ):
     await state.update_data(room_count=callback.data[4])
     await callback.message.edit_text(
-        '✏ Напиши название улицы.\n\n'
-        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+        '✏ *Напиши название улицы.*\n\n'
+        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+        parse_mode='Markdown'
     )
     await CallbackOnStart.Q1.set()
 
@@ -988,8 +994,9 @@ async def entering_street_name(
         await state.update_data(street_name=answer)
 
         await message.answer(
-            '✏ Напиши номер дома в формате 5, 5А или 91 корп.1\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            '✏ *Напиши номер дома* в формате 5, 5А или 91 корп.1\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await CallbackOnStart.next()
 
@@ -1062,9 +1069,10 @@ async def entering_floors(callback: CallbackQuery, state: FSMContext):
         await state.update_data(floors=callback.data.removesuffix('_afloors'))
 
         await callback.message.edit_text(
-            '✏ Напиши площадь квартиры, как'
+            '✏ *Напиши площадь квартиры*, как'
             + ' указано в свидетельстве или выписке\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await CallbackOnStart.plan_category.set()
 
@@ -1092,12 +1100,13 @@ async def plan_category(message: Message, state: FSMContext):
 
         except (ValueError) as e:
             await CallbackOnStart.Q4.set()
-            await code.send_sticker(
+            await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -1119,7 +1128,8 @@ async def entering_area(callback: CallbackQuery, state: FSMContext):
     else:
         await state.update_data(category=callback.data)
         await callback.message.edit_text(
-            message_texts.on.get('enter_price')
+            message_texts.on.get('enter_price'),
+            parse_mode='Markdown'
         )
         await CallbackOnStart.Q6.set()
 
@@ -1142,12 +1152,13 @@ async def entering_price(message: Message, state: FSMContext):
 
         except (ValueError) as e:
             await CallbackOnStart.Q6.set()
-            await code.send_sticker(
+            await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.on.get('price_entering_error')
+                message_texts.on.get('price_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -1238,7 +1249,8 @@ async def entering_mortage(callback: CallbackQuery, state: FSMContext):
         if callback.data == 'no_mortage':
             await state.update_data(mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text')
+            message_texts.on.get('phone_number_entering_text'),
+            parse_mode='Makdown'
         )
         await CallbackOnStart.next()
 
@@ -1255,15 +1267,16 @@ async def entering_phone_number(message: Message, state: FSMContext):
         if re.match(r"^[0-9]+$", message.text):
             await state.update_data(owner_phone_number='+7' + message.text[1:])
             await message.answer(
-                '✏ Как зовут продавца квартиры?\n\n'
+                '✏ *Как зовут продавца квартиры?*\n\n'
                 + 'Его имя будет видно только тебе\n\n'
-                + 'Для отмены внесения объекта напиши "Стоп"'
+                + 'Для отмены внесения объекта напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await CallbackOnStart.Q12.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
                 message_texts.phone_number_entering_error(message.text)
@@ -1370,8 +1383,9 @@ async def add_room(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ Напиши название улицы\n\n'
-        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+        + '✏ *Напиши название улицы*\n\n'
+        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+        parse_mode='Markdown'
     )
     await RoomCallbackStates.R1.set()
 
@@ -1388,8 +1402,9 @@ async def enetering_rooms_street_name(
     else:
         await state.update_data(room_street_name=message.text.title())
         await message.answer(
-            '✏ Напиши номер дома в формате 5, 5А или 91 корп.1\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            '✏ *Напиши номер дома* в формате 5, 5А или 91 корп.1\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await RoomCallbackStates.next()
 
@@ -1463,8 +1478,9 @@ async def entering_room_floors(
     else:
         await state.update_data(room_floors=callback.data.removesuffix('_rfloors'))
         await callback.message.edit_text(
-            '✏ Введи площадь комнаты, как в указано в свидетельстве или выписке\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            '✏ *Введи площадь комнаты*, как в указано в свидетельстве или выписке\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await RoomCallbackStates.next()
 
@@ -1489,14 +1505,16 @@ async def enetering_rooms_area(
                 answer = float(message.text)
             await state.update_data(room_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price')
+                message_texts.on.get('enter_price'),
+                parse_mode='Markdown'
             )
             await RoomCallbackStates.next()
 
         except (ValueError) as e:
             await RoomCallbackStates.R5.set()
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -1520,7 +1538,8 @@ async def entering_room_price(message: Message, state: FSMContext):
         except (ValueError) as e:
             await RoomCallbackStates.R6.set()
             await message.answer(
-                message_texts.on.get('price_entering_error')
+                message_texts.on.get('price_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -1611,7 +1630,8 @@ async def entering_room_mortage(callback: CallbackQuery, state: FSMContext):
         if callback.data == 'no_room_mortage':
             await state.update_data(room_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text')
+            message_texts.on.get('phone_number_entering_text'),
+            parse_mode='Makdown'
         )
         await RoomCallbackStates.next()
 
@@ -1627,21 +1647,22 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
         if re.match(r"^[0-9]+$", message.text):
             await state.update_data(room_owner_phone_number='+7' + message.text[1:])
             await message.answer(
-                '✏ Как зовут продавца комнаты?\n\n'
-                + 'Для отмены внесения объекта напиши "Стоп"'
+                '✏ *Как зовут продавца комнаты?*\n\n'
+                + 'Для отмены внесения объекта напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await RoomCallbackStates.R12.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
                 message_texts.phone_number_entering_error(
                     phone_number=message.text
                 )
             )
-            logging.error(f'🧐 Ошибка при вводе номера телефона {message.text}')
+            logging.error(f'Ошибка при вводе номера телефона {message.text}')
             await RoomCallbackStates.R11.set()
 
 
@@ -1659,24 +1680,6 @@ async def entering_room_agency_name(message: Message, state: FSMContext):
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
         await RoomCallbackStates.R14.set()
-
-
-# @dp.message_handler(state=RoomCallbackStates.R13)
-# async def entering_room_realtor_name(message: Message, state: FSMContext):
-#     if message.text == 'Стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         global flag
-#         flag = False
-#         await state.update_data(room_rieltor_name=answer)
-#         await message.answer(
-#             '✏ Загрузите до 6 фото квартиры\n\n'
-#         )
-#         await RoomCallbackStates.R14.set()
 
 
 @dp.message_handler(state=RoomCallbackStates.R14, content_types=ContentType.PHOTO)
@@ -1756,9 +1759,10 @@ async def add_house(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ Укажи микрорайон расположения дома:\n\n'
+        + '✏ *Укажи микрорайон расположения дома:*\n\n'
         + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.',
-        reply_markup=keyboards.microregion_keyboard('object')
+        reply_markup=keyboards.microregion_keyboard('object'),
+        parse_mode='Markdown'
     )
     await HouseCallbackStates.H1.set()
 
@@ -1779,8 +1783,9 @@ async def entering_house_street_name(
     else:
         await state.update_data(house_microregion=callback.data)
         await callback.message.edit_text(
-            '✏ Напиши название улицы (и номер - по желанию)\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            '✏ *Напиши название улицы* (и номер дома - по желанию)\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await HouseCallbackStates.next()
 
@@ -2038,9 +2043,10 @@ async def entering_house_area(
     else:
         await state.update_data(house_road=callback.data)
         await callback.message.edit_text(
-            '✏ Введи площадь дома, как в указано в свидетельстве или выписке. '
+            '✏ *Введи площадь дома,* как в указано в свидетельстве или выписке. '
             + 'Используйте разделитель "." для дробной и целой частей.\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await HouseCallbackStates.next()
 
@@ -2062,17 +2068,19 @@ async def entering_house_land_area(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(house_area=answer)
             await message.answer(
-                '✏ Введи площадь участка в сотках. '
-                + '(Знаение площади из документации раздели на 100) '
+                '✏ *Введи площадь участка в сотках.* '
+                + '(Значение площади из документации раздели на 100) '
                 + 'Используйте разделитель "." для дробной и целой частей.\n\n'
-                + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+                + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await HouseCallbackStates.next()
 
         except (ValueError) as e:
             await HouseCallbackStates.H12.set()
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -2094,14 +2102,16 @@ async def entering_house_price(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(house_land_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price')
+                message_texts.on.get('enter_price'),
+                parse_mode='Markdown'
             )
             await HouseCallbackStates.next()
 
         except (ValueError) as e:
             await HouseCallbackStates.H13.set()
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -2125,7 +2135,8 @@ async def entering_house_description(message: Message, state: FSMContext):
         except (ValueError) as e:
             await HouseCallbackStates.H14.set()
             await message.answer(
-                message_texts.on.get('price_entering_error')
+                message_texts.on.get('price_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -2234,7 +2245,8 @@ async def entering_house_phone_number(
         if callback.data == 'no_house_mortage':
             await state.update_data(house_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text')
+            message_texts.on.get('phone_number_entering_text'),
+            parse_mode='Makdown'
         )
         await HouseCallbackStates.next()
 
@@ -2252,20 +2264,21 @@ async def entering_house_agency_name(
         if re.match(r"^[0-9]+$", message.text):
             await state.update_data(house_owner_phone_number='+7' + message.text[1:])
             await message.answer(
-                '✏ Как зовут продавца дома?\n\n'
+                '✏ *Как зовут продавца дома?*\n\n'
                 'Его имя будет видно только тебе\n\n'
-                + 'Для отмены внесения объекта напиши "Стоп"'
+                + 'Для отмены внесения объекта напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await HouseCallbackStates.H20.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
                 message_texts.phone_number_entering_error(message.text)
             )
-            logging.error(f'🧐 Ошибка при вводе номера телефона {message.text}')
+            logging.error(f'Ошибка при вводе номера телефона {message.text}')
             await HouseCallbackStates.H19.set()
 
 
@@ -2285,24 +2298,6 @@ async def entering_house_rieltor_name(
             '✏ Загрузите до 6 фото дома\n\n'
         )
         await HouseCallbackStates.H22.set()
-
-
-# @dp.message_handler(state=HouseCallbackStates.H21)
-# async def house_entering_rieltor_name(message: Message, state: FSMContext):
-#     if message.text == 'Стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         global flag
-#         flag = False
-#         await state.update_data(house_rieltor_name=answer)
-#         await message.answer(
-#             '✏ Загрузите до 6 фото дома'
-#         )
-#         await HouseCallbackStates.H22.set()
 
 
 @dp.message_handler(state=HouseCallbackStates.H22, content_types=ContentType.PHOTO)
@@ -2383,10 +2378,11 @@ async def add_townhouse(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ Укажи микрорайон расположения таунхауса\n\n'
+        + '✏ *Укажи микрорайон расположения таунхауса.*\n\n'
         + 'Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n'
         + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
-        reply_markup=keyboards.microregion_keyboard('object')
+        reply_markup=keyboards.microregion_keyboard('object'),
+        parse_mode='Markdown'
     )
     await TownHouseCallbackStates.T1.set()
 
@@ -2406,8 +2402,9 @@ async def entering_townhouse_street_name(
     else:
         await state.update_data(townhouse_microregion=callback.data)
         await callback.message.edit_text(
-            '✏ Напиши название улицы (и номер дома - по желанию)\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            '✏ *Напиши название улицы* (и номер дома - по желанию)\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await TownHouseCallbackStates.next()
 
@@ -2661,7 +2658,8 @@ async def entering_townhouse_area(
     else:
         await state.update_data(townhouse_road=callback.data)
         await callback.message.edit_text(
-            message_texts.on.get('area_entering_text')
+            message_texts.on.get('area_entering_text'),
+            parse_mode='Markdown'
         )
         await TownHouseCallbackStates.next()
 
@@ -2683,17 +2681,19 @@ async def entering_townhouse_land_area(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(townhouse_area=answer)
             await message.answer(
-                '✏ Введи площадь участка в сотках. '
+                '✏ *Введи площадь участка в сотках.* '
                 + '(Значение площади из документации раздели на 100) '
                 + 'Используй разделитель "." для дробной и целой частей.\n\n'
-                + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+                + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await TownHouseCallbackStates.next()
 
         except (ValueError) as e:
             await TownHouseCallbackStates.T12.set()
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -2715,14 +2715,16 @@ async def entering_townhouse_price(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(townhouse_land_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price')
+                message_texts.on.get('enter_price'),
+                parse_mode='Markdown'
             )
             await TownHouseCallbackStates.next()
 
         except (ValueError) as e:
             await TownHouseCallbackStates.T13.set()
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -2746,7 +2748,8 @@ async def entering_townhouse_description(message: Message, state: FSMContext):
         except (ValueError) as e:
             await TownHouseCallbackStates.T14.set()
             await message.answer(
-                message_texts.on.get('price_entering_error')
+                message_texts.on.get('price_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -2855,7 +2858,8 @@ async def entering_townhouse_phone_number(
         if callback.data == 'no_townhouse_mortage':
             await state.update_data(townhouse_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text')
+            message_texts.on.get('phone_number_entering_text'),
+            parse_mode='Makdown'
         )
         await TownHouseCallbackStates.next()
 
@@ -2873,15 +2877,16 @@ async def entering_townhouse_agency_name(
         if re.match(r"^[0-9]+$", message.text):
             await state.update_data(townhouse_owner_phone_number='+7' + message.text[1:])
             await message.answer(
-                '✏ Как зовут продавца таунхауса?\n\n'
+                '✏ *Как зовут продавца таунхауса?*\n\n'
                 'Его имя будет видно только тебе\n\n'
-                + 'Для отмены внесения объекта напиши "Стоп"'
+                + 'Для отмены внесения объекта напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await TownHouseCallbackStates.T20.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
                 message_texts.phone_number_entering_error(message.text)
@@ -2906,24 +2911,6 @@ async def entering_townhouse_rieltor_name(
             '✏ Загрузи до 6 фото таунхауса\n\n'
         )
         await TownHouseCallbackStates.T22.set()
-
-
-# @dp.message_handler(state=TownHouseCallbackStates.T21)
-# async def townhous_upload_photos(message: Message, state: FSMContext):
-#     if message.text == 'Стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         global flag
-#         flag = False
-#         await state.update_data(townhouse_rieltor_name=answer)
-#         await message.answer(
-#             '✏ Загрузите до 6 фото таунхауса'
-#         )
-#         await TownHouseCallbackStates.T22.set()
 
 
 @dp.message_handler(state=TownHouseCallbackStates.T22, content_types=ContentType.PHOTO)
@@ -3004,10 +2991,11 @@ async def add_land(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовьтесь ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ Укажите микрорайон расположения участка\n\n'
+        + '✏ *Укажите микрорайон расположения участка.*\n\n'
         + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n'
         + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
-        reply_markup=keyboards.microregion_keyboard('object')
+        reply_markup=keyboards.microregion_keyboard('object'),
+        parse_mode='Markdown'
     )
     await LandCallbackStates.L1.set()
 
@@ -3027,8 +3015,9 @@ async def entering_land_street_name(
     else:
         await state.update_data(land_microregion=callback.data)
         await callback.message.edit_text(
-            '✏ Напиши название улицы\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
+            '✏ *Напиши название улицы.*\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await LandCallbackStates.next()
 
@@ -3044,8 +3033,9 @@ async def entering_land_number(message: Message, state: FSMContext):
         answer = message.text.title()
         await state.update_data(land_street_name=answer)
         await message.answer(
-            '✏ Напиши номер участка\n\n'
+            '✏ *Напиши номер участка.*\n\n'
             + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await LandCallbackStates.next()
 
@@ -3254,9 +3244,10 @@ async def entering_land_area(
     else:
         await state.update_data(land_road=callback.data)
         await callback.message.edit_text(
-            '✏ Введи площадь участка в сотках. '
+            '✏ *Введи площадь участка в сотках.* '
             + '(Значение площади из документации раздели на 100) '
-            + 'Используйте разделитель "." для дробной и целой частей.'
+            + 'Используйте разделитель "." для дробной и целой частей.',
+            parse_mode='Markdown'
         )
         await LandCallbackStates.next()
 
@@ -3278,13 +3269,15 @@ async def entering_land_price(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(land_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price')
+                message_texts.on.get('enter_price'),
+                parse_mode='Markdown'
             )
             await LandCallbackStates.next()
         except (ValueError) as e:
             await LandCallbackStates.L11.set()
             await message.answer(
-                message_texts.on.get('area_entering_error')
+                message_texts.on.get('area_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -3308,7 +3301,8 @@ async def entering_land_description(message: Message, state: FSMContext):
         except (ValueError) as e:
             await LandCallbackStates.L12.set()
             await message.answer(
-                message_texts.on.get('price_entering_error')
+                message_texts.on.get('price_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -3417,7 +3411,8 @@ async def entering_land_phone_number(
         if callback.data == 'no_land_mortage':
             await state.update_data(land_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text')
+            message_texts.on.get('phone_number_entering_text'),
+            parse_mode='Makdown'
         )
         await LandCallbackStates.next()
 
@@ -3435,15 +3430,16 @@ async def entering_land_agency_name(
         if re.match(r"^[0-9]+$", message.text):
             await state.update_data(land_owner_phone_number='+7' + message.text[1:])
             await message.answer(
-                '✏ Как зовут продавца участка?\n\n'
+                '✏ *Как зовут продавца участка?*\n\n'
                 'Его имя будет видно только тебе\n\n'
-                + 'Для отмены внесения объекта напиши "Стоп"'
+                + 'Для отмены внесения объекта напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await LandCallbackStates.next()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
                 message_texts.phone_number_entering_error(message.text)
@@ -3684,9 +3680,6 @@ async def deleting_object(
                 owner_name=obj.owner_name
             )
             class_name.objects.filter(pk=id).delete()
-        #     data = await state.get_data()
-        #     class_name = Output.str_to_class(data.get('searching_category'))
-        #     class_name.objects.filter(pk=data.get('searching_id')).delete()
             await callback.message.edit_text(
                 'Сделано!'
             )
@@ -3749,8 +3742,9 @@ async def entering_new_price(
         await state.update_data(searching_id=id)
 
         await callback.message.edit_text(
-            '✏ Напиши новую цену.\n\nПолную цену цифрами, '
-            + 'не сокращая, и без знаков Р, р, ₽, руб. и т.п.'
+            '✏ *Напиши новую цену.*\n\nПолную цену цифрами, '
+            + 'не сокращая, и без знаков Р, р, ₽, руб. и т.п.',
+            parse_mode='Markdown'
         )
         await PriceEditCallbackStates.next()
 
@@ -3773,7 +3767,8 @@ async def price_updating_process(
         await message.answer(
             '❗ Ошибка при вводе цены. \n\nВводимое значение должно '
             + 'быть числом. И не пиши "Р", "р", "руб". '
-            + '\n\n✏ Напиши новую цену заново'
+            + '\n\n✏ *Напиши новую цену заново*',
+            parse_mode='Markdown'
         )
         logging.error(
             f'Ошибка при вводе новой цены, {e}'
@@ -3796,15 +3791,13 @@ async def add_buyer(message: Message):
     DB_Worker.command_counting()
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         await message.answer(
-            # 'Внимание! Данные о покупателе будут видны только вам, а так же '
-            # + 'вашему руководителю будут видны имя, категория поиска, лимит, '
-            # + 'источник оплаты, дата внесения\n\n'
-            '✏ Введи имя покупателя\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"'
+            '✏ *Введи имя покупателя.*\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await Buyer.buyer_phone_number.set()
 
@@ -3817,7 +3810,8 @@ async def add_phone_number(message: Message, state: FSMContext):
     else:
         await state.update_data(buyer_name=message.text)
         await message.answer(
-            message_texts.on.get('buyer_phone_number_entering_text')
+            message_texts.on.get('buyer_phone_number_entering_text'),
+            parse_mode='Makdown'
         )
         await Buyer.category.set()
 
@@ -3832,9 +3826,10 @@ async def add_category(message: Message, state: FSMContext):
             await state.update_data(buyer_phone_number=message.text)
             await message.answer(
                 'В какой категории покупатель осуществляет поиск?\n\n'
-                + '✳ Если ваш покупатель ищет в нескольких категориях, '
+                + 'Если ваш покупатель ищет в нескольких категориях, '
                 + 'то заведи его требуемое количество раз с соответствующими категориями.',
-                reply_markup=keyboards.buyer_searching_category()
+                reply_markup=keyboards.buyer_searching_category(),
+                parse_mode='Markdown'
             )
             await Buyer.limit.set()
         else:
@@ -3885,8 +3880,9 @@ async def add_limit(callback: CallbackQuery, state: FSMContext):
             await state.update_data(buyer_search_category='land')
         await callback.message.edit_text(
             '✏ Каков предел суммы покупателя?\n\n'
-            + 'Напиши полное число со всеми нулями\n\n'
-            + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"'
+            + '*Напиши полное число со всеми нулями.*\n\n'
+            + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"',
+            parse_mode='Markdown'
         )
         await Buyer.source.set()
 
@@ -3908,10 +3904,11 @@ async def add_source(message: Message, state: FSMContext):
             await Buyer.source.set()
             await bot.send_sticker(
                 chat_id=message.from_user.id,
-                sticker=r"CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
+                sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.on.get('price_entering_error')
+                message_texts.on.get('price_entering_error'),
+                parse_mode='Markdown'
             )
             logging.error(f'{e}')
 
@@ -3979,9 +3976,10 @@ async def city_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
         if answer == 'Подтвердить выбор':
             await state.update_data(microregions=checked[key])
             await callback.message.edit_text(
-                '✏ Добавь необходимый, по твоему мнению, комментарий к покупателю'
+                '✏ *Добавь* необходимый, по твоему мнению, *комментарий* к покупателю'
                 + '(банк, что продаёт, сумму ПВ, без ПВ, и т.п.)\n\n'
-                + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"'
+                + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await Buyer.base_update.set()
         else:
@@ -4012,9 +4010,10 @@ async def country_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
         if answer == 'Подтвердить выбор':
             await state.update_data(microregions=checked[key])
             await callback.message.edit_text(
-                '✏ Добавь необходимый, по твоему мнению, комментарий к покупателю'
+                '✏ *Добавь* необходимый, по твоему мнению, *комментарий* к покупателю'
                 + '(банк, что продаёт, сумму ПВ, без ПВ, и т.п.)\n\n'
-                + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"'
+                + '🙅‍♂️ Чтобы отменить внесение покупателя, напиши "Стоп"',
+                parse_mode='Markdown'
             )
             await Buyer.base_update.set()
         else:
@@ -4069,7 +4068,8 @@ async def base_update(message: Message, state: FSMContext):
         else:
             await message.answer(
                 'Комментарий по клиенту не должен превышать 500 знаков. '
-                + 'Отредактируй и попробуй заново.'
+                + '*Отредактируй и попробуй заново.*',
+                parse_mode='Markdown'
             )
             await Buyer.base_update.set()
 # -----------------------------------------------------------------------------
@@ -4081,7 +4081,7 @@ async def base_update(message: Message, state: FSMContext):
 async def delete_buyer(message: Message):
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         DB_Worker.command_counting()
@@ -4094,7 +4094,7 @@ async def delete_buyer(message: Message):
             await DeleteBuyer.step2.set()
         else:
             await message.answer(
-                ' У тебя нет клиентов в базе'
+                '❗ У тебя нет клиентов в базе'
             )
 
 
@@ -4117,8 +4117,8 @@ async def deleting_buyer(
             await state.finish()
         except Exception as e:
             await callback.message.answer(
-                '❗ Во время удаления возникла ошибка, попробуй снова.'
-                + 'Если ошибка поторится, напишиет об этом @davletelvir'
+                '❎ Во время удаления возникла ошибка, попробуй снова.'
+                + 'Если ошибка поторится, напиши об этом @davletelvir'
             )
             logging.error(
                 f'Ошибка удаления субъекта, {e}'
@@ -4154,7 +4154,7 @@ async def my_buyers(message: Message):
             )
     else:
         await message.answer(
-            ' У тебя нет клиентов в базе'
+            '❗ У тебя нет клиентов в базе'
         )
 # -----------------------------------------------------------------------------
 # -------------------ОБЪЕКТЫ ДЛЯ КЛИЕНТА---------------------------------------
@@ -4165,7 +4165,7 @@ async def my_buyers(message: Message):
 async def obj_for_my_buyer(message: Message):
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         DB_Worker.command_counting()
@@ -4312,7 +4312,7 @@ async def searching_for_buyer(
 async def my_company_buyers(message: Message):
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         DB_Worker.command_counting()
@@ -4376,7 +4376,7 @@ async def worker_buyers(
 async def my_company_obj(message: Message):
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         DB_Worker.command_counting()
@@ -4490,7 +4490,7 @@ async def worker_objects(
 async def archive(message: Message):
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         DB_Worker.command_counting()
@@ -4522,7 +4522,7 @@ async def arcjive_objects(
         archive_qeryset = Archive.objects.filter(user_id=callback.data)
         if archive_qeryset.exists():
             await callback.message.answer(
-                f'✳ Список объектов, удалённых риелтором *{rieltor.name}*:',
+                f'Список объектов, удалённых риелтором *{rieltor.name}*:',
                 disable_notification=True,
                 parse_mode='Markdown'
             )
@@ -4537,7 +4537,7 @@ async def arcjive_objects(
                 )
         else:
             await callback.message.edit_text(
-                f'✳ У риелтора {rieltor.name} нет удалённых объектов'
+                f'❗ У риелтора {rieltor.name} нет удалённых объектов'
             )
         await state.finish()
 # -----------------------------------------------------------------------------
@@ -4549,13 +4549,13 @@ async def arcjive_objects(
 async def ceo_registration(message: Message):
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+            '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
         DB_Worker.command_counting()
         if Ceo.objects.filter(user_id=message.from_user.id).exists():
             await message.answer(
-                'Ты уже зарегистрирован как руководитель'
+                '❗ Ты уже зарегистрирован как руководитель'
             )
         else:
             await message.answer(
@@ -4571,7 +4571,7 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
     if code_word.exists():
         code_word.delete()
 
-        rieltor = Rieltors.objects.get(user_id=message.from_user.id) #текущий пользователь регистрирующийся на руководителя
+        rieltor = Rieltors.objects.get(user_id=message.from_user.id) # текущий пользователь регистрирующийся на руководителя
         rieltors = Rieltors.objects.filter(agency_name=rieltor.agency_name).exclude(user_id=message.from_user.id)
 
         cond_ceo = False
@@ -4591,23 +4591,23 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
 
         if cond_ceo and cond_workers:
             await message.answer(
-                'Поздравляю! Ты зарегистрирован как руководитель!'
+                'ОК. Ты зарегистрирован как руководитель!'
                 + ' Приглашай своих сотрудников пользоваться ботом!\n\n'
                 + f'Вы уже можете наблюдать за {rieltors_string}'
             )
         elif cond_ceo and not cond_workers:
             await message.answer(
-                'Поздравляю! Ты зарегистрирован как руководитель!'
+                'ОК. Ты зарегистрирован как руководитель!'
                 + ' Приглашай своих сотрудников пользоваться ботом!'
             )
         else:
             await message.answer(
-                'Ошибка! Сообщи об этом @davletelvir'
+                '❎ Ошибка! Сообщи об этом @davletelvir'
             )
         await state.finish()
     else:
         await message.answer(
-            'Неверное кодово слово! Введите заново'
+            '❎ Неверное кодово слово! Введи заново'
         )
         await CeoRegistration.step2.set()
 # -----------------------------------------------------------------------------
