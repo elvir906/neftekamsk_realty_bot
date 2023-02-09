@@ -60,7 +60,7 @@ object_city_microregions = [
     '17 шк', 'Башкирская гимназия'
 ]
 
-angecy_list = [
+agency_list = [
     'Азбука жилья',
     'Веста',
     'Визит',
@@ -69,15 +69,15 @@ angecy_list = [
     'Доверие+',
     'Дом',
     'ЕСН',
-    'Империя недвижимости',
+    'Империя недв.',
     'Квадро',
     'Квартал',
-    'Квартирный вопрос',
+    'Кварт. вопр.',
     'Лидер',
     'Мегаполис',
     'Мир квартир',
     'Мой город',
-    'Недвижимость и точка',
+    'Недвиж. и .',
     'Проспект',
     'Регион',
     'Резиденция',
@@ -88,7 +88,7 @@ angecy_list = [
     'Таунхаус',
     'Эксперт',
     'Этажи',
-    'Я - частный риелтор',
+    'Частный риелтор'
 ]
 
 apartment_category = [
@@ -623,7 +623,6 @@ class keyboards():
         ]
         for i in range(0, len(buttons)):
             keyboard.row(buttons[i])
-        # keyboard.add(*buttons)
 
         cancel_button = 'Отменить внесение покупателя'
         keyboard.row(
@@ -683,17 +682,39 @@ class keyboards():
     def agency_choice_kb():
         buttons = []
         callback_data_string = []
-        for item in angecy_list:
+        for item in agency_list:
             buttons.append(item)
             callback_data_string.append(item)
         keyboard = InlineKeyboardMarkup()
-        for i in range(0, len(buttons)):
-            keyboard.row(
-                InlineKeyboardButton(
-                    buttons[i],
-                    callback_data=callback_data_string[i]
+
+        row_count = (len(agency_list) // 3) + 1
+        lastrow_len = len(agency_list) - ((len(agency_list) // 3) * 3)
+
+        btn_cnt = 0
+
+        for rc in range(0, row_count - 1):
+            btns = []
+            for i in range(rc * 3, rc * 3 + 3):
+                btn_cnt += 1
+                btns.append(
+                    InlineKeyboardButton(
+                        buttons[i],
+                        callback_data=callback_data_string[i]
+                    )
                 )
-            )
+            keyboard.row(*btns)
+
+        btns = []
+        if lastrow_len != 0:
+            for i in range(0, lastrow_len):
+                btns.append(
+                    InlineKeyboardButton(
+                        buttons[btn_cnt + i],
+                        callback_data=callback_data_string[btn_cnt + i]
+                    )
+                )
+            keyboard.row(*btns)
+
         cancel_button = 'Отмена'
         keyboard.row(
             InlineKeyboardButton(cancel_button, callback_data=cancel_button)
