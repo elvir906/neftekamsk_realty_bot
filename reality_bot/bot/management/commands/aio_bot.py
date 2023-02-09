@@ -1404,7 +1404,8 @@ async def add_room(callback: CallbackQuery, state: FSMContext):
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Напиши название улицы*\n\n'
         + 'без указания наименования дорог и проездов (ул., пр., пер. и т.п.)\n\n'
-        + '❗ Пиши правильно: Комсомольский, Победы, Юбилейный, Берёзовское шоссе\n\n'
+        + '❗ Пиши правильно: Комсомольский, Победы, Юбилейный, Берёзовское шоссе\n\n',
+        parse_mode='Markdown'
 
     )
     await RoomCallbackStates.R1.set()
@@ -4082,7 +4083,7 @@ async def base_update(message: Message, state: FSMContext):
                 else:
                     queryset = class_name.objects.filter(price__lte=data.get('buyer_limit'))
                 if queryset.exists():
-                    rieltor = Rieltors.objects.filter(user_id=message.from_user.id)
+                    rieltor = Rieltors.objects.get(user_id=message.from_user.id)
                     for item in queryset:
                         await bot.send_message(
                             chat_id=item.user_id, text='🚀 У пользователя '
