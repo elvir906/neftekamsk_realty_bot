@@ -92,7 +92,7 @@ async def entering_name(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Registration.step1)
 async def agency_choice(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -129,7 +129,7 @@ async def phone_number_entering(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Registration.step3)
 async def registration_finish(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1096,7 +1096,7 @@ async def entering_floors(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=CallbackOnStart.plan_category)
 async def plan_category(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1153,7 +1153,7 @@ async def entering_area(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=CallbackOnStart.Q6)
 async def entering_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1276,7 +1276,7 @@ async def entering_mortage(callback: CallbackQuery, state: FSMContext):
 @dp.message_handler(state=CallbackOnStart.Q11)
 async def entering_phone_number(message: Message, state: FSMContext):
     """Запись номера телефона"""
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1306,7 +1306,7 @@ async def entering_phone_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=CallbackOnStart.Q12)
 async def entering_agency_name(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1415,7 +1415,7 @@ async def add_room(callback: CallbackQuery, state: FSMContext):
 async def enetering_rooms_street_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1434,7 +1434,7 @@ async def enetering_rooms_street_name(
 async def enetering_rooms_house_number(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1510,7 +1510,7 @@ async def entering_room_floors(
 async def enetering_rooms_area(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1542,7 +1542,7 @@ async def enetering_rooms_area(
 
 @dp.message_handler(state=RoomCallbackStates.R6)
 async def entering_room_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1568,7 +1568,7 @@ async def entering_room_price(message: Message, state: FSMContext):
 
 @dp.message_handler(state=RoomCallbackStates.R7)
 async def entering_room_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1660,7 +1660,7 @@ async def entering_room_mortage(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=RoomCallbackStates.R11)
 async def entering_room_phone_number(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1691,7 +1691,7 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=RoomCallbackStates.R12)
 async def entering_room_agency_name(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -1815,7 +1815,7 @@ async def entering_house_street_name(
 
 @dp.message_handler(state=HouseCallbackStates.H2)
 async def entering_house_purpose(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2076,7 +2076,7 @@ async def entering_house_area(
 
 @dp.message_handler(state=HouseCallbackStates.H12)
 async def entering_house_land_area(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2110,7 +2110,7 @@ async def entering_house_land_area(message: Message, state: FSMContext):
 
 @dp.message_handler(state=HouseCallbackStates.H13)
 async def entering_house_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2141,7 +2141,7 @@ async def entering_house_price(message: Message, state: FSMContext):
 
 @dp.message_handler(state=HouseCallbackStates.H14)
 async def entering_house_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2169,7 +2169,7 @@ async def entering_house_description(message: Message, state: FSMContext):
 async def entering_house_encumbrance(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2279,7 +2279,7 @@ async def entering_house_phone_number(
 async def entering_house_agency_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2311,7 +2311,7 @@ async def entering_house_agency_name(
 async def entering_house_rieltor_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2436,7 +2436,7 @@ async def entering_townhouse_street_name(
 
 @dp.message_handler(state=TownHouseCallbackStates.T2)
 async def entering_townhouse_purpose(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2691,7 +2691,7 @@ async def entering_townhouse_area(
 
 @dp.message_handler(state=TownHouseCallbackStates.T12)
 async def entering_townhouse_land_area(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2725,7 +2725,7 @@ async def entering_townhouse_land_area(message: Message, state: FSMContext):
 
 @dp.message_handler(state=TownHouseCallbackStates.T13)
 async def entering_townhouse_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2756,7 +2756,7 @@ async def entering_townhouse_price(message: Message, state: FSMContext):
 
 @dp.message_handler(state=TownHouseCallbackStates.T14)
 async def entering_townhouse_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2784,7 +2784,7 @@ async def entering_townhouse_description(message: Message, state: FSMContext):
 async def entering_townhouse_encumbrance(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2894,7 +2894,7 @@ async def entering_townhouse_phone_number(
 async def entering_townhouse_agency_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -2926,7 +2926,7 @@ async def entering_townhouse_agency_name(
 async def entering_townhouse_rieltor_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3051,7 +3051,7 @@ async def entering_land_street_name(
 
 @dp.message_handler(state=LandCallbackStates.L2)
 async def entering_land_number(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3069,7 +3069,7 @@ async def entering_land_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=LandCallbackStates.L3)
 async def entering_land_purpose(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3281,7 +3281,7 @@ async def entering_land_area(
 
 @dp.message_handler(state=LandCallbackStates.L11)
 async def entering_land_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3311,7 +3311,7 @@ async def entering_land_price(message: Message, state: FSMContext):
 
 @dp.message_handler(state=LandCallbackStates.L12)
 async def entering_land_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3339,7 +3339,7 @@ async def entering_land_description(message: Message, state: FSMContext):
 async def entering_land_encumbrance(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3449,7 +3449,7 @@ async def entering_land_phone_number(
 async def entering_land_agency_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3481,7 +3481,7 @@ async def entering_land_agency_name(
 async def entering_land_rieltor_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
         )
@@ -3833,7 +3833,7 @@ async def add_buyer(message: Message):
 
 @dp.message_handler(state=Buyer.buyer_phone_number)
 async def add_phone_number(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -3847,7 +3847,7 @@ async def add_phone_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Buyer.category)
 async def add_category(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -3919,7 +3919,7 @@ async def add_limit(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Buyer.source)
 async def add_source(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -4060,7 +4060,7 @@ async def country_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Buyer.base_update)
 async def base_update(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -4601,7 +4601,7 @@ async def ceo_registration(message: Message):
 
 @dp.message_handler(state=CeoRegistration.step2)
 async def ceo_reg_step2(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'cтоп':
+    if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
                 'Действие отменено'
             )
