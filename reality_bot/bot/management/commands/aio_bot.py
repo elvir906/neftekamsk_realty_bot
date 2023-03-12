@@ -12,7 +12,7 @@ from code.states import (ApartmentSearch, ArchiveObjects, Buyer,
                          ObjForBuyer, PriceEditCallbackStates, Registration,
                          RoomCallbackStates, RoomSearch,
                          TownHouseCallbackStates, TownHouseSearch,
-                         WorkersBuyers, WorkersObjects)
+                         WorkersBuyers, WorkersObjects, Visible_on, Visible_off)
 from code.utils import (Output, checked_apartment_category, keyboards,
                         object_city_microregions_for_checking,
                         object_country_microregions_for_checking,
@@ -327,7 +327,8 @@ async def rooms(message: Message, state: FSMContext):
     """
     try:
         query_set = Room.objects.filter(
-            price__lte=int(message.text)
+            price__lte=int(message.text),
+            visible=True
         ).order_by('-pub_date')
         pages_count = query_set.count()
         data = await state.get_data()
@@ -434,7 +435,8 @@ async def houses(message: Message, state: FSMContext):
     """Ответ на кнопку поиска по домам"""
     try:
         query_set = House.objects.filter(
-            price__lte=int(message.text)
+            price__lte=int(message.text),
+            visible=True
         ).order_by('-pub_date')
         pages_count = query_set.count()
         data = await state.get_data()
@@ -543,7 +545,8 @@ async def townhouses(message: Message, state: FSMContext):
     """Ответ на кнопку поиска по таунхаусам ПАГИНАЦИЯ"""
     try:
         query_set = TownHouse.objects.filter(
-            price__lte=int(message.text)
+            price__lte=int(message.text),
+            visible=True
         ).order_by('-pub_date')
         pages_count = query_set.count()
         data = await state.get_data()
@@ -650,7 +653,8 @@ async def lands(message: Message, state: FSMContext):
     try:
         # подготовка инфы (кверисет) на вывод
         query_set = Land.objects.filter(
-            price__lte=int(message.text)
+            price__lte=int(message.text),
+            visible=True
         ).order_by('-pub_date')
         pages_count = query_set.count()
         data = await state.get_data()
@@ -856,7 +860,8 @@ async def apartment_search_result(
         query_set = Apartment.objects.filter(query)
         query_set = query_set.filter(
             room_quantity=int(room_count),
-            price__lte=int(message.text)
+            price__lte=int(message.text),
+            visible=True
         ).order_by('-pub_date')
 
         if query_set:
@@ -1286,11 +1291,10 @@ async def entering_phone_number(message: Message, state: FSMContext):
             await state.update_data(owner_phone_number='+7' + message.text[1:])
             await message.answer(
                 '✏ *Как зовут продавца квартиры?*\n\n'
-                + 'Его имя будет видно только тебе\n\n'
                 + 'Для отмены внесения объекта напиши "Стоп"',
                 parse_mode='Markdown'
             )
-            await CallbackOnStart.Q12.set()
+            await CallbackOnStart.Q111.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
@@ -1304,8 +1308,8 @@ async def entering_phone_number(message: Message, state: FSMContext):
             await CallbackOnStart.Q11.set()
 
 
-@dp.message_handler(state=CallbackOnStart.Q12)
-async def entering_agency_name(message: Message, state: FSMContext):
+@dp.message_handler(state=CallbackOnStart.Q111)
+async def visible_or_not(message: Message, state: FSMContext):
     if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
@@ -1315,6 +1319,31 @@ async def entering_agency_name(message: Message, state: FSMContext):
         answer = message.text.title()
         await state.update_data(owner_name=answer)
         await message.answer(
+            text='✏ *Сделать объект видимым для всех риелторов?* \n\n'
+            + 'Вы можете присвоить объекту статус невидимого (если этот '
+            + 'объект пока не актуален, нарабатывается, разрабатывается, '
+            + 'готовится, наклёвывается, в процессе и т.д.) '
+            + 'и другие риелторы не увидят этот объект при поиске. \n\n'
+            + 'У вас он будет храниться в таблице "Объекты-черновики". '
+            + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
+            + 'соответствующим пунктом меню.',
+            reply_markup=keyboards.visible_or_not_kb(),
+            parse_mode='Markdown'
+        )
+        await CallbackOnStart.Q12.set()
+
+
+@dp.callback_query_handler(state=CallbackOnStart.Q12)
+async def entering_agency_name(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(visible=callback.data)
+        print(callback.data)
+        await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
         await CallbackOnStart.Q14.set()
@@ -1686,11 +1715,11 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
                 parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
-            await RoomCallbackStates.R11.set()
+            await RoomCallbackStates.R111.set()
 
 
-@dp.message_handler(state=RoomCallbackStates.R12)
-async def entering_room_agency_name(message: Message, state: FSMContext):
+@dp.message_handler(state=RoomCallbackStates.R111)
+async def room_visible_or_not(message: Message, state: FSMContext):
     if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
@@ -1700,9 +1729,49 @@ async def entering_room_agency_name(message: Message, state: FSMContext):
         answer = message.text.title()
         await state.update_data(room_owner_name=answer)
         await message.answer(
+            text='✏ *Сделать объект видимым для всех риелторов?* \n\n'
+            + 'Вы можете присвоить объекту статус невидимого (если этот '
+            + 'объект пока не актуален, нарабатывается, разрабатывается, '
+            + 'готовится, наклёвывается, в процессе и т.д.) '
+            + 'и другие риелторы не увидят этот объект при поиске. \n\n'
+            + 'У вас он будет храниться в таблице "Объекты-черновики". '
+            + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
+            + 'соответствующим пунктом меню.',
+            reply_markup=keyboards.visible_or_not_kb(),
+            parse_mode='Markdown'
+        )
+        await RoomCallbackStates.R12.set()
+
+
+@dp.callback_query_handler(state=RoomCallbackStates.R12)
+async def room_entering_agency_name(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(visible=callback.data)
+        print(callback.data)
+        await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
         await RoomCallbackStates.R14.set()
+
+# @dp.message_handler(state=RoomCallbackStates.R12)
+# async def entering_room_agency_name(message: Message, state: FSMContext):
+#     if message.text == 'Стоп' or message.text == 'стоп':
+#         await message.answer(
+#             'Действие отменено'
+#         )
+#         await state.finish()
+#     else:
+#         answer = message.text.title()
+#         await state.update_data(room_owner_name=answer)
+#         await message.answer(
+#             '✏ Загрузите до 6 фото квартиры\n\n'
+#         )
+#         await RoomCallbackStates.R14.set()
 
 
 @dp.message_handler(state=RoomCallbackStates.R14, content_types=ContentType.PHOTO)
@@ -2308,9 +2377,7 @@ async def entering_house_agency_name(
 
 
 @dp.message_handler(state=HouseCallbackStates.H20)
-async def entering_house_rieltor_name(
-    message: Message, state: FSMContext
-):
+async def house_visible_or_not(message: Message, state: FSMContext):
     if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
@@ -2320,9 +2387,51 @@ async def entering_house_rieltor_name(
         answer = message.text.title()
         await state.update_data(house_owner_name=answer)
         await message.answer(
-            '✏ Загрузите до 6 фото дома\n\n'
+            text='✏ *Сделать объект видимым для всех риелторов?* \n\n'
+            + 'Вы можете присвоить объекту статус невидимого (если этот '
+            + 'объект пока не актуален, нарабатывается, разрабатывается, '
+            + 'готовится, наклёвывается, в процессе и т.д.) '
+            + 'и другие риелторы не увидят этот объект при поиске. \n\n'
+            + 'У вас он будет храниться в таблице "Объекты-черновики". '
+            + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
+            + 'соответствующим пунктом меню.',
+            reply_markup=keyboards.visible_or_not_kb(),
+            parse_mode='Markdown'
+        )
+        await HouseCallbackStates.H21.set()
+
+
+@dp.callback_query_handler(state=HouseCallbackStates.H21)
+async def house_entering_agency_name(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(visible=callback.data)
+        print(callback.data)
+        await callback.message.edit_text(
+            '✏ Загрузите до 6 фото квартиры\n\n'
         )
         await HouseCallbackStates.H22.set()
+
+# @dp.message_handler(state=HouseCallbackStates.H20)
+# async def entering_house_rieltor_name(
+#     message: Message, state: FSMContext
+# ):
+#     if message.text == 'Стоп' or message.text == 'стоп':
+#         await message.answer(
+#             'Действие отменено'
+#         )
+#         await state.finish()
+#     else:
+#         answer = message.text.title()
+#         await state.update_data(house_owner_name=answer)
+#         await message.answer(
+#             '✏ Загрузите до 6 фото дома\n\n'
+#         )
+#         await HouseCallbackStates.H22.set()
 
 
 @dp.message_handler(state=HouseCallbackStates.H22, content_types=ContentType.PHOTO)
@@ -2923,9 +3032,7 @@ async def entering_townhouse_agency_name(
 
 
 @dp.message_handler(state=TownHouseCallbackStates.T20)
-async def entering_townhouse_rieltor_name(
-    message: Message, state: FSMContext
-):
+async def townhouse_visible_or_not(message: Message, state: FSMContext):
     if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
@@ -2935,9 +3042,51 @@ async def entering_townhouse_rieltor_name(
         answer = message.text.title()
         await state.update_data(townhouse_owner_name=answer)
         await message.answer(
-            '✏ Загрузи до 6 фото таунхауса\n\n'
+            text='✏ *Сделать объект видимым для всех риелторов?* \n\n'
+            + 'Вы можете присвоить объекту статус невидимого (если этот '
+            + 'объект пока не актуален, нарабатывается, разрабатывается, '
+            + 'готовится, наклёвывается, в процессе и т.д.) '
+            + 'и другие риелторы не увидят этот объект при поиске. \n\n'
+            + 'У вас он будет храниться в таблице "Объекты-черновики". '
+            + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
+            + 'соответствующим пунктом меню.',
+            reply_markup=keyboards.visible_or_not_kb(),
+            parse_mode='Markdown'
+        )
+        await TownHouseCallbackStates.T21.set()
+
+
+@dp.callback_query_handler(state=TownHouseCallbackStates.T21)
+async def townhouse_entering_agency_name(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(visible=callback.data)
+        print(callback.data)
+        await callback.message.edit_text(
+            '✏ Загрузите до 6 фото квартиры\n\n'
         )
         await TownHouseCallbackStates.T22.set()
+
+# @dp.message_handler(state=TownHouseCallbackStates.T20)
+# async def entering_townhouse_rieltor_name(
+#     message: Message, state: FSMContext
+# ):
+#     if message.text == 'Стоп' or message.text == 'стоп':
+#         await message.answer(
+#             'Действие отменено'
+#         )
+#         await state.finish()
+#     else:
+#         answer = message.text.title()
+#         await state.update_data(townhouse_owner_name=answer)
+#         await message.answer(
+#             '✏ Загрузи до 6 фото таунхауса\n\n'
+#         )
+#         await TownHouseCallbackStates.T22.set()
 
 
 @dp.message_handler(state=TownHouseCallbackStates.T22, content_types=ContentType.PHOTO)
@@ -3463,7 +3612,7 @@ async def entering_land_agency_name(
                 + 'Для отмены внесения объекта напиши "Стоп"',
                 parse_mode='Markdown'
             )
-            await LandCallbackStates.next()
+            await LandCallbackStates.L18.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
@@ -3478,9 +3627,7 @@ async def entering_land_agency_name(
 
 
 @dp.message_handler(state=LandCallbackStates.L18)
-async def entering_land_rieltor_name(
-    message: Message, state: FSMContext
-):
+async def land_visible_or_not(message: Message, state: FSMContext):
     if message.text == 'Стоп' or message.text == 'стоп':
         await message.answer(
             'Действие отменено'
@@ -3490,9 +3637,51 @@ async def entering_land_rieltor_name(
         answer = message.text.title()
         await state.update_data(land_owner_name=answer)
         await message.answer(
-            '✏ Загрузи до 6 фото участка\n\n'
+            text='✏ *Сделать объект видимым для всех риелторов?* \n\n'
+            + 'Вы можете присвоить объекту статус невидимого (если этот '
+            + 'объект пока не актуален, нарабатывается, разрабатывается, '
+            + 'готовится, наклёвывается, в процессе и т.д.) '
+            + 'и другие риелторы не увидят этот объект при поиске. \n\n'
+            + 'У вас он будет храниться в таблице "Объекты-черновики". '
+            + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
+            + 'соответствующим пунктом меню.',
+            reply_markup=keyboards.visible_or_not_kb(),
+            parse_mode='Markdown'
+        )
+        await LandCallbackStates.L181.set()
+
+
+@dp.callback_query_handler(state=LandCallbackStates.L181)
+async def land_entering_agency_name(callback: CallbackQuery, state: FSMContext):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(visible=callback.data)
+        print(callback.data)
+        await callback.message.edit_text(
+            '✏ Загрузите до 6 фото квартиры\n\n'
         )
         await LandCallbackStates.L20.set()
+
+# @dp.message_handler(state=LandCallbackStates.L18)
+# async def entering_land_rieltor_name(
+#     message: Message, state: FSMContext
+# ):
+#     if message.text == 'Стоп' or message.text == 'стоп':
+#         await message.answer(
+#             'Действие отменено'
+#         )
+#         await state.finish()
+#     else:
+#         answer = message.text.title()
+#         await state.update_data(land_owner_name=answer)
+#         await message.answer(
+#             '✏ Загрузи до 6 фото участка\n\n'
+#         )
+#         await LandCallbackStates.L20.set()
 
 
 @dp.message_handler(state=LandCallbackStates.L20, content_types=ContentType.PHOTO)
@@ -3568,11 +3757,95 @@ async def land_base_updating(message: Message, state: FSMContext):
 async def entering_phone_number_for_searching(message: Message):
     DB_Worker.command_counting()
 
-    apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id)
-    room_queryset = Room.objects.filter(user_id=message.from_user.id)
-    house_queryset = House.objects.filter(user_id=message.from_user.id)
-    townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id)
-    land_queryset = Land.objects.filter(user_id=message.from_user.id)
+    apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id, visible=True)
+    room_queryset = Room.objects.filter(user_id=message.from_user.id, visible=True)
+    house_queryset = House.objects.filter(user_id=message.from_user.id, visible=True)
+    townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id, visible=True)
+    land_queryset = Land.objects.filter(user_id=message.from_user.id, visible=True)
+
+    apartment_count = apartment_queryset.count()
+    room_count = room_queryset.count()
+    house_count = house_queryset.count()
+    townhouse_count = townhouse_queryset.count()
+    land_count = land_queryset.count()
+
+    total_count = apartment_count + room_count + house_count + townhouse_count + land_count
+
+    data = {
+        'total_count': total_count,
+        'apartment_count': apartment_count,
+        'room_count': room_count,
+        'house_count': house_count,
+        'townhouse_count': townhouse_count,
+        'land_count': land_count,
+    }
+
+    await message.answer(
+        message_texts.my_objects_text(data),
+        disable_notification=True,
+        parse_mode='Markdown'
+    )
+    for item in apartment_queryset:
+        await asyncio.sleep(0.5)
+        await message.answer(
+            f'*{item.room_quantity} к.кв.* '
+            + f'{item.street_name} д.{item.number_of_house}, '
+            + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
+            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            disable_notification=True,
+            parse_mode='Markdown'
+        )
+
+    for item in room_queryset:
+        await asyncio.sleep(0.5)
+        await message.answer(
+            f'*Комната* {item.street_name} '
+            + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
+            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            disable_notification=True,
+            parse_mode='Markdown'
+        )
+
+    for item in house_queryset:
+        await asyncio.sleep(0.5)
+        await message.answer(
+            f'*Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            disable_notification=True,
+            parse_mode='Markdown'
+        )
+
+    for item in townhouse_queryset:
+        await asyncio.sleep(0.5)
+        await message.answer(
+            f'*Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            disable_notification=True,
+            parse_mode='Markdown'
+        )
+
+    for item in land_queryset:
+        await asyncio.sleep(0.5)
+        await message.answer(
+            f'*Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            disable_notification=True,
+            parse_mode='Markdown'
+        )
+
+
+# -----------------------------------------------------------------------------
+# -------------- МОИ ЧЕРНОВЫЕ ОБЪЕКТЫ -----------------------------------------
+# -----------------------------------------------------------------------------
+@dp.message_handler(commands=['blacklist'])
+async def searching_blacklists_obj(message: Message):
+    DB_Worker.command_counting()
+
+    apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id, visible=False)
+    room_queryset = Room.objects.filter(user_id=message.from_user.id, visible=False)
+    house_queryset = House.objects.filter(user_id=message.from_user.id, visible=False)
+    townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id, visible=False)
+    land_queryset = Land.objects.filter(user_id=message.from_user.id, visible=False)
 
     apartment_count = apartment_queryset.count()
     room_count = room_queryset.count()
@@ -3691,7 +3964,7 @@ async def deleting_object(
             def get_number_of_house(category, obj):
                 if (category == 'House') or (category == "TownHouse"):
                     return ''
-                elif category == 'Lansd':
+                elif category == 'Land':
                     return obj.number_of_land
                 return obj.number_of_house
 
@@ -3722,6 +3995,134 @@ async def deleting_object(
                 f'Ошибка удаления объекта, {e}'
             )
             await DeleteCallbackStates.D2.set()
+# -----------------------------------------------------------------------------
+# --------------------СДЕЛАТЬ ОБЪЕКТ ВИДИМЫМ-----------------------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['visible_on'])
+async def visible_on(message: Message):
+
+    DB_Worker.command_counting()
+    user_id = message.from_user.id
+
+    cond1 = Apartment.objects.filter(user_id=user_id, visible=False).exists()
+    cond2 = Room.objects.filter(user_id=user_id, visible=False).exists()
+    cond3 = House.objects.filter(user_id=user_id, visible=False).exists()
+    cond4 = TownHouse.objects.filter(user_id=user_id, visible=False).exists()
+    cond5 = Land.objects.filter(user_id=user_id, visible=False).exists()
+
+    big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+    if big_cond:
+        await message.answer(
+            'Выбери черновой объект, который хочешь сделать видимым:',
+            reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, False)
+        )
+        await Visible_on.step2.set()
+    else:
+        await message.answer(
+            ' У тебя нет черновых объектов в базе'
+        )
+
+
+@dp.callback_query_handler(state=Visible_on.step2)
+async def visible_on_step3(
+    callback: CallbackQuery, state: FSMContext
+):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        category = callback.data.split()[1]
+        id = callback.data.split()[0]
+
+        try:
+            class_name = Output.str_to_class(category)
+            obj = class_name.objects.get(pk=id)
+            obj.visible = True
+            obj.save()
+
+            await callback.message.edit_text(
+                'Сделано!'
+            )
+            await state.finish()
+        except Exception as e:
+            await callback.message.answer(
+                '❗ Во время изменения видимости возникла ошибка, попробуй снова.'
+                + 'Если ошибка поторится, напишиет об этом @davletelvir'
+            )
+            logging.error(
+                f'Ошибка изменения видимости объекта объекта, {e}'
+            )
+            await state.finish()
+
+
+# -----------------------------------------------------------------------------
+# --------------------СДЕЛАТЬ ОБЪЕКТ НЕВИДИМЫМ-----------------------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['visible_off'])
+async def visible_off(message: Message):
+
+    DB_Worker.command_counting()
+    user_id = message.from_user.id
+
+    cond1 = Apartment.objects.filter(user_id=user_id, visible=True).exists()
+    cond2 = Room.objects.filter(user_id=user_id, visible=True).exists()
+    cond3 = House.objects.filter(user_id=user_id, visible=True).exists()
+    cond4 = TownHouse.objects.filter(user_id=user_id, visible=True).exists()
+    cond5 = Land.objects.filter(user_id=user_id, visible=True).exists()
+
+    big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+    if big_cond:
+        await message.answer(
+            'Выбери объект, который хочешь сделать невидимым:',
+            reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, True)
+        )
+        await Visible_off.step2.set()
+    else:
+        await message.answer(
+            ' У тебя нет объектов в базе'
+        )
+
+
+@dp.callback_query_handler(state=Visible_off.step2)
+async def visible_off_step3(
+    callback: CallbackQuery, state: FSMContext
+):
+    if callback.data == 'Отмена':
+        await callback.message.edit_text(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        category = callback.data.split()[1]
+        id = callback.data.split()[0]
+
+        try:
+            class_name = Output.str_to_class(category)
+            obj = class_name.objects.get(pk=id)
+            obj.visible = False
+            obj.save()
+
+            await callback.message.edit_text(
+                'Сделано!'
+            )
+            await state.finish()
+        except Exception as e:
+            await callback.message.answer(
+                '❗ Во время изменения видимости возникла ошибка, попробуй снова.'
+                + 'Если ошибка поторится, напишиет об этом @davletelvir'
+            )
+            logging.error(
+                f'Ошибка изменения видимости объекта объекта, {e}'
+            )
+            await state.finish()
 # -----------------------------------------------------------------------------
 # -------------- РЕДАКТИРОВНАИЕ ЦЕНЫ-------------------------------------------
 # -----------------------------------------------------------------------------

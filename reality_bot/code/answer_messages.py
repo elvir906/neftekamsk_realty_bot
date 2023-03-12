@@ -536,7 +536,7 @@ class message_texts():
 
     def my_objects_text(data: dict) -> str:
         if data.get("total_count") == 0:
-            text = 'У тебя нет объектов в базе'
+            text = 'У тебя нет объектов в этой таблице'
             return text
         text = (f'У вас *{data.get("total_count")}* объект (-а, -ов):\n'
                 + f'квартир - {data.get("apartment_count")},\n'

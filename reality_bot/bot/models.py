@@ -208,7 +208,11 @@ class Apartment(models.Model):
         blank=True,
         max_length=200
     )
-
+    visible = models.BooleanField(
+        verbose_name='Видимость д/др. агентов',
+        default='True'
+    )
+    
     class Meta:
         verbose_name = 'Квартира'
         verbose_name_plural = 'Квартиры'
@@ -298,6 +302,10 @@ class Room(models.Model):
         verbose_name='Продавец',
         blank=True,
         max_length=200
+    )
+    visible = models.BooleanField(
+        verbose_name='Видимость д/др. агентов',
+        default='True'
     )
 
     class Meta:
@@ -421,6 +429,10 @@ class House(models.Model):
         verbose_name='Продавец',
         blank=True,
         max_length=200
+    )
+    visible = models.BooleanField(
+        verbose_name='Видимость д/др. агентов',
+        default='True'
     )
 
     class Meta:
@@ -546,6 +558,10 @@ class TownHouse(models.Model):
         blank=True,
         max_length=200
     )
+    visible = models.BooleanField(
+        verbose_name='Видимость д/др. агентов',
+        default='True'
+    )
 
     class Meta:
         verbose_name = 'Таунхаус'
@@ -661,6 +677,10 @@ class Land(models.Model):
         verbose_name='Продавец',
         blank=True,
         max_length=200
+    )
+    visible = models.BooleanField(
+        verbose_name='Видимость д/др. агентов',
+        default='True'
     )
 
     class Meta:

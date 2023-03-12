@@ -28,6 +28,7 @@ class ApartmentAdmin(admin.ModelAdmin):
         'code_word',
         'user_id',
         'photo_id',
+        'visible',
     )
 
 
@@ -52,6 +53,7 @@ class RoomAdmin (admin.ModelAdmin):
         'code_word',
         'user_id',
         'photo_id',
+        'visible',
     )
 
 
@@ -84,6 +86,7 @@ class HouseAdmin(admin.ModelAdmin):
         'code_word',
         'user_id',
         'photo_id',
+        'visible',
     )
 
 
@@ -116,6 +119,7 @@ class TownHouseAdmin(admin.ModelAdmin):
         'code_word',
         'user_id',
         'photo_id',
+        'visible',
     )
 
 
@@ -143,6 +147,7 @@ class LandAdmin(admin.ModelAdmin):
         'code_word',
         'user_id',
         'photo_id',
+        'visible',
     )
 
 

@@ -2,9 +2,10 @@ import datetime as dt
 import logging
 
 from aiogram.dispatcher import FSMContext
-
 from bot.models import (Apartment, Buyer, Ceo, Counter, House, Land, Rieltors,
                         Room, TownHouse)
+
+from .utils import Output
 
 
 class DB_Worker():
@@ -31,7 +32,8 @@ class DB_Worker():
                 photo_id=state_data.get('photo'),
                 code_word=state_data.get('code_word'),
                 user_id=state_data.get('user_id'),
-                pub_date=dt.datetime.now()
+                pub_date=dt.datetime.now(),
+                visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
         except Exception as e:
@@ -59,7 +61,8 @@ class DB_Worker():
                 photo_id=state_data.get('room_photo'),
                 code_word=state_data.get('room_code_word'),
                 user_id=state_data.get('room_user_id'),
-                pub_date=dt.datetime.now()
+                pub_date=dt.datetime.now(),
+                visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
         except Exception as e:
@@ -95,7 +98,8 @@ class DB_Worker():
                 photo_id=state_data.get('house_photo'),
                 code_word=state_data.get('house_code_word'),
                 user_id=state_data.get('house_user_id'),
-                pub_date=dt.datetime.now()
+                pub_date=dt.datetime.now(),
+                visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
         except Exception as e:
@@ -131,7 +135,8 @@ class DB_Worker():
                 photo_id=state_data.get('townhouse_photo'),
                 code_word=state_data.get('townhouse_code_word'),
                 user_id=state_data.get('townhouse_user_id'),
-                pub_date=dt.datetime.now()
+                pub_date=dt.datetime.now(),
+                visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
         except Exception as e:
@@ -165,7 +170,8 @@ class DB_Worker():
                 photo_id=state_data.get('land_photo'),
                 code_word=state_data.get('land_code_word'),
                 user_id=state_data.get('land_user_id'),
-                pub_date=dt.datetime.now()
+                pub_date=dt.datetime.now(),
+                visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
         except Exception as e:

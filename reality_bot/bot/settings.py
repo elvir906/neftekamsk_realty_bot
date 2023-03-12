@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJ_SECRET_KEY')
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 

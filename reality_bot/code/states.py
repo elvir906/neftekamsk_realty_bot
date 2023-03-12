@@ -15,6 +15,7 @@ class CallbackOnStart(StatesGroup):
     Q9 = State()
     Q10 = State()
     Q11 = State()
+    Q111 = State()
     Q12 = State()
     Q13 = State()
     Q14 = State()
@@ -57,6 +58,7 @@ class RoomCallbackStates(StatesGroup):
     R9 = State()
     R10 = State()
     R11 = State()
+    R111 = State()
     R12 = State()
     R13 = State()
     R14 = State()
@@ -134,6 +136,7 @@ class LandCallbackStates(StatesGroup):
     L16 = State()
     L17 = State()
     L18 = State()
+    L181 = State()
     L19 = State()
     L20 = State()
     L21 = State()
@@ -161,6 +164,16 @@ class DeleteCallbackStates(StatesGroup):
     D2 = State()
     D3 = State()
     D4 = State()
+
+
+class Visible_on(StatesGroup):
+    step2 = State()
+    step3 = State()
+
+
+class Visible_off(StatesGroup):
+    step2 = State()
+    step3 = State()
 
 
 class Buyer(StatesGroup):

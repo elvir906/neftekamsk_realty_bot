@@ -130,11 +130,11 @@ class keyboards():
     def get_category_keyboard():
         """генерация клавиатуры выбора по категориям"""
 
-        mc_count = Room.objects.count()
-        house_count = House.objects.count()
-        townhouse_count = TownHouse.objects.count()
-        land_count = Land.objects.count()
-        apartment_count = Apartment.objects.count()
+        mc_count = Room.objects.filter(visible=True).count()
+        house_count = House.objects.filter(visible=True).count()
+        townhouse_count = TownHouse.objects.filter(visible=True).count()
+        land_count = Land.objects.filter(visible=True).count()
+        apartment_count = Apartment.objects.filter(visible=True).count()
 
         buttons_names = ['Квартиры', 'Комнаты', 'Дома', 'Таунхаусы', 'Участки']
         quantitative_indicator = [
@@ -158,11 +158,11 @@ class keyboards():
     def get_rooms_count_keyboard():
         """Генерация клавиатуры выбора по количеству комнат квартир"""
 
-        one_room_quantity = Apartment.objects.filter(room_quantity=1).count()
-        two_room_quantity = Apartment.objects.filter(room_quantity=2).count()
-        three_room_quantity = Apartment.objects.filter(room_quantity=3).count()
-        four_room_quantity = Apartment.objects.filter(room_quantity=4).count()
-        five_room_quantity = Apartment.objects.filter(room_quantity=5).count()
+        one_room_quantity = Apartment.objects.filter(room_quantity=1, visible=True).count()
+        two_room_quantity = Apartment.objects.filter(room_quantity=2, visible=True).count()
+        three_room_quantity = Apartment.objects.filter(room_quantity=3, visible=True).count()
+        four_room_quantity = Apartment.objects.filter(room_quantity=4, visible=True).count()
+        five_room_quantity = Apartment.objects.filter(room_quantity=5, visible=True).count()
 
         keyboard = InlineKeyboardMarkup()
 
@@ -551,6 +551,70 @@ class keyboards():
         )
         return keyboard
 
+    def objects_list_keyboard_for_change_visibleness(searching_user_id: int, visible: bool):
+        keyboard = InlineKeyboardMarkup()
+
+        apartment_queryset = Apartment.objects.filter(
+            user_id=searching_user_id, visible=visible
+        )
+        room_queryset = Room.objects.filter(
+            user_id=searching_user_id, visible=visible
+        )
+        house_queryset = House.objects.filter(
+            user_id=searching_user_id, visible=visible
+        )
+        townhouse_queryset = TownHouse.objects.filter(
+            user_id=searching_user_id, visible=visible
+        )
+        land_queryset = Land.objects.filter(
+            user_id=searching_user_id, visible=visible
+        )
+
+        buttons = []
+        callback_data_string = []
+
+        for item in apartment_queryset:
+            buttons.append(f'{item.room_quantity}к.кв. '
+                           + f'{item.street_name} {item.number_of_house} '
+                           + f'- {int(item.price)} ₽')
+            callback_data_string.append([item.pk, 'Apartment'])
+
+        for item in room_queryset:
+            buttons.append(f'Комната {item.street_name} '
+                           + f'{item.number_of_house} - {int(item.price)} ₽')
+            callback_data_string.append([item.pk, 'Room'])
+
+        for item in house_queryset:
+            buttons.append(f'Дом {item.microregion} '
+                           + f'{item.street_name} - {int(item.price)} ₽')
+            callback_data_string.append([item.pk, 'House'])
+
+        for item in townhouse_queryset:
+            buttons.append(f'Таунхаус {item.microregion} '
+                           + f'{item.street_name} - {int(item.price)} ₽')
+            callback_data_string.append([item.pk, 'TownHouse'])
+
+        for item in land_queryset:
+            buttons.append(f'Участок {item.microregion} '
+                           + f'{item.street_name} {item.number_of_land} - '
+                           + f'{int(item.price)} ₽')
+            callback_data_string.append([item.pk, 'Land'])
+
+        for i in range(0, len(buttons)):
+            keyboard.row(
+                InlineKeyboardButton(
+                    buttons[i],
+                    callback_data=f'{callback_data_string[i][0]} '
+                    + f'{callback_data_string[i][1]}'
+                )
+            )
+
+        cancel_button = 'Отмена'
+        keyboard.row(
+            InlineKeyboardButton(cancel_button, callback_data=cancel_button)
+        )
+        return keyboard
+
     def pagination_keyboard(page, pages, category):
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
@@ -721,12 +785,36 @@ class keyboards():
         )
         return keyboard
 
+    def visible_or_not_kb():
+        keyboard = InlineKeyboardMarkup()
+        buttons = [
+            'Да, сделать видимым для всех',
+            'Нет, сделать видимым только мне',
+            'Отмена'
+        ]
+        callback_data_string = ['True', 'False', 'Cancel']
+        btns = []
+        for i in range(0, len(buttons)):
+            btns.append(
+                InlineKeyboardButton(
+                    text=buttons[i],
+                    callback_data=callback_data_string[i]
+                )
+            )
+        keyboard.add(*btns)
+        return keyboard
+
 
 class Output():
     def false_or_true(item: bool) -> str:
         if item:
             return 'Есть'
         return 'Нет'
+
+    def false_or_true2(item: str) -> bool:
+        if item == 'True':
+            return True
+        return False
 
     # Строку в название класса
     def str_to_class(str):
