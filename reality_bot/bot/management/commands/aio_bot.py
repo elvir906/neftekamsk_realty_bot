@@ -1757,21 +1757,6 @@ async def room_entering_agency_name(callback: CallbackQuery, state: FSMContext):
         )
         await RoomCallbackStates.R14.set()
 
-# @dp.message_handler(state=RoomCallbackStates.R12)
-# async def entering_room_agency_name(message: Message, state: FSMContext):
-#     if message.text == 'Стоп' or message.text == 'стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         await state.update_data(room_owner_name=answer)
-#         await message.answer(
-#             '✏ Загрузите до 6 фото квартиры\n\n'
-#         )
-#         await RoomCallbackStates.R14.set()
-
 
 @dp.message_handler(state=RoomCallbackStates.R14, content_types=ContentType.PHOTO)
 async def report_room_photo(message: Message):
@@ -2415,23 +2400,6 @@ async def house_entering_agency_name(callback: CallbackQuery, state: FSMContext)
         )
         await HouseCallbackStates.H22.set()
 
-# @dp.message_handler(state=HouseCallbackStates.H20)
-# async def entering_house_rieltor_name(
-#     message: Message, state: FSMContext
-# ):
-#     if message.text == 'Стоп' or message.text == 'стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         await state.update_data(house_owner_name=answer)
-#         await message.answer(
-#             '✏ Загрузите до 6 фото дома\n\n'
-#         )
-#         await HouseCallbackStates.H22.set()
-
 
 @dp.message_handler(state=HouseCallbackStates.H22, content_types=ContentType.PHOTO)
 async def house_report_photo(message: Message):
@@ -3070,23 +3038,6 @@ async def townhouse_entering_agency_name(callback: CallbackQuery, state: FSMCont
         )
         await TownHouseCallbackStates.T22.set()
 
-# @dp.message_handler(state=TownHouseCallbackStates.T20)
-# async def entering_townhouse_rieltor_name(
-#     message: Message, state: FSMContext
-# ):
-#     if message.text == 'Стоп' or message.text == 'стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         await state.update_data(townhouse_owner_name=answer)
-#         await message.answer(
-#             '✏ Загрузи до 6 фото таунхауса\n\n'
-#         )
-#         await TownHouseCallbackStates.T22.set()
-
 
 @dp.message_handler(state=TownHouseCallbackStates.T22, content_types=ContentType.PHOTO)
 async def townhouse_report_photo(message: Message):
@@ -3665,23 +3616,6 @@ async def land_entering_agency_name(callback: CallbackQuery, state: FSMContext):
         )
         await LandCallbackStates.L20.set()
 
-# @dp.message_handler(state=LandCallbackStates.L18)
-# async def entering_land_rieltor_name(
-#     message: Message, state: FSMContext
-# ):
-#     if message.text == 'Стоп' or message.text == 'стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         answer = message.text.title()
-#         await state.update_data(land_owner_name=answer)
-#         await message.answer(
-#             '✏ Загрузи до 6 фото участка\n\n'
-#         )
-#         await LandCallbackStates.L20.set()
-
 
 @dp.message_handler(state=LandCallbackStates.L20, content_types=ContentType.PHOTO)
 async def land_report_photo(message: Message):
@@ -4183,7 +4117,7 @@ async def edit_price(message: Message):
             await PriceEditCallbackStates.EP2.set()
         else:
             await message.answer(
-                ' У тебя нет объектов в базе'
+                'У тебя нет объектов в этой таблице'
             )
 
 
