@@ -3757,81 +3757,86 @@ async def land_base_updating(message: Message, state: FSMContext):
 async def entering_phone_number_for_searching(message: Message):
     DB_Worker.command_counting()
 
-    apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id, visible=True)
-    room_queryset = Room.objects.filter(user_id=message.from_user.id, visible=True)
-    house_queryset = House.objects.filter(user_id=message.from_user.id, visible=True)
-    townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id, visible=True)
-    land_queryset = Land.objects.filter(user_id=message.from_user.id, visible=True)
-
-    apartment_count = apartment_queryset.count()
-    room_count = room_queryset.count()
-    house_count = house_queryset.count()
-    townhouse_count = townhouse_queryset.count()
-    land_count = land_queryset.count()
-
-    total_count = apartment_count + room_count + house_count + townhouse_count + land_count
-
-    data = {
-        'total_count': total_count,
-        'apartment_count': apartment_count,
-        'room_count': room_count,
-        'house_count': house_count,
-        'townhouse_count': townhouse_count,
-        'land_count': land_count,
-    }
-
-    await message.answer(
-        message_texts.my_objects_text(data),
-        disable_notification=True,
-        parse_mode='Markdown'
-    )
-    for item in apartment_queryset:
-        await asyncio.sleep(0.5)
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            f'*{item.room_quantity} к.кв.* '
-            + f'{item.street_name} д.{item.number_of_house}, '
-            + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+        )
+    else:
+        apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id, visible=True)
+        room_queryset = Room.objects.filter(user_id=message.from_user.id, visible=True)
+        house_queryset = House.objects.filter(user_id=message.from_user.id, visible=True)
+        townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id, visible=True)
+        land_queryset = Land.objects.filter(user_id=message.from_user.id, visible=True)
+
+        apartment_count = apartment_queryset.count()
+        room_count = room_queryset.count()
+        house_count = house_queryset.count()
+        townhouse_count = townhouse_queryset.count()
+        land_count = land_queryset.count()
+
+        total_count = apartment_count + room_count + house_count + townhouse_count + land_count
+
+        data = {
+            'total_count': total_count,
+            'apartment_count': apartment_count,
+            'room_count': room_count,
+            'house_count': house_count,
+            'townhouse_count': townhouse_count,
+            'land_count': land_count,
+        }
+
+        await message.answer(
+            message_texts.my_objects_text(data),
             disable_notification=True,
             parse_mode='Markdown'
         )
+        for item in apartment_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*{item.room_quantity} к.кв.* '
+                + f'{item.street_name} д.{item.number_of_house}, '
+                + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in room_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Комната* {item.street_name} '
-            + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in room_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Комната* {item.street_name} '
+                + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in house_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in house_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in townhouse_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in townhouse_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in land_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in land_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
 
 # -----------------------------------------------------------------------------
@@ -3841,81 +3846,86 @@ async def entering_phone_number_for_searching(message: Message):
 async def searching_blacklists_obj(message: Message):
     DB_Worker.command_counting()
 
-    apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id, visible=False)
-    room_queryset = Room.objects.filter(user_id=message.from_user.id, visible=False)
-    house_queryset = House.objects.filter(user_id=message.from_user.id, visible=False)
-    townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id, visible=False)
-    land_queryset = Land.objects.filter(user_id=message.from_user.id, visible=False)
-
-    apartment_count = apartment_queryset.count()
-    room_count = room_queryset.count()
-    house_count = house_queryset.count()
-    townhouse_count = townhouse_queryset.count()
-    land_count = land_queryset.count()
-
-    total_count = apartment_count + room_count + house_count + townhouse_count + land_count
-
-    data = {
-        'total_count': total_count,
-        'apartment_count': apartment_count,
-        'room_count': room_count,
-        'house_count': house_count,
-        'townhouse_count': townhouse_count,
-        'land_count': land_count,
-    }
-
-    await message.answer(
-        message_texts.my_objects_text(data),
-        disable_notification=True,
-        parse_mode='Markdown'
-    )
-    for item in apartment_queryset:
-        await asyncio.sleep(0.5)
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            f'*{item.room_quantity} к.кв.* '
-            + f'{item.street_name} д.{item.number_of_house}, '
-            + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+        )
+    else:
+        apartment_queryset = Apartment.objects.filter(user_id=message.from_user.id, visible=False)
+        room_queryset = Room.objects.filter(user_id=message.from_user.id, visible=False)
+        house_queryset = House.objects.filter(user_id=message.from_user.id, visible=False)
+        townhouse_queryset = TownHouse.objects.filter(user_id=message.from_user.id, visible=False)
+        land_queryset = Land.objects.filter(user_id=message.from_user.id, visible=False)
+
+        apartment_count = apartment_queryset.count()
+        room_count = room_queryset.count()
+        house_count = house_queryset.count()
+        townhouse_count = townhouse_queryset.count()
+        land_count = land_queryset.count()
+
+        total_count = apartment_count + room_count + house_count + townhouse_count + land_count
+
+        data = {
+            'total_count': total_count,
+            'apartment_count': apartment_count,
+            'room_count': room_count,
+            'house_count': house_count,
+            'townhouse_count': townhouse_count,
+            'land_count': land_count,
+        }
+
+        await message.answer(
+            message_texts.my_objects_text(data),
             disable_notification=True,
             parse_mode='Markdown'
         )
+        for item in apartment_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*{item.room_quantity} к.кв.* '
+                + f'{item.street_name} д.{item.number_of_house}, '
+                + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in room_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Комната* {item.street_name} '
-            + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in room_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Комната* {item.street_name} '
+                + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in house_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in house_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in townhouse_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in townhouse_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 
-    for item in land_queryset:
-        await asyncio.sleep(0.5)
-        await message.answer(
-            f'*Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-            + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
-            disable_notification=True,
-            parse_mode='Markdown'
-        )
+        for item in land_queryset:
+            await asyncio.sleep(0.5)
+            await message.answer(
+                f'*Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
+                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                disable_notification=True,
+                parse_mode='Markdown'
+            )
 # -----------------------------------------------------------------------------
 # --------------------УДАЛЕНИЕ ОБЪЕКТА-----------------------------------------
 # -----------------------------------------------------------------------------
@@ -3923,28 +3933,33 @@ async def searching_blacklists_obj(message: Message):
 
 @dp.message_handler(commands=['deleteobject'])
 async def delete_object(message: Message):
-
     DB_Worker.command_counting()
-    user_id = message.from_user.id
 
-    cond1 = Apartment.objects.filter(user_id=user_id).exists()
-    cond2 = Room.objects.filter(user_id=user_id).exists()
-    cond3 = House.objects.filter(user_id=user_id).exists()
-    cond4 = TownHouse.objects.filter(user_id=user_id).exists()
-    cond5 = Land.objects.filter(user_id=user_id).exists()
-
-    big_cond = cond1 or cond2 or cond3 or cond4 or cond5
-
-    if big_cond:
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Выбери объект для удаления:',
-            reply_markup=keyboards.objects_list_keyboard(user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await DeleteCallbackStates.D2.set()
     else:
-        await message.answer(
-            ' У тебя нет объектов в базе'
-        )
+        user_id = message.from_user.id
+
+        cond1 = Apartment.objects.filter(user_id=user_id).exists()
+        cond2 = Room.objects.filter(user_id=user_id).exists()
+        cond3 = House.objects.filter(user_id=user_id).exists()
+        cond4 = TownHouse.objects.filter(user_id=user_id).exists()
+        cond5 = Land.objects.filter(user_id=user_id).exists()
+
+        big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+        if big_cond:
+            await message.answer(
+                'Выбери объект для удаления:',
+                reply_markup=keyboards.objects_list_keyboard(user_id)
+            )
+            await DeleteCallbackStates.D2.set()
+        else:
+            await message.answer(
+                ' У тебя нет объектов в базе'
+            )
 
 
 @dp.callback_query_handler(state=DeleteCallbackStates.D2)
@@ -4004,26 +4019,32 @@ async def deleting_object(
 async def visible_on(message: Message):
 
     DB_Worker.command_counting()
-    user_id = message.from_user.id
 
-    cond1 = Apartment.objects.filter(user_id=user_id, visible=False).exists()
-    cond2 = Room.objects.filter(user_id=user_id, visible=False).exists()
-    cond3 = House.objects.filter(user_id=user_id, visible=False).exists()
-    cond4 = TownHouse.objects.filter(user_id=user_id, visible=False).exists()
-    cond5 = Land.objects.filter(user_id=user_id, visible=False).exists()
-
-    big_cond = cond1 or cond2 or cond3 or cond4 or cond5
-
-    if big_cond:
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Выбери черновой объект, который хочешь сделать видимым:',
-            reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, False)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await Visible_on.step2.set()
     else:
-        await message.answer(
-            ' У тебя нет черновых объектов в базе'
-        )
+        user_id = message.from_user.id
+
+        cond1 = Apartment.objects.filter(user_id=user_id, visible=False).exists()
+        cond2 = Room.objects.filter(user_id=user_id, visible=False).exists()
+        cond3 = House.objects.filter(user_id=user_id, visible=False).exists()
+        cond4 = TownHouse.objects.filter(user_id=user_id, visible=False).exists()
+        cond5 = Land.objects.filter(user_id=user_id, visible=False).exists()
+
+        big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+        if big_cond:
+            await message.answer(
+                'Выбери черновой объект, который хочешь сделать видимым:',
+                reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, False)
+            )
+            await Visible_on.step2.set()
+        else:
+            await message.answer(
+                ' У тебя нет черновых объектов в базе'
+            )
 
 
 @dp.callback_query_handler(state=Visible_on.step2)
@@ -4069,26 +4090,32 @@ async def visible_on_step3(
 async def visible_off(message: Message):
 
     DB_Worker.command_counting()
-    user_id = message.from_user.id
 
-    cond1 = Apartment.objects.filter(user_id=user_id, visible=True).exists()
-    cond2 = Room.objects.filter(user_id=user_id, visible=True).exists()
-    cond3 = House.objects.filter(user_id=user_id, visible=True).exists()
-    cond4 = TownHouse.objects.filter(user_id=user_id, visible=True).exists()
-    cond5 = Land.objects.filter(user_id=user_id, visible=True).exists()
-
-    big_cond = cond1 or cond2 or cond3 or cond4 or cond5
-
-    if big_cond:
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            'Выбери объект, который хочешь сделать невидимым:',
-            reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, True)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await Visible_off.step2.set()
     else:
-        await message.answer(
-            ' У тебя нет объектов в базе'
-        )
+        user_id = message.from_user.id
+
+        cond1 = Apartment.objects.filter(user_id=user_id, visible=True).exists()
+        cond2 = Room.objects.filter(user_id=user_id, visible=True).exists()
+        cond3 = House.objects.filter(user_id=user_id, visible=True).exists()
+        cond4 = TownHouse.objects.filter(user_id=user_id, visible=True).exists()
+        cond5 = Land.objects.filter(user_id=user_id, visible=True).exists()
+
+        big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+        if big_cond:
+            await message.answer(
+                'Выбери объект, который хочешь сделать невидимым:',
+                reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, True)
+            )
+            await Visible_off.step2.set()
+        else:
+            await message.answer(
+                'У тебя нет объектов в этой таблице'
+            )
 
 
 @dp.callback_query_handler(state=Visible_off.step2)
@@ -4132,26 +4159,32 @@ async def visible_off_step3(
 async def edit_price(message: Message):
 
     DB_Worker.command_counting()
-    user_id = message.from_user.id
 
-    cond1 = Apartment.objects.filter(user_id=user_id).exists()
-    cond2 = Room.objects.filter(user_id=user_id).exists()
-    cond3 = House.objects.filter(user_id=user_id).exists()
-    cond4 = TownHouse.objects.filter(user_id=user_id).exists()
-    cond5 = Land.objects.filter(user_id=user_id).exists()
-
-    big_cond = cond1 or cond2 or cond3 or cond4 or cond5
-
-    if big_cond:
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
-            '✏ Выберите объект, цену которого вы хотите изменить',
-            reply_markup=keyboards.objects_list_keyboard(user_id)
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
-        await PriceEditCallbackStates.EP2.set()
     else:
-        await message.answer(
-            ' У тебя нет объектов в базе'
-        )
+        user_id = message.from_user.id
+
+        cond1 = Apartment.objects.filter(user_id=user_id).exists()
+        cond2 = Room.objects.filter(user_id=user_id).exists()
+        cond3 = House.objects.filter(user_id=user_id).exists()
+        cond4 = TownHouse.objects.filter(user_id=user_id).exists()
+        cond5 = Land.objects.filter(user_id=user_id).exists()
+
+        big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+        if big_cond:
+            await message.answer(
+                '✏ Выберите объект, цену которого вы хотите изменить',
+                reply_markup=keyboards.objects_list_keyboard(user_id)
+            )
+            await PriceEditCallbackStates.EP2.set()
+        else:
+            await message.answer(
+                ' У тебя нет объектов в базе'
+            )
 
 
 @dp.callback_query_handler(
