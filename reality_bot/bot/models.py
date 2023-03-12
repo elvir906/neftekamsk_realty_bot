@@ -110,10 +110,8 @@ class Counter(models.Model):
 
 
 class Apartment(models.Model):
-    room_quantity = models.DecimalField(
-        verbose_name='Количество комнат',
-        decimal_places=0,
-        max_digits=1
+    room_quantity = models.IntegerField(
+        verbose_name='Количество комнат'
     )
     street_name = models.CharField(
         max_length=100,
@@ -123,14 +121,10 @@ class Apartment(models.Model):
         max_length=10,
         verbose_name='Номер дома'
     )
-    floor = models.DecimalField(
-        decimal_places=0,
-        max_digits=2,
+    floor = models.IntegerField(
         verbose_name='Этаж'
     )
-    number_of_floors = models.DecimalField(
-        decimal_places=0,
-        max_digits=2,
+    number_of_floors = models.IntegerField(
         verbose_name='Этажность дома'
     )
     area = models.DecimalField(
@@ -212,7 +206,7 @@ class Apartment(models.Model):
         verbose_name='Видимость д/др. агентов',
         default='True'
     )
-    
+
     class Meta:
         verbose_name = 'Квартира'
         verbose_name_plural = 'Квартиры'
@@ -227,14 +221,10 @@ class Room(models.Model):
         max_length=10,
         verbose_name='Номер дома'
     )
-    floor = models.DecimalField(
-        decimal_places=0,
-        max_digits=2,
+    floor = models.IntegerField(
         verbose_name='Этаж'
     )
-    number_of_floors = models.DecimalField(
-        decimal_places=0,
-        max_digits=2,
+    number_of_floors = models.IntegerField(
         verbose_name='Этажность дома'
     )
     area = models.DecimalField(

@@ -11,8 +11,8 @@ from code.states import (ApartmentSearch, ArchiveObjects, Buyer,
                          HouseSearch, LandCallbackStates, LandSearch,
                          ObjForBuyer, PriceEditCallbackStates, Registration,
                          RoomCallbackStates, RoomSearch,
-                         TownHouseCallbackStates, TownHouseSearch,
-                         WorkersBuyers, WorkersObjects, Visible_on, Visible_off)
+                         TownHouseCallbackStates, TownHouseSearch, Visible_off,
+                         Visible_on, WorkersBuyers, WorkersObjects)
 from code.utils import (Output, checked_apartment_category, keyboards,
                         object_city_microregions_for_checking,
                         object_country_microregions_for_checking,
@@ -23,8 +23,7 @@ import django
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from aiogram.types import (CallbackQuery, ContentType, InputFile, MediaGroup,
-                           Message)
+from aiogram.types import CallbackQuery, ContentType, MediaGroup, Message
 from bot.models import Apartment, Archive
 from bot.models import Buyer as BuyerDB
 from bot.models import (Ceo, CodeWord, House, Individuals, Land, Rieltors,
@@ -3749,10 +3748,11 @@ async def land_base_updating(message: Message, state: FSMContext):
         await message.answer_media_group(media=album)
         await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
-
 # -----------------------------------------------------------------------------
 # -------------- МОИ ОБЪЕКТЫ --------------------------------------------------
 # -----------------------------------------------------------------------------
+
+
 @dp.message_handler(commands=['myobjects'])
 async def entering_phone_number_for_searching(message: Message):
     DB_Worker.command_counting()
@@ -5046,7 +5046,7 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
         if code_word.exists():
             code_word.delete()
 
-            rieltor = Rieltors.objects.get(user_id=message.from_user.id) # текущий пользователь регистрирующийся на руководителя
+            rieltor = Rieltors.objects.get(user_id=message.from_user.id)  # текущий пользователь регистрирующийся на руководителя
             rieltors = Rieltors.objects.filter(agency_name=rieltor.agency_name).exclude(user_id=message.from_user.id)
 
             cond_ceo = False
