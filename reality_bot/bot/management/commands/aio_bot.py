@@ -4449,7 +4449,7 @@ async def base_update(message: Message, state: FSMContext):
                         room_quantity=data.get('buyer_search_category')
                     )
                 else:
-                    queryset = class_name.objects.filter(price__lte=data.get('buyer_limit'))
+                    queryset = class_name.objects.filter(price__lte=data.get('buyer_limit'), visible=True)
                 if queryset.exists():
                     rieltor = Rieltors.objects.get(user_id=message.from_user.id)
                     for item in queryset:
@@ -4603,7 +4603,7 @@ async def searching_for_buyer(
                 room_quantity=buyer_category.get('category')
             )
         else:
-            queryset = class_name.objects.filter(price__lte=(buyer_limit.get('limit')))
+            queryset = class_name.objects.filter(price__lte=(buyer_limit.get('limit')), visible=True)
 
         if queryset.exists():
             await callback.message.edit_text('🔎 Возможно, покупателю подойдут такие варианты:')
@@ -4803,11 +4803,11 @@ async def worker_objects(
     else:
         rieltor = Rieltors.objects.get(user_id=callback.data)
 
-        apartment_queryset = Apartment.objects.filter(user_id=rieltor.user_id)
-        room_queryset = Room.objects.filter(user_id=rieltor.user_id)
-        house_queryset = House.objects.filter(user_id=rieltor.user_id)
-        townhouse_queryset = TownHouse.objects.filter(user_id=rieltor.user_id)
-        land_queryset = Land.objects.filter(user_id=rieltor.user_id)
+        apartment_queryset = Apartment.objects.filter(user_id=rieltor.user_id, visible=True)
+        room_queryset = Room.objects.filter(user_id=rieltor.user_id, visible=True)
+        house_queryset = House.objects.filter(user_id=rieltor.user_id, visible=True)
+        townhouse_queryset = TownHouse.objects.filter(user_id=rieltor.user_id, visible=True)
+        land_queryset = Land.objects.filter(user_id=rieltor.user_id, visible=True)
 
         apartment_count = apartment_queryset.count()
         room_count = room_queryset.count()
