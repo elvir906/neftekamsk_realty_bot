@@ -1415,8 +1415,9 @@ async def base_updating(message: Message, state: FSMContext):
             else:
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        if data.get('visible') is True:
+            await message.answer_media_group(media=album)
+            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
 
@@ -1820,8 +1821,9 @@ async def room_base_updating(message: Message, state: FSMContext):
             else:
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        if data.get('visible') is True:
+            await message.answer_media_group(media=album)
+            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
 
@@ -2463,8 +2465,9 @@ async def house_base_updating(message: Message, state: FSMContext):
             else:
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        if data.get('visible') is True:
+            await message.answer_media_group(media=album)
+            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
 
@@ -3101,8 +3104,9 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
             else:
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        if data.get('visible') is True:
+            await message.answer_media_group(media=album)
+            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
 
@@ -3679,8 +3683,9 @@ async def land_base_updating(message: Message, state: FSMContext):
             else:
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        if data.get('visible') is True:
+            await message.answer_media_group(media=album)
+            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 # -----------------------------------------------------------------------------
 # -------------- МОИ ОБЪЕКТЫ --------------------------------------------------
