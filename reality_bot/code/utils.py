@@ -801,15 +801,18 @@ class keyboards():
             'Отмена'
         ]
         callback_data_string = ['True', 'False', 'Cancel']
-        btns = []
-        for i in range(0, len(buttons)):
-            btns.append(
-                InlineKeyboardButton(
-                    text=buttons[i],
-                    callback_data=callback_data_string[i]
-                )
-            )
-        keyboard.row(*btns)
+        # btns = []
+        # for i in range(0, len(buttons)):
+        #     btns.append(
+        #         InlineKeyboardButton(
+        #             text=buttons[i],
+        #             callback_data=callback_data_string[i]
+        #         )
+        #     )
+        # keyboard.row(*btns)
+        keyboard.row(InlineKeyboardButton(text=buttons[0], callback_data=callback_data_string[0]))
+        keyboard.row(InlineKeyboardButton(text=buttons[1], callback_data=callback_data_string[1]))
+        keyboard.row(InlineKeyboardButton(text=buttons[2], callback_data=callback_data_string[2]))
         return keyboard
 
 
