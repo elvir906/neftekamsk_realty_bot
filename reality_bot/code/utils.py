@@ -809,7 +809,7 @@ class keyboards():
                     callback_data=callback_data_string[i]
                 )
             )
-        keyboard.add(*btns)
+        keyboard.row(*btns)
         return keyboard
 
 
