@@ -232,15 +232,7 @@ async def get_statistics(message: Message):
 @dp.message_handler(commands=['searchobjects'])
 async def search_objects(message: Message):
     DB_Worker.command_counting()
-    # await code.send_photo(
-    #     chat_id=message.chat.id,
-    #     photo=photo,
-    #     caption='✏ Выбери один из двух форматов просмотра объектов:\n'
-    #             + '*Каскадная* - все объекты "вываливаются" в чат, *с фото*.\n'
-    #             + '*Карусель* - лаконичное перелистывание, но *без фото*.',
-    #             reply_markup=keyboards.carousel_or_cascade_keyboard(),
-    #             parse_mode='Markdown'
-    #     )
+
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
@@ -312,8 +304,9 @@ async def add_object(message: Message):
 # -----------------------------------------------------------------------------
 
 
-@dp.callback_query_handler(text='Комнаты')
+@dp.callback_query_handler(text=['Комнаты'])
 async def rooms_search(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(view_format=callback.data)
     await callback.message.edit_text('✏ До какой цены вывести объекты?')
     await RoomSearch.step2.set()
 
@@ -324,6 +317,7 @@ async def rooms(message: Message, state: FSMContext):
     Ответ на кнопку поиска по комнатам
     ПАГИНАЦИЮ комментами разжевал в участках ниже если чо
     """
+
     try:
         query_set = Room.objects.filter(
             price__lte=int(message.text),
@@ -1341,7 +1335,6 @@ async def entering_agency_name(callback: CallbackQuery, state: FSMContext):
         await state.finish()
     else:
         await state.update_data(visible=callback.data)
-        print(callback.data)
         await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
@@ -1416,7 +1409,7 @@ async def base_updating(message: Message, state: FSMContext):
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
         await message.answer_media_group(media=album)
-        if data.get('visible') is True:
+        if data.get('visible') == 'True':
             await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
@@ -1752,7 +1745,6 @@ async def room_entering_agency_name(callback: CallbackQuery, state: FSMContext):
         await state.finish()
     else:
         await state.update_data(visible=callback.data)
-        print(callback.data)
         await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
@@ -1822,7 +1814,7 @@ async def room_base_updating(message: Message, state: FSMContext):
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
         await message.answer_media_group(media=album)
-        if data.get('visible') is True:
+        if data.get('visible') == 'True':
             await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
@@ -2395,7 +2387,6 @@ async def house_entering_agency_name(callback: CallbackQuery, state: FSMContext)
         await state.finish()
     else:
         await state.update_data(visible=callback.data)
-        print(callback.data)
         await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
@@ -2465,7 +2456,7 @@ async def house_base_updating(message: Message, state: FSMContext):
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
         await message.answer_media_group(media=album)
-        if data.get('visible') is True:
+        if data.get('visible') == 'True':
             await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
@@ -3032,7 +3023,6 @@ async def townhouse_entering_agency_name(callback: CallbackQuery, state: FSMCont
         await state.finish()
     else:
         await state.update_data(visible=callback.data)
-        print(callback.data)
         await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
@@ -3102,7 +3092,7 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
         await message.answer_media_group(media=album)
-        if data.get('visible') is True:
+        if data.get('visible') == 'True':
             await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 
@@ -3609,7 +3599,6 @@ async def land_entering_agency_name(callback: CallbackQuery, state: FSMContext):
         await state.finish()
     else:
         await state.update_data(visible=callback.data)
-        print(callback.data)
         await callback.message.edit_text(
             '✏ Загрузите до 6 фото квартиры\n\n'
         )
@@ -3679,7 +3668,7 @@ async def land_base_updating(message: Message, state: FSMContext):
                 album.attach_photo(photo_id)
                 channel_album.attach_photo(photo_id)
         await message.answer_media_group(media=album)
-        if data.get('visible') is True:
+        if data.get('visible') == 'True':
             await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
     await state.finish()
 # -----------------------------------------------------------------------------

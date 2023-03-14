@@ -889,6 +889,14 @@ class keyboards():
         keyboard.row(InlineKeyboardButton(text=buttons[2], callback_data=callback_data_string[2]))
         return keyboard
 
+    # def fast_or_price_kb():
+    #     keyboard = InlineKeyboardMarkup()
+    #     butn_txt = ['Посмотреть все объекты', 'Посмотреть по цене']
+    #     callback_data_str = ['Fast', 'Price']
+    #     keyboard.row(InlineKeyboardButton(text=butn_txt[0], callback_data=callback_data_str[0]))
+    #     keyboard.row(InlineKeyboardButton(text=butn_txt[1], callback_data=callback_data_str[1]))
+    #     return keyboard
+
 
 class Output():
     def false_or_true(item: bool) -> str:
