@@ -1846,8 +1846,7 @@ async def add_house(callback: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(
-    state=HouseCallbackStates.H1,
-    text=object_microregions.append('Отменить внесение объекта')
+    state=HouseCallbackStates.H1
 )
 async def entering_house_street_name(
     callback: CallbackQuery, state: FSMContext
@@ -2483,8 +2482,7 @@ async def add_townhouse(callback: CallbackQuery, state: FSMContext):
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Укажи микрорайон расположения таунхауса.*\n\n'
-        + 'Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n'
-        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+        + 'Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n',
         reply_markup=keyboards.microregion_keyboard('object'),
         parse_mode='Markdown'
     )
@@ -2492,8 +2490,7 @@ async def add_townhouse(callback: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(
-    state=TownHouseCallbackStates.T1,
-    text=object_microregions.append('Отменить внесение объекта')
+    state=TownHouseCallbackStates.T1
 )
 async def entering_townhouse_street_name(
     callback: CallbackQuery, state: FSMContext
@@ -3122,8 +3119,7 @@ async def add_land(callback: CallbackQuery, state: FSMContext):
         'Приготовьтесь ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Укажите микрорайон расположения участка.*\n\n'
-        + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n'
-        + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"',
+        + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n',
         reply_markup=keyboards.microregion_keyboard('object'),
         parse_mode='Markdown'
     )
@@ -3131,8 +3127,7 @@ async def add_land(callback: CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(
-    state=LandCallbackStates.L1,
-    text=object_microregions.append('Отменить внесение объекта')
+    state=LandCallbackStates.L1
 )
 async def entering_land_street_name(
     callback: CallbackQuery, state: FSMContext

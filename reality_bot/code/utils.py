@@ -381,27 +381,19 @@ class keyboards():
         return keyboard
 
     def microregion_keyboard(item: str):
-        """Генерация клавиатуры на выбор микрорайона"""
+        """Генерация клавиатуры на выбор микрорайона при добавлении объекта"""
 
         keyboard = InlineKeyboardMarkup()
+
         buttons = [
             InlineKeyboardButton(
                 text=object_microregions[i],
                 callback_data=object_microregions[i]
-                ) for i in range(0, len(object_microregions) - 1)
+                ) for i in range(0, len(object_microregions))
         ]
-        keyboard.row(buttons[0], buttons[2])
-        keyboard.row(buttons[7], buttons[5])
-        keyboard.row(buttons[3], buttons[4], buttons[6])
-        keyboard.row(buttons[8], buttons[1])
-        keyboard.row(buttons[9], buttons[10], buttons[11])
-        keyboard.row(buttons[12], buttons[13], buttons[14])
-        keyboard.row(buttons[15], buttons[16])
 
-        if item == 'object':
-            cancel_button = 'Отменить внесение объекта'
-        if item == 'subject':
-            cancel_button = 'Отменить внесение покупателя'
+        keyboard.add(*buttons)
+        cancel_button = 'Отменить внесение объекта'
         keyboard.row(
             InlineKeyboardButton(text=cancel_button, callback_data=cancel_button)
         )
@@ -436,7 +428,7 @@ class keyboards():
             InlineKeyboardButton(
                 text=new_kbd_btns[i],
                 callback_data=new_kbd_btns[i]
-                ) for i in range(0, len(new_kbd_btns) - 1)
+                ) for i in range(0, len(new_kbd_btns))
         ]
         keyboard.add(*buttons)
         accept_button = 'Подтвердить выбор'
