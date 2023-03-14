@@ -16,7 +16,7 @@ from code.states import (ApartmentSearch, ArchiveObjects, Buyer,
 from code.utils import (Output, checked_apartment_category, keyboards,
                         object_city_microregions_for_checking,
                         object_country_microregions_for_checking,
-                        object_microregions)
+                        object_microregions, apartment_category)
 from functools import reduce
 
 import django
@@ -811,7 +811,7 @@ async def apartment_plan_category_checking(
 ):
     answer = callback.data
     key = str(callback.from_user.id)
-    if answer == 'Подтвердить выбор':
+    if answer == '✴ Подтвердить выбор':
         if not checked_category[key]:
             await callback.message.edit_text(
                 '❗ Необходимо выбрать категорию',
@@ -821,6 +821,10 @@ async def apartment_plan_category_checking(
             await state.update_data(category=checked_category[key])
             await callback.message.edit_text('✏ До какой цены вывести объекты?')
             await ApartmentSearch.step4.set()
+    elif answer == '❇ Показать все':
+        await state.update_data(category=apartment_category)
+        await callback.message.edit_text('✏ До какой цены вывести объекты?')
+        await ApartmentSearch.step4.set()
     else:
         if '✅' in answer:
             checked_category[key].remove(answer.removeprefix('✅ '))

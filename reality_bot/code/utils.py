@@ -209,7 +209,8 @@ checked_apartment_category = [
     '✅ Улучшенной планировки',
     '✅ Новые дома',
     '✅ Новые дома с инд.отоплением',
-    'Подтвердить выбор'
+    '✴ Подтвердить выбор',
+    '❇ Показать все'
 ]
 
 
@@ -450,8 +451,16 @@ class keyboards():
                 callback_data=new_kbd_btns[i]
                 ) for i in range(0, len(new_kbd_btns))
         ]
-        keyboard.add(*buttons)
-        accept_button = 'Подтвердить выбор'
+        keyboard.row(buttons[0])
+        keyboard.row(buttons[1])
+        keyboard.row(buttons[2])
+        keyboard.row(buttons[3])
+        keyboard.row(buttons[4])
+        accept_button = '❇ Показать все'
+        keyboard.row(
+            InlineKeyboardButton(text=accept_button, callback_data=accept_button)
+        )
+        accept_button = '✴ Подтвердить выбор'
         keyboard.row(
             InlineKeyboardButton(text=accept_button, callback_data=accept_button)
         )
