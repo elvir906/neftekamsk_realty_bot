@@ -35,6 +35,7 @@ object_country_microregions_for_checking = [
     'Саузбаш',
     'Староянзигитово',
     'Ташкиново',
+    'Янаул',
     '✅ Актанышбаш',
     '✅ Амзя',
     '✅ Арлан',
@@ -64,6 +65,7 @@ object_country_microregions_for_checking = [
     '✅ Саузбаш',
     '✅ Староянзигитово',
     '✅ Ташкиново',
+    '✅ Янаул',
     'Отменить внесение покупателя',
     'Подтвердить выбор'
 ]
@@ -98,6 +100,7 @@ object_microregions = [
     'Саузбаш',
     'Староянзигитово',
     'Ташкиново',
+    'Янаул',
 ]
 
 object_microregions_for_buyer = [
@@ -130,6 +133,7 @@ object_microregions_for_buyer = [
     'Саузбаш',
     'Староянзигитово',
     'Ташкиново',
+    'Янаул',
 ]
 
 object_city_microregions_for_checking = [
