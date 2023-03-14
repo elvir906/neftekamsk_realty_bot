@@ -13,10 +13,10 @@ from code.states import (ApartmentSearch, ArchiveObjects, Buyer,
                          RoomCallbackStates, RoomSearch,
                          TownHouseCallbackStates, TownHouseSearch, Visible_off,
                          Visible_on, WorkersBuyers, WorkersObjects)
-from code.utils import (Output, checked_apartment_category, keyboards,
-                        object_city_microregions_for_checking,
+from code.utils import (Output, apartment_category, checked_apartment_category,
+                        keyboards, object_city_microregions_for_checking,
                         object_country_microregions_for_checking,
-                        object_microregions, apartment_category)
+                        object_microregions)
 from functools import reduce
 
 import django
@@ -30,7 +30,7 @@ from bot.models import (Ceo, CodeWord, House, Individuals, Land, Rieltors,
                         Room, Subscriptors, TownHouse)
 from decouple import config
 from django.core.management.base import BaseCommand
-from django.db.models import Q
+from django.db.models import Q, Min
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rest.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -808,7 +808,10 @@ async def apartment_plan_category_choice(
 async def apartment_plan_category_checking(
     callback: CallbackQuery,
     state: FSMContext
-):
+):  
+    data = await state.get_data()
+    room_quantity = data.get('room_count')
+    min = Apartment.objects.filter(room_quantity=room_quantity).aggregate(Min('price'))
     answer = callback.data
     key = str(callback.from_user.id)
     if answer == '✴ Подтвердить выбор':
@@ -819,11 +822,11 @@ async def apartment_plan_category_checking(
             )
         else:
             await state.update_data(category=checked_category[key])
-            await callback.message.edit_text('✏ До какой цены вывести объекты?')
+            await callback.message.edit_text(f'✏ До какой цены вывести объекты? Мин. {min["price__min"]} ₽')
             await ApartmentSearch.step4.set()
     elif answer == '❇ Показать все':
         await state.update_data(category=apartment_category)
-        await callback.message.edit_text('✏ До какой цены вывести объекты?')
+        await callback.message.edit_text(f'✏ До какой цены вывести объекты? Мин. {min["price__min"]} ₽')
         await ApartmentSearch.step4.set()
     else:
         if '✅' in answer:
