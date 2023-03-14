@@ -252,7 +252,7 @@ async def cascade(callback: CallbackQuery, state: FSMContext):
     """Ответ на кнопку просмотра базы в каскадной форме"""
     await state.reset_data()
     await state.update_data(view_form=callback.data)
-    await callback.message.answer(
+    await callback.message.edit_text(
         '✏ Выбери категорию объектов для поиска',
         reply_markup=keyboards.get_category_keyboard()
     )
@@ -306,7 +306,6 @@ async def add_object(message: Message):
 
 @dp.callback_query_handler(text=['Комнаты'])
 async def rooms_search(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(view_format=callback.data)
     await callback.message.edit_text('✏ До какой цены вывести объекты?')
     await RoomSearch.step2.set()
 
