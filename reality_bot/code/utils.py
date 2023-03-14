@@ -443,11 +443,26 @@ class keyboards():
         return keyboard
 
     def apartment_plan_category_choice(checked_buttons: list):
+
+        mjk_quantity = Apartment.objects.filter(category='МЖК', visible=True).count()
+        stpl_quantity = Apartment.objects.filter(category='Старой планировки', visible=True).count()
+        ulpl_quantity = Apartment.objects.filter(category='Улучшенной планировки', visible=True).count()
+        new_house_quantity = Apartment.objects.filter(category='Новые дома', visible=True).count()
+        ind_otopl_quantity = Apartment.objects.filter(category='Новые дома с инд.отоплением', visible=True).count()
+
+        category_count = [
+            mjk_quantity,
+            stpl_quantity,
+            ulpl_quantity,
+            new_house_quantity,
+            ind_otopl_quantity
+        ]
+
         keyboard = InlineKeyboardMarkup()
         new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in apartment_category]
         buttons = [
             InlineKeyboardButton(
-                text=new_kbd_btns[i],
+                text=new_kbd_btns[i] + '  (' + str(category_count[i]) + ')',
                 callback_data=new_kbd_btns[i]
                 ) for i in range(0, len(new_kbd_btns))
         ]
