@@ -5162,11 +5162,11 @@ async def my_coworkers(message: Message):
             ceo = Ceo.objects.get(user_id=user_id)
             rieltors = Rieltors.objects.filter(agency_name=ceo.agency_name).exclude(user_id=user_id)
             if rieltors.exists():
-                for item in rieltors:
-                    await message.answer(
+                await message.answer(
                         text=f'У вас *{rieltors.count()}* сотрудник (-а, -ов) в системе:',
                         parse_mode='Markdown'
                     )
+                for item in rieltors:
                     await message.answer(
                         text=f'username в телеграм: *@{item.username}*,\n'
                              + f'имя: *{item.name}*,\n'
