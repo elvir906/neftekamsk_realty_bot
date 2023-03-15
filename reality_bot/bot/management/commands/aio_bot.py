@@ -30,7 +30,7 @@ from bot.models import (Ceo, CodeWord, House, Individuals, Land, Rieltors,
                         Room, Subscriptors, TownHouse)
 from decouple import config
 from django.core.management.base import BaseCommand
-from django.db.models import Q, Min
+from django.db.models import Q, Min, Max
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rest.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -306,7 +306,20 @@ async def add_object(message: Message):
 
 @dp.callback_query_handler(text=['Комнаты'])
 async def rooms_search(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text('✏ До какой цены вывести объекты?')
+    min_of_all = Room.objects.filter(
+        visible=True
+    ).aggregate(Min('price'))
+
+    max_of_all = Room.objects.filter(
+        visible=True
+    ).aggregate(Max('price'))
+
+    await callback.message.edit_text(
+        '✏ *До какой цены вывести объекты?*\n'
+        + f'min. {min_of_all["price__min"]}₽ - '
+        + f'max. {max_of_all["price__max"]}₽',
+        parse_mode='Markdown'
+    )
     await RoomSearch.step2.set()
 
 
@@ -418,7 +431,20 @@ async def rooms_next(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='Дома')
 async def houses_search(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text('✏ До какой цены вывести объекты?')
+    min_of_all = House.objects.filter(
+        visible=True
+    ).aggregate(Min('price'))
+
+    max_of_all = House.objects.filter(
+        visible=True
+    ).aggregate(Max('price'))
+
+    await callback.message.edit_text(
+        '✏ *До какой цены вывести объекты?*\n'
+        + f'min. {min_of_all["price__min"]}₽ - '
+        + f'max. {max_of_all["price__max"]}₽',
+        parse_mode='Markdown'
+    )
     await HouseSearch.step2.set()
 
 
@@ -528,7 +554,20 @@ async def houses_next(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='Таунхаусы')
 async def townhouses_search(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text('✏ До какой цены вывести объекты?')
+    min_of_all = TownHouse.objects.filter(
+        visible=True
+    ).aggregate(Min('price'))
+
+    max_of_all = TownHouse.objects.filter(
+        visible=True
+    ).aggregate(Max('price'))
+
+    await callback.message.edit_text(
+        '✏ *До какой цены вывести объекты?*\n'
+        + f'min. {min_of_all["price__min"]}₽ - '
+        + f'max. {max_of_all["price__max"]}₽',
+        parse_mode='Markdown'
+    )
     await TownHouseSearch.step2.set()
 
 
@@ -635,7 +674,20 @@ async def townhouses_next(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='Участки')
 async def lands_search(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text('✏ До какой цены вывести объекты?')
+    min_of_all = Land.objects.filter(
+        visible=True
+    ).aggregate(Min('price'))
+
+    max_of_all = Land.objects.filter(
+        visible=True
+    ).aggregate(Max('price'))
+
+    await callback.message.edit_text(
+        '✏ *До какой цены вывести объекты?*\n'
+        + f'min. {min_of_all["price__min"]}₽ - '
+        + f'max. {max_of_all["price__max"]}₽',
+        parse_mode='Markdown'
+    )
     await LandSearch.step2.set()
 
 
@@ -808,12 +860,35 @@ async def apartment_plan_category_choice(
 async def apartment_plan_category_checking(
     callback: CallbackQuery,
     state: FSMContext
-):  
+):
     data = await state.get_data()
     room_quantity = data.get('room_count')
-    min = Apartment.objects.filter(room_quantity=room_quantity).aggregate(Min('price'))
-    answer = callback.data
     key = str(callback.from_user.id)
+
+    min_of_all = Apartment.objects.filter(
+        room_quantity=room_quantity,
+        visible=True
+    ).aggregate(Min('price'))
+
+    max_of_all = Apartment.objects.filter(
+        room_quantity=room_quantity,
+        visible=True
+    ).aggregate(Max('price'))
+
+    min_of_selected = Apartment.objects.filter(
+        room_quantity=room_quantity,
+        visible=True,
+        category__in=checked_category[key]
+    ).aggregate(Min('price'))
+
+    max_of_selected = Apartment.objects.filter(
+        room_quantity=room_quantity,
+        visible=True,
+        category__in=checked_category[key]        
+    ).aggregate(Max('price'))
+
+    answer = callback.data
+
     if answer == '✴ Подтвердить выбор':
         if not checked_category[key]:
             await callback.message.edit_text(
@@ -822,12 +897,24 @@ async def apartment_plan_category_checking(
             )
         else:
             await state.update_data(category=checked_category[key])
-            await callback.message.edit_text(f'✏ До какой цены вывести объекты? Мин. {min["price__min"]} ₽')
+            await callback.message.edit_text(
+                '✏ *До какой цены вывести объекты?*\n'
+                + f'min. {min_of_selected["price__min"]}₽ - '
+                + f'max. {max_of_selected["price__max"]}₽',
+                parse_mode='Markdown'
+            )
             await ApartmentSearch.step4.set()
+
     elif answer == '❇ Показать все':
         await state.update_data(category=apartment_category)
-        await callback.message.edit_text(f'✏ До какой цены вывести объекты? Мин. {min["price__min"]} ₽')
+        await callback.message.edit_text(
+            '✏ *До какой цены вывести объекты?*\n'
+            + f'min. {min_of_all["price__min"]}₽ - '
+            + f'max. {max_of_all["price__max"]}₽',
+            parse_mode='Markdown'
+        )
         await ApartmentSearch.step4.set()
+
     else:
         if '✅' in answer:
             checked_category[key].remove(answer.removeprefix('✅ '))
@@ -1701,7 +1788,7 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
                 + 'Для отмены внесения объекта напиши "Стоп"',
                 parse_mode='Markdown'
             )
-            await RoomCallbackStates.R12.set()
+            await RoomCallbackStates.R111.set()
         else:
             await bot.send_sticker(
                 chat_id=message.from_user.id,
@@ -1714,7 +1801,7 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
                 parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
-            await RoomCallbackStates.R111.set()
+            await RoomCallbackStates.R11.set()
 
 
 @dp.message_handler(state=RoomCallbackStates.R111)
