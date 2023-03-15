@@ -4538,13 +4538,19 @@ async def base_update(message: Message, state: FSMContext):
                 if queryset.exists():
                     rieltor = Rieltors.objects.get(user_id=message.from_user.id)
                     for item in queryset:
+                        microregions = ', '.join(data.get("microregions"))
+                        buyer_source = data.get('buyer_source')
                         await bot.send_message(
                             chat_id=item.user_id, text='🚀 У пользователя '
                             + f'@{message.from_user.username}, АН "{rieltor.agency_name}" '
-                            + 'есть возможный '
-                            + 'покупатель на твой объект\n'
-                            + f'{Output.search_category_output(data.get("buyer_search_category"))}, '
-                            + f'ул.{item.street_name}'
+                            + 'есть возможный покупатель на твой объект:\n'
+                            + f'*{Output.search_category_output(data.get("buyer_search_category"))},* '
+                            + f'*ул.{item.street_name}.*\n\n'
+                            + f'Район поиска этого клиента указан как: *{microregions}*.\n'
+                            + f'Источник оплаты у этого клиента указан как: *{buyer_source}*\n\n'
+                            + f'Ты можешь начать беседу с ним в чате, нажав на ссылку @{message.from_user.username}.\n'
+                            + f'*Желаю успехов в работе!*',
+                            parse_mode='Markdown'
                         )
 
             await state.finish()
