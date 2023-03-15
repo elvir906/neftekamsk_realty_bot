@@ -4540,7 +4540,7 @@ async def base_update(message: Message, state: FSMContext):
                     for item in queryset:
                         await bot.send_message(
                             chat_id=item.user_id, text='🚀 У пользователя '
-                            + f'@{message.from_user.username}, АН "{rieltor.agency_name}"'
+                            + f'@{message.from_user.username}, АН "{rieltor.agency_name}" '
                             + 'есть возможный '
                             + 'покупатель на твой объект\n'
                             + f'{Output.search_category_output(data.get("buyer_search_category"))}, '
@@ -4832,10 +4832,16 @@ async def worker_buyers(
             )
             for item in queryset:
                 await asyncio.sleep(0.5)
+
+                phone_str = list(item.phone_number)
+                phone_str[-1] = 'х'
+                phone_str[-2] = 'х'
+                phone_str_with_star = ''.join(phone_str)
+
                 await callback.message.answer(
                     f'❇ _Дата внесения: {item.pub_date.date().strftime("%d-%m-%Y")}_\n'
                     f'*Имя:* {item.buyer_name},\n'
-                    + f'*Тел:* {item.phone_number},\n\n'
+                    + f'*Тел:* {phone_str_with_star},\n\n'
                     + f'*Объект поиска:* {Output.search_category_output(item.category)},\n'
                     + f'*Область поиска:* {item.microregion},\n\n'
                     + f'*Денежный лимит:* {item.limit} ₽,\n'
@@ -4918,49 +4924,82 @@ async def worker_objects(
         )
         for item in apartment_queryset:
             await asyncio.sleep(0.5)
+
+            phone_str = list(item.owner_phone_number)
+            phone_str[-1] = 'х'
+            phone_str[-2] = 'х'
+            phone_str_with_star = ''.join(phone_str)
+
             await callback.message.answer(
                 f'✳ *{item.room_quantity} к.кв.* '
                 + f'{item.street_name} д.{item.number_of_house}, '
                 + f'{item.floor} этаж - *{int(item.price)} ₽*\n'
                 # тут код для доступа к телефонам и именам
-                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                # + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                + f'Продавец: {item.owner_name}, т.{phone_str_with_star}',
                 disable_notification=True,
                 parse_mode='Markdown'
             )
 
         for item in room_queryset:
             await asyncio.sleep(0.5)
+
+            phone_str = list(item.owner_phone_number)
+            phone_str[-1] = 'х'
+            phone_str[-2] = 'х'
+            phone_str_with_star = ''.join(phone_str)
+
+            print(phone_str_with_star)
+
             await callback.message.answer(
                 f'✳ *Комната* {item.street_name} '
                 + f'д.{item.number_of_house}, {item.floor} этаж - *{int(item.price)} ₽*\n'
-                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                + f'Продавец: {item.owner_name}, т.{phone_str_with_star}',
                 disable_notification=True,
                 parse_mode='Markdown'
             )
 
         for item in house_queryset:
             await asyncio.sleep(0.5)
+
+            phone_str = list(item.owner_phone_number)
+            phone_str[-1] = 'х'
+            phone_str[-2] = 'х'
+            phone_str_with_star = ''.join(phone_str)
+
             await callback.message.answer(
                 f'✳ *Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                + f'Продавец: {item.owner_name}, т.{phone_str_with_star}',
                 disable_notification=True,
                 parse_mode='Markdown'
             )
 
         for item in townhouse_queryset:
             await asyncio.sleep(0.5)
+
+            phone_str = list(item.owner_phone_number)
+            phone_str[-1] = 'х'
+            phone_str[-2] = 'х'
+            phone_str_with_star = ''.join(phone_str)
+
             await callback.message.answer(
                 f'✳ *Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                + f'Продавец: {item.owner_name}, т.{phone_str_with_star}',
                 disable_notification=True,
                 parse_mode='Markdown'
             )
 
         for item in land_queryset:
             await asyncio.sleep(0.5)
+
+            phone_str = list(item.owner_phone_number)
+            phone_str[-1] = 'х'
+            phone_str[-2] = 'х'
+            phone_str_with_star = ''.join(phone_str)
+
             await callback.message.answer(
                 f'✳ *Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
-                + f'Продавец: {item.owner_name}, т.{item.owner_phone_number}',
+                + f'Продавец: {item.owner_name}, т.{phone_str_with_star}',
                 disable_notification=True,
                 parse_mode='Markdown'
             )
