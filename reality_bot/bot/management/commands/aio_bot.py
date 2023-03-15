@@ -840,13 +840,15 @@ async def apartment_plan_category_choice(
     state: FSMContext
 ):
     await state.update_data(room_count=callback.data.removesuffix('-комнатные'))
+    data = await state.get_data()
+    room_quantity = data.get('room_count')
     global checked_category
     key = str(callback.from_user.id)
     checked_category.setdefault(key, [])
 
     await callback.message.edit_text(
         '✏ Выберите категорию по планировке',
-        reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[])
+        reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[], room_count=room_quantity)
     )
     checked_category[key] = []
 
@@ -893,7 +895,7 @@ async def apartment_plan_category_checking(
         if not checked_category[key]:
             await callback.message.edit_text(
                 '❗ Необходимо выбрать категорию',
-                reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[])
+                reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[], room_count=room_quantity)
             )
         else:
             await state.update_data(category=checked_category[key])
@@ -923,7 +925,8 @@ async def apartment_plan_category_checking(
         await callback.message.edit_text(
             '✏ Выберите категорию по планировке',
             reply_markup=keyboards.apartment_plan_category_choice(
-                checked_buttons=checked_category[key]
+                checked_buttons=checked_category[key],
+                room_count=room_quantity
             )
         )
         await ApartmentSearch.step3.set()

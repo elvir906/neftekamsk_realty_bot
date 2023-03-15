@@ -442,13 +442,13 @@ class keyboards():
         )
         return keyboard
 
-    def apartment_plan_category_choice(checked_buttons: list):
+    def apartment_plan_category_choice(checked_buttons: list, room_count):
 
-        mjk_quantity = Apartment.objects.filter(category='МЖК', visible=True).count()
-        stpl_quantity = Apartment.objects.filter(category='Старой планировки', visible=True).count()
-        ulpl_quantity = Apartment.objects.filter(category='Улучшенной планировки', visible=True).count()
-        new_house_quantity = Apartment.objects.filter(category='Новые дома', visible=True).count()
-        ind_otopl_quantity = Apartment.objects.filter(category='Новые дома с инд.отоплением', visible=True).count()
+        mjk_quantity = Apartment.objects.filter(category='МЖК', visible=True, room_quantity=room_count).count()
+        stpl_quantity = Apartment.objects.filter(category='Старой планировки', visible=True, room_quantity=room_count).count()
+        ulpl_quantity = Apartment.objects.filter(category='Улучшенной планировки', visible=True, room_quantity=room_count).count()
+        new_house_quantity = Apartment.objects.filter(category='Новые дома', visible=True, room_quantity=room_count).count()
+        ind_otopl_quantity = Apartment.objects.filter(category='Новые дома с инд.отоплением', visible=True, room_quantity=room_count).count()
 
         category_count = [
             mjk_quantity,
