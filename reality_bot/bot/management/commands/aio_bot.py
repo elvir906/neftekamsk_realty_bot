@@ -4631,12 +4631,12 @@ async def my_buyers(message: Message):
             await asyncio.sleep(0.5)
             await message.answer(
                 f'❇ _Дата внесения: {item.pub_date.date().strftime("%d-%m-%Y")}_\n'
-                f'*Имя:* {item.buyer_name},\n'
-                + f'*Тел:* {item.phone_number},\n\n'
-                + f'*Объект поиска:* {Output.search_category_output(item.category)},\n'
-                + f'*Область поиска:* {item.microregion},\n\n'
-                + f'*Денежный лимит:* {item.limit} ₽,\n'
-                + f'*Денежный ресурс:* {item.source},\n\n'
+                f'*Имя:* {item.buyer_name}\n'
+                + f'*Тел:* {item.phone_number}\n\n'
+                + f'*Объект поиска:* {Output.search_category_output(item.category)}\n'
+                + f'*Область поиска:* {item.microregion}\n\n'
+                + f'*Денежный лимит:* {item.limit} ₽\n'
+                + f'*Источник оплаты:* {item.source}\n\n'
                 + f'*Комментарий:* {item.comment}',
                 disable_notification=True,
                 parse_mode='Markdown'
