@@ -5246,5 +5246,9 @@ async def send_updates_step1(message: Message, state: FSMContext):
         rieltors = Rieltors.objects.all().values_list('user_id')
         for item in rieltors:
             await asyncio.sleep(0.5)
-            await bot.send_message(text=message.text, chat_id=item[0])
+            await bot.send_message(
+                text='👋 *Привет!*\n\n' + message.text,
+                chat_id=item[0],
+                parse_mode='Markdown'
+            )
         await state.finish()
