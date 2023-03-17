@@ -12,7 +12,7 @@ from code.states import (ApartmentSearch, ArchiveObjects, Buyer,
                          ObjForBuyer, PriceEditCallbackStates, Registration,
                          RoomCallbackStates, RoomSearch,
                          TownHouseCallbackStates, TownHouseSearch, Visible_off,
-                         Visible_on, WorkersBuyers, WorkersObjects)
+                         Visible_on, WorkersBuyers, WorkersObjects, SendMessages)
 from code.utils import (Output, apartment_category, checked_apartment_category,
                         keyboards, object_city_microregions_for_checking,
                         object_country_microregions_for_checking,
@@ -5223,3 +5223,27 @@ async def speech(message: Message):
         await message.answer(
             item
         )
+
+# -----------------------------------------------------------------------------
+# --------------------Рассылка-------------------------------------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['updates'])
+async def send_updates(message: Message):
+    await message.answer('Что хочешь отправить? или пиши "Стоп"')
+    await SendMessages.step1.set()
+
+
+@dp.message_handler(state=SendMessages.step1)
+async def send_updates_step1(message: Message, state: FSMContext):
+    if message.text == 'Стоп' or message.text == 'стоп':
+        await message.answer(
+                'Действие отменено'
+            )
+        await state.finish()
+    else:
+        rieltors = Rieltors.objects.all().values_list('user_id')
+        for item in rieltors:
+            await bot.send_message(text=message.text, chat_id=item[0])
+        await state.finish()

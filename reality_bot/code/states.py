@@ -22,10 +22,9 @@ class CallbackOnStart(StatesGroup):
     Q15 = State()
 
 
-# class Presearching(StatesGroup):
-#     step1 = State()
-#     step2 = State()
-#     step3 = State()
+class SendMessages(StatesGroup):
+    step1 = State()
+    step2 = State()
 
 
 class ApartmentSearch(StatesGroup):
