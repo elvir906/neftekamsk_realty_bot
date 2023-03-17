@@ -4840,8 +4840,11 @@ async def worker_buyers(
                 await asyncio.sleep(0.5)
 
                 phone_str = list(item.phone_number)
-                phone_str[-1] = 'х'
-                phone_str[-2] = 'х'
+                phone_str[2] = 'х'
+                phone_str[3] = 'х'
+                phone_str[4] = 'х'
+                phone_str[5] = 'х'
+                phone_str[6] = 'х'
                 phone_str_with_star = ''.join(phone_str)
 
                 await callback.message.answer(
@@ -4932,8 +4935,11 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[-1] = 'х'
-            phone_str[-2] = 'х'
+            phone_str[2] = 'х'
+            phone_str[3] = 'х'
+            phone_str[4] = 'х'
+            phone_str[5] = 'х'
+            phone_str[6] = 'х'
             phone_str_with_star = ''.join(phone_str)
 
             await callback.message.answer(
@@ -4951,8 +4957,11 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[-1] = 'х'
-            phone_str[-2] = 'х'
+            phone_str[2] = 'х'
+            phone_str[3] = 'х'
+            phone_str[4] = 'х'
+            phone_str[5] = 'х'
+            phone_str[6] = 'х'
             phone_str_with_star = ''.join(phone_str)
 
             print(phone_str_with_star)
@@ -4969,8 +4978,11 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[-1] = 'х'
-            phone_str[-2] = 'х'
+            phone_str[2] = 'х'
+            phone_str[3] = 'х'
+            phone_str[4] = 'х'
+            phone_str[5] = 'х'
+            phone_str[6] = 'х'
             phone_str_with_star = ''.join(phone_str)
 
             await callback.message.answer(
@@ -4984,8 +4996,11 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[-1] = 'х'
-            phone_str[-2] = 'х'
+            phone_str[2] = 'х'
+            phone_str[3] = 'х'
+            phone_str[4] = 'х'
+            phone_str[5] = 'х'
+            phone_str[6] = 'х'
             phone_str_with_star = ''.join(phone_str)
 
             await callback.message.answer(
@@ -4999,8 +5014,11 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[-1] = 'х'
-            phone_str[-2] = 'х'
+            phone_str[2] = 'х'
+            phone_str[3] = 'х'
+            phone_str[4] = 'х'
+            phone_str[5] = 'х'
+            phone_str[6] = 'х'
             phone_str_with_star = ''.join(phone_str)
 
             await callback.message.answer(
