@@ -158,7 +158,8 @@ async def registration_finish(message: Message, state: FSMContext):
                     text='В систему добавился пользователь:\n'
                     + f'имя в системе: *{rieltor.name}\n'
                     + f'АН "{rieltor.agency_name}"*\n'
-                    + f'имя в телеграм: *{message.from_user.first_name}*'
+                    + f'имя в телеграм: *{message.from_user.first_name}*',
+                    parse_mode='Markdown'
                 )
 
                 ceo = Ceo.objects.filter(agency_name=rieltor.agency_name)
