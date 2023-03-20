@@ -42,6 +42,7 @@ POSTGRES_PASSWORD = config('POSTGRES_PASSWORD')
 DB_HOST = config('DB_HOST')
 DB_PORT = config('DB_PORT')
 TELEGRAM_CHANNEL_ID = config('TELEGRAM_CHANNEL_ID')
+CHAT_ID = config('CHAT_ID')
 
 bot = Bot(token=config('TELEGRAM_TOKEN'))
 
@@ -151,6 +152,11 @@ async def registration_finish(message: Message, state: FSMContext):
                 await message.answer(
                     f'OK, {rieltor.name}, всё готово! Можешь начинать '
                     + 'работу с нажатия на кнопку "Меню"'
+                )
+
+                await bot.copy_message(
+                    chat_id=
+                    text=f'В систему добавился пользователь {rieltor.name} и {rieltor.agency_name}'
                 )
 
                 ceo = Ceo.objects.filter(agency_name=rieltor.agency_name)
