@@ -157,7 +157,7 @@ async def registration_finish(message: Message, state: FSMContext):
                     chat_id=CHAT_ID,
                     text='🌱 В систему добавился пользователь:\n'
                     + f'фирма: *АН "{rieltor.agency_name}"*\n'
-                    + f'имя в системе: *{rieltor.name}\n'                    
+                    + f'имя в системе: *{rieltor.name}\n'
                     + f'имя в телеграм: *{message.from_user.first_name}*',
                     parse_mode='Markdown'
                 )
