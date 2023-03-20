@@ -153,10 +153,12 @@ async def registration_finish(message: Message, state: FSMContext):
                     f'OK, {rieltor.name}, всё готово! Можешь начинать '
                     + 'работу с нажатия на кнопку "Меню"'
                 )
-
-                await bot.copy_message(
-                    chat_id=
-                    text=f'В систему добавился пользователь {rieltor.name} и {rieltor.agency_name}'
+                await bot.send_message(
+                    chat_id=CHAT_ID,
+                    text='В систему добавился пользователь:\n'
+                    + f'имя в системе: *{rieltor.name}\n'
+                    + f'АН "{rieltor.agency_name}"*\n'
+                    + f'имя в телеграм: *{message.from_user.first_name}*'
                 )
 
                 ceo = Ceo.objects.filter(agency_name=rieltor.agency_name)
