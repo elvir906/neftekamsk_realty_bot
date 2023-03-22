@@ -157,7 +157,7 @@ async def registration_finish(message: Message, state: FSMContext):
                     chat_id=CHAT_ID,
                     text='🌱 В систему добавился пользователь:\n'
                     + f'фирма: *АН "{rieltor.agency_name}"*\n'
-                    + f'имя в системе: *{rieltor.name}\n'
+                    + f'имя в системе: *{rieltor.name}*\n'
                     + f'имя в телеграм: *{message.from_user.first_name}*',
                     parse_mode='Markdown'
                 )
@@ -5252,8 +5252,8 @@ async def send_updates_step1(message: Message, state: FSMContext):
             )
         await state.finish()
     else:
-        rieltors = Rieltors.objects.all().values_list('user_id')
-        for item in rieltors:
+        rieltors_ids = Rieltors.objects.all().values_list('user_id')
+        for item in rieltors_ids:
             await asyncio.sleep(0.5)
             await bot.send_message(
                 text='👋 *Привет!*\n\n' + message.text,
@@ -5261,3 +5261,73 @@ async def send_updates_step1(message: Message, state: FSMContext):
                 parse_mode='Markdown'
             )
         await state.finish()
+
+# -----------------------------------------------------------------------------
+# --------------------НЕТ ОБЪЕКТОВ---------------------------------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['noobjects'])
+async def send_message_noobjects(message: Message):
+    rieltors_ids = Rieltors.objects.all().values_list('user_id')
+    objects_count = 0
+
+    mc_count = Room.objects.filter(visible=True)
+    house_count = House.objects.filter(visible=True)
+    townhouse_count = TownHouse.objects.filter(visible=True)
+    land_count = Land.objects.filter(visible=True)
+    apartment_count = Apartment.objects.filter(visible=True)
+
+    for item in rieltors_ids:
+        objects_count = mc_count.filter(user_id=item[0]).count()
+        + house_count.filter(user_id=item[0]).count()
+        + townhouse_count.filter(user_id=item[0]).count()
+        + land_count.filter(user_id=item[0]).count()
+        + apartment_count.filter(user_id=item[0]).count()
+
+        if objects_count == 0:
+            await bot.send_message(
+                text='👋 *Привет! Это База-бот*\n\n'
+                     + 'У тебя совсем нет объектов в моей базе 😯.\n\n'
+                     + ' А значит другие риелторы не видят здесь твоих объектов,'
+                     + ' а ещё я не могу из-за этого сообщать тебе о новых покупателях'
+                     + ' у других риелторов,'
+                     + ' которым подошёл бы твой объект или объекты.\n\n'
+                     + 'Увы, так ты теряешь возможности сработаться и заработать.'
+                     + ' Смелее добавляй объекты сюда!\n\n'
+                     + 'Если ты не знаешь, как заводить объекты в базу и'
+                     + ' тебе нужна помощь от'
+                     + ' владельца бота и разработчика, то пиши @davletelvir',
+                chat_id=item[0],
+                parse_mode='Markdown'
+            )
+
+# -----------------------------------------------------------------------------
+# --------------------НЕТ ПОКУПАТЕЛЕЙ------------------------------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['nobuyers'])
+async def send_message_nobuyers(message: Message):
+    rieltors_ids = Rieltors.objects.all().values_list('user_id')
+    buyers_count = 0
+
+    buyers = BuyerDB.objects.all()
+
+    for item in rieltors_ids:
+        buyers_count = buyers.filter(user_id=item[0]).count()
+
+        if buyers_count == 0:
+            await bot.send_message(
+                text='👋 *Привет! Это База-бот*\n\n'
+                     + 'У тебя совсем нет покупателей в моей базе 😯.\n\n'
+                     + ' А значит я не смогу сообщить другим риелторам, что'
+                     + ' у тебя появился подходящий покупатель на их объекты.\n\n'
+                     + 'Увы, так ты теряешь возможности сработаться и заработать.'
+                     + ' Смелее добавляй покупателей сюда!\n\n'
+                     + 'Если ты не знаешь, как работать с ботом и базой и'
+                     + ' тебе нужна помощь от'
+                     + ' владельца бота и разработчика, то пиши @davletelvir',
+                chat_id=item[0],
+                parse_mode='Markdown'
+            )
