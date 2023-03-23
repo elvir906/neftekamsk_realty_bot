@@ -5249,7 +5249,7 @@ async def my_coworkers(message: Message):
 
 @dp.message_handler(commands=['aqidel'])
 async def history_is_lie(message: Message):
-    await message.answer(message_texts.aqidel())
+    await message.answer(text=message_texts.aqidel(), parse_mode='Markdown')
 
 
 @dp.message_handler(commands=['speech'])
@@ -5376,12 +5376,12 @@ async def send_message_nobuyers(message: Message):
 # -----------------------------------------------------------------------------
 
 
-@dp.message_handler(commands=['botcommands'])
+@dp.message_handler(commands=['hidden'])
 async def additional_commands(message: Message):
-    if not message.from_user.id == int(CHAT_ID):
-        await message.answer('У тебя нет прав на просмотр скрытых комманд')
-    else:
-        await message.answer(text='/aqidel\n\n/updates\n\n/noobjects\n\n/nobuyers')
+    # if not message.from_user.id == int(CHAT_ID):
+    #     await message.answer('У тебя нет прав на просмотр скрытых комманд')
+    # else:
+    await message.answer(text='/speech\n\n/aqidel\n\n/updates\n\n/noobjects\n\n/nobuyers')
 
 # -----------------------------------------------------------------------------
 # --------------------Команды по редактированию объектов-----------------------
