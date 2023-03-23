@@ -27,7 +27,7 @@ from aiogram.types import CallbackQuery, ContentType, MediaGroup, Message
 from bot.models import Apartment, Archive
 from bot.models import Buyer as BuyerDB
 from bot.models import (Ceo, CodeWord, House, Individuals, Land, Rieltors,
-                        Room, Subscriptors, TownHouse)
+                        Room, Subscriptors, TownHouse, Counter)
 from decouple import config
 from django.core.management.base import BaseCommand
 from django.db.models import Q, Min, Max
@@ -217,12 +217,15 @@ async def get_statistics(message: Message):
     buyers_count = BuyerDB.objects.values('phone_number').distinct().count()
     buyers_count_all = BuyerDB.objects.all().count()
 
+    command_counter = Counter.objects.values_list('counter')[0][0]
+
     data = {
         'buyers_count': buyers_count,
         'buyers_count_all': buyers_count_all,
         'agency_count': agency_count,
         'rieltors_count': Rieltors.objects.all().count(),
-        'objects_count': objects_count
+        'objects_count': objects_count,
+        'command_counter': command_counter
     }
     await message.answer(
         text=message_texts.statistics_text(data=data),
@@ -1316,7 +1319,7 @@ async def entering_description(message: Message, state: FSMContext):
         )
         await state.finish()
     else:
-        if len(message.text) <= 200:
+        if len(message.text) <= 555:
             await state.update_data(description=answer)
             await message.answer(
                 '✏ На недвижимости есть обременение?',
@@ -1725,7 +1728,7 @@ async def entering_room_description(message: Message, state: FSMContext):
         await state.finish()
     else:
         answer = message.text
-        if len(message.text) <= 200:
+        if len(message.text) <= 555:
             await state.update_data(room_description=answer)
             await message.answer(
                 '✏ На недвижимости есть обременение?',
@@ -2351,7 +2354,7 @@ async def entering_house_encumbrance(
         await state.finish()
     else:
         answer = message.text
-        if len(message.text) <= 200:
+        if len(message.text) <= 555:
             await state.update_data(house_description=answer)
             await message.answer(
                 '✏ На доме есть обременение?',
@@ -2988,7 +2991,7 @@ async def entering_townhouse_encumbrance(
         await state.finish()
     else:
         answer = message.text
-        if len(message.text) <= 200:
+        if len(message.text) <= 555:
             await state.update_data(townhouse_description=answer)
             await message.answer(
                 '✏ На таунхаусе есть обременение?',
@@ -3564,7 +3567,7 @@ async def entering_land_encumbrance(
         await state.finish()
     else:
         answer = message.text
-        if len(message.text) <= 200:
+        if len(message.text) <= 555:
             await state.update_data(land_description=answer)
             await message.answer(
                 '✏ На объекте есть обременение?',
@@ -4126,7 +4129,7 @@ async def visible_on_step3(
         except Exception as e:
             await callback.message.answer(
                 '❗ Во время изменения видимости возникла ошибка, попробуй снова.'
-                + 'Если ошибка поторится, напишиет об этом @davletelvir'
+                + 'Если ошибка повторится, напишиет об этом @davletelvir'
             )
             logging.error(
                 f'Ошибка изменения видимости объекта объекта, {e}'
@@ -4664,7 +4667,7 @@ async def my_buyers(message: Message):
         for item in queryset:
             await asyncio.sleep(0.5)
             await message.answer(
-                f'❇ _Дата внесения: {item.pub_date.date().strftime("%d-%m-%Y")}_\n'
+                f'❇ _Дата внесения: {item.pub_date.date().strftime("%d.%m.%Y")}_\n'
                 f'*Имя:* {item.buyer_name}\n'
                 + f'*Тел:* {item.phone_number}\n\n'
                 + f'*Объект поиска:* {Output.search_category_output(item.category)}\n'
