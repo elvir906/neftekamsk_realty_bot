@@ -204,7 +204,25 @@ async def about(message: Message):
 
 @dp.message_handler(commands=['getstatistics'])
 async def get_statistics(message: Message):
-    await message.answer(message_texts.on.get('statistics'))
+    mc_count = Room.objects.filter(visible=True).count()
+    house_count = House.objects.filter(visible=True).count()
+    townhouse_count = TownHouse.objects.filter(visible=True).count()
+    land_count = Land.objects.filter(visible=True).count()
+    apartment_count = Apartment.objects.filter(visible=True).count()
+
+    objects_count = mc_count + house_count + townhouse_count + land_count + apartment_count
+
+    agency_count = Rieltors.objects.all().values_list('agency_name').count()
+
+    data = {
+        'agency_count': agency_count,
+        'rieltors_count': Rieltors.objects.all().count(),
+        'objects_count': objects_count
+    }
+    await message.answer(
+        text=message_texts.statistics_text(data=data),
+        parse_mode='Markdown'
+    )
 # -----------------------------------------------------------------------------
 # -----------------------ПОИСК ОБЪЕКТА-----------------------------------------
 # -----------------------------------------------------------------------------
@@ -2040,6 +2058,7 @@ async def entering_house_material(
     state=HouseCallbackStates.H5, text=[
         'Кирпич',
         'Заливной',
+        'Блок',
         'Блок, облицованный кирпичом',
         'Дерево',
         'Дерево, облицованное кирпичом',
@@ -2678,6 +2697,7 @@ async def entering_townhouse_material(
     state=TownHouseCallbackStates.T5, text=[
         'Кирпич',
         'Заливной',
+        'Блок',
         'Блок, облицованный кирпичом',
         'Дерево',
         'Дерево, облицованное кирпичом',
@@ -5281,17 +5301,21 @@ async def send_message_noobjects(message: Message):
         apartment_count = Apartment.objects.filter(visible=True)
 
         for item in rieltors_ids:
-            objects_count = mc_count.filter(user_id=item[0]).count()
-            + house_count.filter(user_id=item[0]).count()
-            + townhouse_count.filter(user_id=item[0]).count()
-            + land_count.filter(user_id=item[0]).count()
-            + apartment_count.filter(user_id=item[0]).count()
+            objects_count = (
+                mc_count.filter(user_id=item[0]).count()
+                + house_count.filter(user_id=item[0]).count()
+                + townhouse_count.filter(user_id=item[0]).count()
+                + land_count.filter(user_id=item[0]).count()
+                + apartment_count.filter(user_id=item[0]).count()
+            )
+
+            print(item[0], objects_count)
 
             if objects_count == 0:
                 await bot.send_message(
                     text='👋 *Привет! Это База-бот*\n\n'
                          + 'У тебя совсем нет объектов в моей базе 😯.\n\n'
-                         + ' А значит другие риелторы не видят здесь твоих объектов,'
+                         + 'А значит другие риелторы не видят здесь твоих объектов,'
                          + ' а ещё я не могу из-за этого сообщать тебе о новых покупателях'
                          + ' у других риелторов,'
                          + ' которым подошёл бы твой объект или объекты.\n\n'
@@ -5322,11 +5346,13 @@ async def send_message_nobuyers(message: Message):
         for item in rieltors_ids:
             buyers_count = buyers.filter(user_id=item[0]).count()
 
+            print(buyers_count)
+
             if buyers_count == 0:
                 await bot.send_message(
                     text='👋 *Привет! Это База-бот*\n\n'
                          + 'У тебя совсем нет покупателей в моей базе 😯.\n\n'
-                         + ' А значит я не смогу сообщить другим риелторам, что'
+                         + 'А значит я не смогу сообщить другим риелторам, что'
                          + ' у тебя появился подходящий покупатель на их объекты.\n\n'
                          + 'Увы, так ты теряешь возможности сработаться и заработать.'
                          + ' Смелее добавляй покупателей сюда!\n\n'
@@ -5338,7 +5364,7 @@ async def send_message_nobuyers(message: Message):
                 )
 
 # -----------------------------------------------------------------------------
-# --------------------НЕТ ПОКУПАТЕЛЕЙ------------------------------------------
+# --------------------СКРЫТЫЕ КОММАНДЫ-----------------------------------------
 # -----------------------------------------------------------------------------
 
 
@@ -5347,4 +5373,15 @@ async def additional_commands(message: Message):
     if not message.from_user.id == int(CHAT_ID):
         await message.answer('У тебя нет прав на просмотр скрытых комманд')
     else:
-        await message.answer(text='/aqidel\n/updates\n/noobjects\n/nobuyers')
+        await message.answer(text='/aqidel\n\n/updates\n\n/noobjects\n\n/nobuyers')
+
+# -----------------------------------------------------------------------------
+# --------------------Команды по редактированию объектов-----------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['editobjects'])
+async def eidt_objects(message: Message):
+    await message.answer(
+        text='Выберите объект:'
+    )

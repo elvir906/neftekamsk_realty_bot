@@ -1,3 +1,5 @@
+import datetime as dt
+
 from bot.models import Apartment, House, Land, Room, TownHouse
 
 from .utils import Output
@@ -581,6 +583,17 @@ class message_texts():
             '',
             '❗ Не забудь удалить покупателя по завершении сделки. Удалить покупателя можно через пункт меню'
         ]
+        return text
+
+    def statistics_text(data):
+        text = (f'*Статистика пользования ботом на {str(dt.datetime.now().strftime("%d.%m.%Y"))}:*\n'
+                + f'число агентств в системе: *{data.get("agency_count")}*\n'
+                + f'количество пользователей: *{data.get("rieltors_count")}*\n'
+                + f'количество объектов в системе: *{data.get("objects_count")}*'
+                # + f' {}'
+                # + f' {}'
+                # + f' {}'
+                )
         return text
 
     def aqidel():
