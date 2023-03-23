@@ -212,7 +212,7 @@ async def get_statistics(message: Message):
 
     objects_count = mc_count + house_count + townhouse_count + land_count + apartment_count
 
-    agency_count = Rieltors.objects.all().values_list('agency_name').count()
+    agency_count = Rieltors.objects.values('agency_name').distinct().count()
 
     data = {
         'agency_count': agency_count,
