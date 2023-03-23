@@ -214,7 +214,12 @@ async def get_statistics(message: Message):
 
     agency_count = Rieltors.objects.values('agency_name').distinct().count()
 
+    buyers_count = BuyerDB.objects.values('phone_number').distinct().count()
+    buyers_count_all = BuyerDB.objects.all().count()
+
     data = {
+        'buyers_count': buyers_count,
+        'buyers_count_all': buyers_count_all,
         'agency_count': agency_count,
         'rieltors_count': Rieltors.objects.all().count(),
         'objects_count': objects_count

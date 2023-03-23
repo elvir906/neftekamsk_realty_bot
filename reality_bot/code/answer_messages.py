@@ -587,11 +587,11 @@ class message_texts():
 
     def statistics_text(data):
         text = (f'*Статистика пользования ботом на {str(dt.datetime.now().strftime("%d.%m.%Y"))}:*\n'
-                + f'число агентств в системе: *{data.get("agency_count")}*\n'
-                + f'количество пользователей: *{data.get("rieltors_count")}*\n'
-                + f'количество объектов в системе: *{data.get("objects_count")}*'
-                # + f' {}'
-                # + f' {}'
+                + f'агентств: *{data.get("agency_count")}*\n'
+                + f'пользователей: *{data.get("rieltors_count")}*\n'
+                + f'объектов: *{data.get("objects_count")}*\n'
+                + f'всего записей о покупателях: *{data.get("buyers_count_all")}*\n'
+                + f'всего различных покупателей: *{data.get("buyers_count")}*'
                 # + f' {}'
                 )
         return text
