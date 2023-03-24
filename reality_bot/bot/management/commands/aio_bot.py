@@ -5391,5 +5391,5 @@ async def additional_commands(message: Message):
 @dp.message_handler(commands=['editobjects'])
 async def eidt_objects(message: Message):
     await message.answer(
-        text='Выберите объект:'
+        text='Выберите объект для редактирования:'
     )
