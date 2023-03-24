@@ -43,8 +43,8 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/neftekamsk_realty_bot_backend
             sudo docker-compose stop
             sudo docker-compose rm backend
-            rm ./reality_bot/.env
-            touch ./reality_bot/.env
+            rm .env
+            touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
