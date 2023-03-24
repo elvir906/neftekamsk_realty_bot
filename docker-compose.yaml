@@ -19,7 +19,7 @@ services:
     depends_on:
       - base
     env_file:
-      - reality_bot/.env
+      - .env
   nginx:
     image: nginx:1.21.3-alpine
 
