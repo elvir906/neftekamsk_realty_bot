@@ -43,17 +43,17 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/neftekamsk_realty_bot_backend
             sudo docker-compose stop
             sudo docker-compose rm backend
-            rm reality_bot/.env
-            touch reality_bot/.env
-            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> reality_bot/.env
-            echo DB_NAME=${{ secrets.DB_NAME }} >> reality_bot/.env
-            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> reality_bot/.env
-            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> reality_bot/.env
-            echo DB_HOST=${{ secrets.DB_HOST }} >> reality_bot/.env
-            echo DB_PORT=${{ secrets.DB_PORT }} >> reality_bot/.env
-            echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> reality_bot/.env
-            echo TELEGRAM_CHANNEL_ID=${{ secrets.TELEGRAM_CHANNEL_ID }} >> reality_bot/.env
-            echo CHAT_ID=${{ secrets.CHAT_ID }} >> reality_bot/.env
+            rm ./reality_bot/.env
+            touch ./reality_bot/.env
+            echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> ./reality_bot/.env
+            echo DB_NAME=${{ secrets.DB_NAME }} >> ./reality_bot/.env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> ./reality_bot/.env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> ./reality_bot/.env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> ./reality_bot/.env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> ./reality_bot/.env
+            echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> ./reality_bot/.env
+            echo TELEGRAM_CHANNEL_ID=${{ secrets.TELEGRAM_CHANNEL_ID }} >> ./reality_bot/.env
+            echo CHAT_ID=${{ secrets.CHAT_ID }} >> ./reality_bot/.env
             sudo docker-compose up -d
   telegram_message:
     name: Send telegram message
