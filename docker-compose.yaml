@@ -11,8 +11,9 @@ services:
     ports:
       - 5432:5432
   backend:
-    build:
-      image: davletelvir/neftekamsk_realty_bot_backend:latest
+    # build:
+    image: davletelvir/neftekamsk_realty_bot_backend:latest
+      
       # context: .
       # dockerfile: reality_bot/Dockerfile
     volumes:
