@@ -12,8 +12,9 @@ services:
       - 5432:5432
   backend:
     build:
-      context: .
-      dockerfile: reality_bot/Dockerfile
+      image: davletelvir/neftekamsk_realty_bot_backend:latest
+      # context: .
+      # dockerfile: reality_bot/Dockerfile
     volumes:
       - static_value:/app/static/
     depends_on:
