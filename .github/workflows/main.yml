@@ -1,4 +1,4 @@
-name: stripe-app workflow
+name: BOT workflow
 
 on:
   push:
