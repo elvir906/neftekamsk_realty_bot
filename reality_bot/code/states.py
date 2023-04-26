@@ -27,6 +27,19 @@ class SendMessages(StatesGroup):
     step2 = State()
 
 
+class SendPic(StatesGroup):
+    step1 = State()
+    step2 = State()
+
+
+class Autopost(StatesGroup):
+    step2 = State()
+    step3 = State()
+    step4 = State()
+    step5 = State()
+    step6 = State()
+
+
 class ApartmentSearch(StatesGroup):
     step1 = State()
     step2 = State()

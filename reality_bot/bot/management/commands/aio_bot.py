@@ -5,32 +5,33 @@ import os
 import re
 from code.answer_messages import message_texts
 from code.db_worker import DB_Worker
-from code.states import (ApartmentSearch, ArchiveObjects, Buyer,
+from code.states import (ApartmentSearch, ArchiveObjects, Autopost, Buyer,
                          CallbackOnStart, CeoRegistration, DeleteBuyer,
                          DeleteCallbackStates, HouseCallbackStates,
                          HouseSearch, LandCallbackStates, LandSearch,
                          ObjForBuyer, PriceEditCallbackStates, Registration,
-                         RoomCallbackStates, RoomSearch,
+                         RoomCallbackStates, RoomSearch, SendMessages, SendPic,
                          TownHouseCallbackStates, TownHouseSearch, Visible_off,
-                         Visible_on, WorkersBuyers, WorkersObjects, SendMessages)
+                         Visible_on, WorkersBuyers, WorkersObjects)
 from code.utils import (Output, apartment_category, checked_apartment_category,
                         keyboards, object_city_microregions_for_checking,
-                        object_country_microregions_for_checking,
-                        object_microregions)
+                        object_country_microregions_for_checking, vk_club_ids)
 from functools import reduce
 
 import django
+import vk_api
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, ContentType, MediaGroup, Message
 from bot.models import Apartment, Archive
 from bot.models import Buyer as BuyerDB
-from bot.models import (Ceo, CodeWord, House, Individuals, Land, Rieltors,
-                        Room, Subscriptors, TownHouse, Counter)
+from bot.models import (Ceo, CodeWord, Counter, House, Individuals, Land,
+                        Rieltors, Room, Subscriptors, TownHouse)
 from decouple import config
 from django.core.management.base import BaseCommand
-from django.db.models import Q, Min, Max
+from django.db.models import Max, Min, Q
+import vk_captchasolver as vc
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rest.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -4486,13 +4487,14 @@ async def add_microregion(callback: CallbackQuery, state: FSMContext):
 )
 async def city_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
     answer = callback.data
-    key = str(callback.from_user.id)
+    
     if answer == 'Отменить внесение покупателя':
         await callback.message.edit_text(
             'Действие по добавлению покупателя отменено'
         )
         await state.finish()
     else:
+        key = str(callback.from_user.id)
         if answer == 'Подтвердить выбор':
             await state.update_data(microregions=checked[key])
             await callback.message.edit_text(
@@ -5290,6 +5292,60 @@ async def send_updates_step1(message: Message, state: FSMContext):
         await state.finish()
 
 # -----------------------------------------------------------------------------
+# --------------------Рассылка изображения-------------------------------------
+# -----------------------------------------------------------------------------
+
+
+@dp.message_handler(commands=['updates_pic'])
+async def send_pic(message: Message):
+    if not message.from_user.id == int(CHAT_ID):
+        await message.answer('У тебя нет прав на рассылку сообщений')
+    else:
+        await message.answer('Что хочешь отправить?')
+        await SendPic.step1.set()
+
+
+pic = {}
+
+
+@dp.message_handler(state=SendPic.step1, content_types=ContentType.PHOTO)
+async def send_pic_step1(message: Message, state: FSMContext):
+    global pic
+    key = str(message.from_user.id)
+    pic.setdefault(key, [])
+
+    if len(pic[key]) == 0:
+        pic[key].append(message.photo[-1].file_id)
+        await message.answer(text='Введи подпись к изображению')
+        await SendPic.step2.set()
+    else:
+        pic[key].append(message.photo[-1].file_id)
+
+
+@dp.message_handler(state=SendPic.step2)
+async def send_pic_step2(message: Message, state: FSMContext):
+
+    rieltors_ids = Rieltors.objects.all().values_list('user_id')
+    user_id = message.from_user.id
+    pics = pic.get(str(user_id))
+    pic.pop(str(user_id))
+
+    for item in rieltors_ids:
+        album = MediaGroup()  # <---- Надо обнулять медиагрупп, а то накапливает изображения.
+        await asyncio.sleep(0.5)
+        for photo_id in pics:
+            if photo_id == pics[-1]:
+                album.attach_photo(
+                    photo_id,
+                    caption=message.text
+                )
+            else:
+                album.attach_photo(photo_id)
+        await bot.send_media_group(media=album, chat_id=item[0])
+
+    await state.finish()
+
+# -----------------------------------------------------------------------------
 # --------------------НЕТ ОБЪЕКТОВ---------------------------------------------
 # -----------------------------------------------------------------------------
 
@@ -5378,10 +5434,10 @@ async def send_message_nobuyers(message: Message):
 
 @dp.message_handler(commands=['hidden'])
 async def additional_commands(message: Message):
-    # if not message.from_user.id == int(CHAT_ID):
-    #     await message.answer('У тебя нет прав на просмотр скрытых комманд')
-    # else:
-    await message.answer(text='/speech\n\n/aqidel\n\n/updates\n\n/noobjects\n\n/nobuyers')
+    if not message.from_user.id == int(CHAT_ID):
+        await message.answer('У тебя нет прав на просмотр скрытых комманд')
+    else:
+        await message.answer(text='/speech\n\n/aqidel\n\n/updates\n\n/noobjects\n\n/nobuyers\n\n/updates_pic')
 
 # -----------------------------------------------------------------------------
 # --------------------Команды по редактированию объектов-----------------------
@@ -5393,3 +5449,280 @@ async def eidt_objects(message: Message):
     await message.answer(
         text='Выберите объект для редактирования:'
     )
+
+
+# -----------------------------------------------------------------------------
+# --------------------Автопосты в группы---------------------------------------
+# -----------------------------------------------------------------------------
+checked = {}
+
+
+@dp.message_handler(commands=['vk_autopost'])
+async def vk_autopost_step1(message: Message):
+    DB_Worker.command_counting()
+
+    if not Rieltors.objects.filter(user_id=message.from_user.id):
+        await message.answer(
+            'Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
+        )
+    else:
+        user_id = message.from_user.id
+        key = str(user_id)
+        checked.setdefault(key, [])
+
+        cond1 = Apartment.objects.filter(user_id=user_id).exists()
+        cond2 = Room.objects.filter(user_id=user_id).exists()
+        cond3 = House.objects.filter(user_id=user_id).exists()
+        cond4 = TownHouse.objects.filter(user_id=user_id).exists()
+        cond5 = Land.objects.filter(user_id=user_id).exists()
+
+        big_cond = cond1 or cond2 or cond3 or cond4 or cond5
+
+        if big_cond:
+            await message.answer(
+                text=message_texts.on.get('vk_autopost_instruction'),
+                reply_markup=keyboards.objects_list_autopost_keyboard(
+                    checked_buttons=[], searching_user_id=user_id
+                )[0],
+                parse_mode='Markdown'
+            )
+            checked[key] = []
+            await Autopost.step2.set()
+        else:
+            await message.answer(
+                'Для того, чтобы пользловаться функцией автопостинга, '
+                + 'необходимо, чтобы у тебя были объекты в базе, но у тебя их нет. '
+                + 'Загрузи объекты и пользуйся этой функцией.'
+            )
+
+
+@dp.callback_query_handler(state=Autopost.step2)
+async def vk_autopost_step2(callback: CallbackQuery, state: FSMContext):
+    answer = callback.data
+    if answer == 'Отмена':
+        await callback.message.edit_text(text='Действие отменено.')
+        await state.finish()
+    else:
+        key = str(callback.from_user.id)
+        db_items = keyboards.objects_list_autopost_keyboard(
+                checked_buttons=checked[key],
+                searching_user_id=callback.from_user.id
+        )[1]
+        if answer == '💫 Подтвердить выбор':
+            if len(db_items) == 0:
+                await callback.message.edit_text(
+                    text='Ты ничего не выбрал. Скомандуй еще раз '
+                    + '/vk_autopost, если желаешь создать посты в вк.'
+                )
+                await state.finish()
+            elif len(db_items) > 5:
+                await callback.message.edit_text(
+                    text='Ты выбрал более, чем 5 (пять) объектов для '
+                    + 'постинга! В бета-версии этой команды допустима отправка '
+                    + 'не более 5 (пяти) объектов.'
+                    )
+                await state.finish()
+            else:
+                await state.update_data(db_items=db_items)
+                await callback.message.edit_text(
+                    text='✏ Введите логин вк (номер телефона)\n\n'
+                    + 'Для отмены напиши "Стоп"'
+                )
+                await Autopost.step3.set()
+        else:
+            if '✅' in answer:
+                checked[key].remove(answer.removeprefix('✅ '))
+            else:
+                checked[key].append(answer)
+            await callback.message.edit_text(
+                text=message_texts.on.get('vk_autopost_instruction'),
+                reply_markup=keyboards.objects_list_autopost_keyboard(
+                    checked_buttons=checked[key],
+                    searching_user_id=callback.from_user.id
+                )[0],
+                parse_mode='Markdown'
+            )
+            await Autopost.step2.set()
+
+
+@dp.message_handler(state=Autopost.step3)
+async def vk_autopost_step3(message: Message, state: FSMContext):
+    if message.text == 'Стоп' or message.text == 'стоп':
+        await message.answer(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(vk_login=message.text)
+        await message.answer(
+            text='✏ Введите пароль от аккаунта вк\n\n'
+            + 'Для отмены напиши "Стоп"'
+        )
+        await Autopost.step4.set()
+
+
+@dp.message_handler(state=Autopost.step4)
+async def vk_autopost_step4(message: Message, state: FSMContext):
+    if message.text == 'Стоп' or message.text == 'стоп':
+        await message.answer(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        await state.update_data(vk_password=message.text)
+        await message.answer(
+            text='✏ Напиши один из резервных кодов\n\n'
+            + 'Для отмены напиши "Стоп"'
+        )
+        await Autopost.step5.set()
+
+
+@dp.message_handler(state=Autopost.step5)
+async def vk_autopost_step5(message: Message, state: FSMContext):
+    if message.text == 'Стоп' or message.text == 'стоп':
+        await message.answer(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        try:
+
+            vk_code = message.text
+
+            def auth_handler():
+                code = vk_code
+                remember_device = True
+                return code, remember_device
+
+            data = await state.get_data()
+            vk_login = data.get('vk_login')
+            vk_password = data.get('vk_password')
+
+            vk_session = vk_api.VkApi(
+                login=vk_login,
+                password=vk_password,
+                auth_handler=auth_handler,
+            )
+
+            try:
+                vk_session.auth()
+            except vk_api.AuthError as error_msg:
+                captcha = vc.solve(sid=74838345480543, s=1)
+                print(captcha)
+                print(error_msg)
+                return
+
+            vk = vk_session.get_api()
+
+            db_items = data.get('db_items')
+            category_in_post = {
+                'Apartment': 'квартира',
+                'Room': 'комната',
+                'House': 'частный дом',
+                'TownHouse': 'таунхаус',
+                'Land': 'земельный участок'
+            }
+
+            rieltor = Rieltors.objects.get(user_id=message.from_user.id)
+
+            if len(vk_club_ids) * len(db_items) == 1:
+                interval = 1
+            else:
+                interval = 45
+
+            await message.answer(
+                            text=f'Постинг займёт {(len(vk_club_ids) * len(db_items) * interval) / 60} минут. '
+                            + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или если появится ошибка. '
+                            + 'Если возникнет ошибка, то сообщи, пожалуйста, разработчику @davletelvir об этом.'
+                        )
+
+            for club in vk_club_ids:
+                for item in db_items:
+                    class_name = Output.str_to_class(item.split()[1])
+                    obj = class_name.objects.get(pk=item.split()[0])
+
+                    category = category_in_post.get(item.split()[1])
+
+                    footer = (
+                        'Описание:\n'
+                        + f'{obj.description}\n\n'
+                        + f'Звоните: {rieltor.phone_number}, {rieltor.name}, АН "{rieltor.agency_name}"\n\n'
+                        # + '✅ Больше объектов недвижимости С ЦЕНАМИ в телеграм-канале https://t.me/neftekamsk_reality.'
+                    )
+
+                    if category == 'квартира' or category == 'комната':
+                        post_text = (
+                            f'Продаётся {category}:\n'
+                            + f'адрес: г.Нефтекамск, {obj.street_name}, д. {obj.number_of_house};\n'
+                            + f'этаж: {obj.floor}/{obj.number_of_floors};\n'
+                            + f'площадь: {obj.area} кв.м.\n\n'
+                            + footer
+                        )
+                        await message.answer(
+                            text=f'Загружаю пост {category} {obj.street_name}, д. {obj.number_of_house}'
+                        )
+
+                    elif category == 'частный дом' or category == 'таунхаус':
+                        post_text = (
+                            f'Продаётся {category}:\n'
+                            + f'местположение: {obj.microregion};\n'
+                            + f'площадь помещения: {obj.area} кв.м.;\n'
+                            + f'материал стен: {obj.material};\n'
+                            + f'площадь участка: {obj.area_of_land} соток;\n'
+                            + f'назначение участка: {obj.purpose};\n'
+                            + f'степень газификации: {obj.gaz};\n'
+                            + f'водоснабжение: {obj.water};\n'
+                            + f'подъезд к участку: {obj.road};\n'
+                            + f'Наличие бани в доме/на участке: {obj.sauna};\n'
+                            + f'Наличие гаража в доме/на участке: {obj.garage};\n'
+                            + f'Наличие ограждения участка: {obj.fence};\n\n'
+                            + footer
+                        )
+                        await message.answer(
+                            text=f'Загружаю пост {category} {obj.microregion}, {obj.street_name}'
+                        )
+
+                    elif category == 'земельный участок':
+                        post_text = (
+                            f'Продаётся {category}:\n'
+                            + f'местположение: {obj.microregion};\n'
+                            + f'площадь участка: {obj.area_of_land} соток;\n'
+                            + f'назначение участка: {obj.purpose};\n'
+                            + f'степень газификации: {obj.gaz};\n'
+                            + f'водоснабжение: {obj.water};\n'
+                            + f'подъезд к участку: {obj.road};\n'
+                            + f'Наличие бани на участке: {obj.sauna};\n'
+                            + f'Наличие гаража на участке: {obj.garage};\n'
+                            + f'Наличие ограждения участка: {obj.fence};\n\n'
+                            + footer
+                        )
+                        await message.answer(
+                            text=f'Загружаю пост {category} {obj.microregion}, {obj.street_name}'
+                        )
+
+                    group_id = club
+
+                    upload = vk_api.VkUpload(vk_session)
+
+                    for image in obj.photo_id:
+                        file_info = await bot.get_file(image)
+                        downloaded_file = await bot.download_file(file_info.file_path)
+                        photo = upload.photo_wall(downloaded_file, group_id=group_id)[0]
+                        attachments = [f'photo{photo["owner_id"]}_{photo["id"]}']
+
+                    vk.wall.post(owner_id=-group_id, message=post_text, attachments=attachments)
+
+                    await asyncio.sleep(interval)
+
+                await message.answer(
+                    text='Автопостинг свершился!'
+                )
+                await state.finish()
+
+        except Exception as e:
+            await message.answer(
+                    text='К сожалению, автопостинг не получился из-за ошибки:\n'
+                    + f'{e}'
+            )
+            await state.finish()
+            logging.error(f'{e}')

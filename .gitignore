@@ -5,6 +5,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.github/workflows/
 
 __pycache__/
 11

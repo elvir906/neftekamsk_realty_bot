@@ -221,6 +221,17 @@ checked_apartment_category = [
     '❇ Показать все'
 ]
 
+# vk_club_ids = [196141794, ]
+vk_club_ids = [
+    196141794, 63457783, 63537905,
+    29428739, 86544563, 64607782,
+    65334690, 134547488, 89874972,
+    20247557, 96536503, 139607111,
+    123413608, 184458122, 119878560,
+    48391487, 103044161, 110598482,
+    132862886, 120068525,
+]
+
 
 class keyboards():
     def apartment_plan_category():
@@ -675,6 +686,104 @@ class keyboards():
         )
         return keyboard
 
+    def objects_list_autopost_keyboard(checked_buttons: list, searching_user_id: int):
+
+        rieltor = Rieltors.objects.get(user_id=searching_user_id)
+
+        # apartment_queryset = Apartment.objects.filter(
+        #     user_id=searching_user_id
+        # )
+        # room_queryset = Room.objects.filter(
+        #     user_id=searching_user_id
+        # )
+        # house_queryset = House.objects.filter(
+        #     user_id=searching_user_id
+        # )
+        # townhouse_queryset = TownHouse.objects.filter(
+        #     user_id=searching_user_id
+        # )
+        # land_queryset = Land.objects.filter(
+        #     user_id=searching_user_id
+        # )
+
+        apartment_queryset = Apartment.objects.filter(
+            agency=rieltor.agency_name, visible=True
+        )
+        room_queryset = Room.objects.filter(
+            agency_name=rieltor.agency_name, visible=True
+        )
+        house_queryset = House.objects.filter(
+            agency_name=rieltor.agency_name, visible=True
+        )
+        townhouse_queryset = TownHouse.objects.filter(
+            agency_name=rieltor.agency_name, visible=True
+        )
+        land_queryset = Land.objects.filter(
+            agency_name=rieltor.agency_name, visible=True
+        )
+
+        buttons = []
+        callback_data_string = []
+
+        for item in apartment_queryset:
+            buttons.append(f'{item.room_quantity}к.кв. '
+                           + f'{item.street_name} {item.number_of_house} '
+                           + f'- {int(item.price)} ₽, '
+                           + f'{item.author}')
+            callback_data_string.append([item.pk, 'Apartment'])
+
+        for item in room_queryset:
+            buttons.append(f'Комн. {item.street_name} '
+                           + f'{item.number_of_house} - {int(item.price)} ₽, '
+                           + f'{item.author}')
+            callback_data_string.append([item.pk, 'Room'])
+
+        for item in house_queryset:
+            buttons.append(f'Дом {item.microregion} '
+                           + f'{item.street_name} - {int(item.price)} ₽, '
+                           + f'{item.author}')
+            callback_data_string.append([item.pk, 'House'])
+
+        for item in townhouse_queryset:
+            buttons.append(f'Тх {item.microregion} '
+                           + f'{item.street_name} - {int(item.price)} ₽, '
+                           + f'{item.author}')
+            callback_data_string.append([item.pk, 'TownHouse'])
+
+        for item in land_queryset:
+            buttons.append(f'Уч. {item.microregion} '
+                           + f'{item.street_name} {item.number_of_land} - '
+                           + f'{int(item.price)} ₽, '
+                           + f'{item.author}')
+            callback_data_string.append([item.pk, 'Land'])
+
+        new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in buttons]
+
+        keyboard = InlineKeyboardMarkup()
+        db_item = []
+
+        for i in range(0, len(new_kbd_btns)):
+            keyboard.row(
+                InlineKeyboardButton(
+                    text=new_kbd_btns[i],
+                    callback_data=new_kbd_btns[i]
+                )
+            )
+            if '✅' in new_kbd_btns[i]:
+                db_item.append(f'{callback_data_string[i][0]} {callback_data_string[i][1]}')
+
+        accept_button = '💫 Подтвердить выбор'
+        keyboard.row(
+            InlineKeyboardButton(accept_button, callback_data=accept_button)
+        )
+
+        cancel_button = 'Отмена'
+        keyboard.row(
+            InlineKeyboardButton(cancel_button, callback_data=cancel_button)
+        )
+
+        return keyboard, db_item
+
     def objects_list_keyboard_for_change_visibleness(searching_user_id: int, visible: bool):
         keyboard = InlineKeyboardMarkup()
 
@@ -921,14 +1030,6 @@ class keyboards():
         keyboard.row(InlineKeyboardButton(text=buttons[1], callback_data=callback_data_string[1]))
         keyboard.row(InlineKeyboardButton(text=buttons[2], callback_data=callback_data_string[2]))
         return keyboard
-
-    # def fast_or_price_kb():
-    #     keyboard = InlineKeyboardMarkup()
-    #     butn_txt = ['Посмотреть все объекты', 'Посмотреть по цене']
-    #     callback_data_str = ['Fast', 'Price']
-    #     keyboard.row(InlineKeyboardButton(text=butn_txt[0], callback_data=callback_data_str[0]))
-    #     keyboard.row(InlineKeyboardButton(text=butn_txt[1], callback_data=callback_data_str[1]))
-    #     return keyboard
 
 
 class Output():

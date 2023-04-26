@@ -7,23 +7,23 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/db_data/
     env_file:
-      - .env
-      # - reality_bot/.env
+      # - .env
+      - reality_bot/.env
     ports:
       - 5432:5432
   backend:
     build:
-    image: davletelvir/neftekamsk_realty_bot_backend:latest
+    # image: davletelvir/neftekamsk_realty_bot_backend:latest
       
-      # context: .
-      # dockerfile: reality_bot/Dockerfile
+      context: .
+      dockerfile: reality_bot/Dockerfile
     volumes:
       - static_value:/app/static/
     depends_on:
       - base
     env_file:
-      - .env
-      # - reality_bot/.env
+      # - .env
+      - reality_bot/.env
   nginx:
     image: nginx:1.21.3-alpine
     ports:
