@@ -5652,7 +5652,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
                     if category == 'квартира' or category == 'комната':
                         post_text = (
-                            f'Продаётся {category}:\n'
+                            f'🏠 Продаётся {category}:\n'
                             + f'адрес: г.Нефтекамск, {obj.street_name}, д. {obj.number_of_house};\n'
                             + f'этаж: {obj.floor}/{obj.number_of_floors};\n'
                             + f'площадь: {obj.area} кв.м.\n\n'
