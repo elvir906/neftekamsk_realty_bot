@@ -5704,13 +5704,16 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
                     upload = vk_api.VkUpload(vk_session)
 
+                    key = str(message.from_user.id)
+                    images.setdefault(key, [])
+
                     for image in obj.photo_id:
                         file_info = await bot.get_file(image)
                         downloaded_file = await bot.download_file(file_info.file_path)
                         photo = upload.photo_wall(downloaded_file, group_id=group_id)[0]
-                        attachments = [f'photo{photo["owner_id"]}_{photo["id"]}']
+                        images[key].append(f'photo{photo["owner_id"]}_{photo["id"]}')
 
-                    vk.wall.post(owner_id=-group_id, message=post_text, attachments=attachments)
+                    vk.wall.post(owner_id=-group_id, message=post_text, attachments=images[key])
 
                     await asyncio.sleep(interval)
 
