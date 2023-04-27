@@ -5659,7 +5659,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                             + footer
                         )
                         await message.answer(
-                            text=f'Загружаю пост {category} {obj.street_name}, д. {obj.number_of_house}'
+                            text=f'Загружаю пост {category} {obj.street_name}, д. {obj.number_of_house} в группу {club}'
                         )
 
                     elif category == 'частный дом' or category == 'таунхаус':
@@ -5706,6 +5706,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
                     key = str(message.from_user.id)
                     images.setdefault(key, [])
+                    images[key] = []
 
                     for image in obj.photo_id:
                         file_info = await bot.get_file(image)
