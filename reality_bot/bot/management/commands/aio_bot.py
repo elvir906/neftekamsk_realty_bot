@@ -5631,8 +5631,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                 interval = 45
 
             await message.answer(
-                text=f'Постинг займёт примерно {(len(vk_club_ids) * len(db_items) * interval) / 60} минут. '
-                + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или если появится ошибка. '
+                text=f'Постинг займёт примерно {(len(vk_club_ids) * len(db_items) * interval) / 60} минут (-ы). '
+                + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или если вдруг появится ошибка. '
                 + 'Если возникнет ошибка, то сообщи, пожалуйста, разработчику @davletelvir об этом.'
             )
 
@@ -5660,7 +5660,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         )
                         await message.answer(
                             text=f'Загружаю пост {category} {obj.street_name}, '
-                            + f'д. {obj.number_of_house} в группу https://vk.com/club{club}'
+                            + f'д. {obj.number_of_house} в сообщество https://vk.com/club{club}'
                         )
 
                     elif category == 'частный дом' or category == 'таунхаус':
@@ -5681,7 +5681,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         )
                         await message.answer(
                             text=f'Загружаю пост {category} {obj.microregion}, '
-                            + f'{obj.street_name} в группу https://vk.com/club{club}'
+                            + f'{obj.street_name} в сообщество https://vk.com/club{club}'
                         )
 
                     elif category == 'земельный участок':
@@ -5700,7 +5700,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         )
                         await message.answer(
                             text=f'Загружаю пост {category} {obj.microregion}, '
-                            + f'{obj.street_name} в группу https://vk.com/club{club}'
+                            + f'{obj.street_name} в сообщество https://vk.com/club{club}'
                         )
 
                     group_id = club
