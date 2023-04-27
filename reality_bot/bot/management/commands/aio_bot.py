@@ -5643,10 +5643,15 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
                     category = category_in_post.get(item.split()[1])
 
+                    if rieltor.name == 'Эльвир dev':
+                        rieltor_name = '_'
+                    else:
+                        rieltor_name == rieltor.name
+
                     footer = (
                         'Описание:\n'
                         + f'{obj.description}\n\n'
-                        + f'Звоните: {rieltor.phone_number}, {rieltor.name}, АН "{rieltor.agency_name}"\n\n'
+                        + f'Звоните: {rieltor.phone_number}, {rieltor_name}, АН "{rieltor.agency_name}"\n\n'
                         # + '✅ Больше объектов недвижимости С ЦЕНАМИ в телеграм-канале https://t.me/neftekamsk_reality.'
                     )
 
