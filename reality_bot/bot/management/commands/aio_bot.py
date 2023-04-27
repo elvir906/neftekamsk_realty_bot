@@ -5631,7 +5631,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                 interval = 45
 
             await message.answer(
-                text=f'Постинг займёт {(len(vk_club_ids) * len(db_items) * interval) / 60} минут. '
+                text=f'Постинг займёт примерно {(len(vk_club_ids) * len(db_items) * interval) / 60} минут. '
                 + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или если появится ошибка. '
                 + 'Если возникнет ошибка, то сообщи, пожалуйста, разработчику @davletelvir об этом.'
             )
@@ -5659,7 +5659,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                             + footer
                         )
                         await message.answer(
-                            text=f'Загружаю пост {category} {obj.street_name}, д. {obj.number_of_house} в группу {club}'
+                            text=f'Загружаю пост {category} {obj.street_name}, '
+                            + f'д. {obj.number_of_house} в группу https://vk.com/club{club}'
                         )
 
                     elif category == 'частный дом' or category == 'таунхаус':
@@ -5679,7 +5680,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                             + footer
                         )
                         await message.answer(
-                            text=f'Загружаю пост {category} {obj.microregion}, {obj.street_name}'
+                            text=f'Загружаю пост {category} {obj.microregion}, '
+                            + f'{obj.street_name} в группу https://vk.com/club{club}'
                         )
 
                     elif category == 'земельный участок':
@@ -5697,7 +5699,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                             + footer
                         )
                         await message.answer(
-                            text=f'Загружаю пост {category} {obj.microregion}, {obj.street_name}'
+                            text=f'Загружаю пост {category} {obj.microregion}, '
+                            + f'{obj.street_name} в группу https://vk.com/club{club}'
                         )
 
                     group_id = club
@@ -5716,7 +5719,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
                     vk.wall.post(owner_id=-group_id, message=post_text, attachments=images[key])
 
-                    await asyncio.sleep(interval)
+                    if not (club == vk_club_ids[-1]) and (item == db_items[-1]):
+                        await asyncio.sleep(interval)
 
             await message.answer(text='Автопостинг свершился!')
             await state.finish()
