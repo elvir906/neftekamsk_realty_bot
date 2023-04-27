@@ -221,16 +221,16 @@ checked_apartment_category = [
     '❇ Показать все'
 ]
 
-# vk_club_ids = [196141794, ]
-vk_club_ids = [
-    196141794, 63457783, 63537905,
-    29428739, 86544563, 64607782,
-    65334690, 134547488, 89874972,
-    20247557, 96536503, 139607111,
-    123413608, 184458122, 119878560,
-    48391487, 103044161, 110598482,
-    132862886, 120068525,
-]
+vk_club_ids = [196141794, 124100407]
+# vk_club_ids = [
+#     196141794, 63457783, 63537905,
+#     29428739, 86544563, 64607782,
+#     65334690, 134547488, 89874972,
+#     20247557, 96536503, 139607111,
+#     123413608, 184458122, 119878560,
+#     48391487, 103044161, 110598482,
+#     132862886, 120068525,
+# ]
 
 
 class keyboards():
@@ -727,34 +727,39 @@ class keyboards():
 
         for item in apartment_queryset:
             buttons.append(f'{item.room_quantity}к.кв. '
-                           + f'{item.street_name} {item.number_of_house} '
+                           + f'{item.street_name}'[:3] + '.,'
+                           + f' {item.number_of_house} '
                            + f'- {int(item.price)} ₽, '
-                           + f'{item.author}')
+                           + f'{item.author}'[:4])
             callback_data_string.append([item.pk, 'Apartment'])
 
         for item in room_queryset:
-            buttons.append(f'Комн. {item.street_name} '
-                           + f'{item.number_of_house} - {int(item.price)} ₽, '
-                           + f'{item.author}')
+            buttons.append('Комн. '
+                           + f'{item.street_name}'[:3] + '.,'
+                           + f' {item.number_of_house} - {int(item.price)} ₽, '
+                           + f'{item.author}'[:4])
             callback_data_string.append([item.pk, 'Room'])
 
         for item in house_queryset:
-            buttons.append(f'Дом {item.microregion} '
-                           + f'{item.street_name} - {int(item.price)} ₽, '
-                           + f'{item.author}')
+            buttons.append('Дом ' + f'{item.microregion}'[:4] + '.,'
+                           + f' {item.street_name}'[:4] + '.,'
+                           + f' - {int(item.price)} ₽, '
+                           + f'{item.author}'[:4])
             callback_data_string.append([item.pk, 'House'])
 
         for item in townhouse_queryset:
-            buttons.append(f'Тх {item.microregion} '
-                           + f'{item.street_name} - {int(item.price)} ₽, '
-                           + f'{item.author}')
+            buttons.append('Тх. ' + f'{item.microregion}'[:4] + '.,'
+                           + f' {item.street_name}'[:4] + '.,'
+                           + f' - {int(item.price)} ₽, '
+                           + f'{item.author}'[:4])
             callback_data_string.append([item.pk, 'TownHouse'])
 
         for item in land_queryset:
-            buttons.append(f'Уч. {item.microregion} '
-                           + f'{item.street_name} {item.number_of_land} - '
+            buttons.append('Уч. ' + f'{item.microregion}'[:4] + '.,'
+                           + f' {item.street_name}'[:4] + '.,'
+                           + f' {item.number_of_land} - '
                            + f'{int(item.price)} ₽, '
-                           + f'{item.author}')
+                           + f'{item.author}'[:4])
             callback_data_string.append([item.pk, 'Land'])
 
         new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in buttons]

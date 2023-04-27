@@ -1,5 +1,7 @@
 version: '3.8'
 
+# закомментированние - это для размещения на удаленном сервере
+
 services:
   base:
     container_name: pgsql_container

@@ -5540,7 +5540,7 @@ async def vk_autopost_step2(callback: CallbackQuery, state: FSMContext):
                     checked_buttons=checked[key],
                     searching_user_id=callback.from_user.id
                 )[0],
-                parse_mode='Markdown'
+                parse_mode='Markdown2'
             )
             await Autopost.step2.set()
 
