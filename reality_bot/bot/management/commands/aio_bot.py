@@ -5631,10 +5631,10 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                 interval = 45
 
             await message.answer(
-                            text=f'Постинг займёт {(len(vk_club_ids) * len(db_items) * interval) / 60} минут. '
-                            + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или если появится ошибка. '
-                            + 'Если возникнет ошибка, то сообщи, пожалуйста, разработчику @davletelvir об этом.'
-                        )
+                text=f'Постинг займёт {(len(vk_club_ids) * len(db_items) * interval) / 60} минут. '
+                + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или если появится ошибка. '
+                + 'Если возникнет ошибка, то сообщи, пожалуйста, разработчику @davletelvir об этом.'
+            )
 
             for club in vk_club_ids:
                 for item in db_items:
@@ -5714,15 +5714,13 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
                     await asyncio.sleep(interval)
 
-                await message.answer(
-                    text='Автопостинг свершился!'
-                )
-                await state.finish()
+            await message.answer(text='Автопостинг свершился!')
+            await state.finish()
 
         except Exception as e:
             await message.answer(
-                    text='К сожалению, автопостинг не получился из-за ошибки:\n'
-                    + f'{e}'
+                text='К сожалению, автопостинг не получился из-за ошибки:\n'
+                + f'{e}'
             )
             await state.finish()
             logging.error(f'{e}')
