@@ -5660,7 +5660,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         )
                         await message.answer(
                             text=f'Загружаю пост {category} {obj.street_name}, '
-                            + f'д. {obj.number_of_house} в сообщество https://vk.com/club{club}'
+                            + f'д. {obj.number_of_house} в сообщество https://vk.com/club{club}',
+                            disable_notification=True,
                         )
 
                     elif category == 'частный дом' or category == 'таунхаус':
@@ -5681,7 +5682,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         )
                         await message.answer(
                             text=f'Загружаю пост {category} {obj.microregion}, '
-                            + f'{obj.street_name} в сообщество https://vk.com/club{club}'
+                            + f'{obj.street_name} в сообщество https://vk.com/club{club}',
+                            disable_notification=True,
                         )
 
                     elif category == 'земельный участок':
@@ -5700,7 +5702,8 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         )
                         await message.answer(
                             text=f'Загружаю пост {category} {obj.microregion}, '
-                            + f'{obj.street_name} в сообщество https://vk.com/club{club}'
+                            + f'{obj.street_name} в сообщество https://vk.com/club{club}',
+                            disable_notification=True,
                         )
 
                     group_id = club
