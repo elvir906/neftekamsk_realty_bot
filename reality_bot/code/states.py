@@ -40,6 +40,14 @@ class Autopost(StatesGroup):
     step6 = State()
 
 
+class Adpost(StatesGroup):
+    step2 = State()
+    step3 = State()
+    step4 = State()
+    step5 = State()
+    step6 = State()
+
+
 class ApartmentSearch(StatesGroup):
     step1 = State()
     step2 = State()
