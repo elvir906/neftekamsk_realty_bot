@@ -5632,10 +5632,10 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
             rieltor = Rieltors.objects.get(user_id=message.from_user.id)
 
-            if len(vk_club_ids) * len(db_items) == 1:
-                interval = 1
-            else:
-                interval = 45
+            # if len(vk_club_ids) * len(db_items) == 1:
+            #     interval = 1
+            # else:
+            interval = 45
 
             await message.answer(
                 text=f'Постинг займёт примерно {(len(vk_club_ids) * len(db_items) * interval) / 60} минут (-ы). '
