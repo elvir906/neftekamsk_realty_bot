@@ -5527,7 +5527,7 @@ async def vk_autopost_step2(callback: CallbackQuery, state: FSMContext):
             else:
                 await state.update_data(db_items=db_items)
                 await callback.message.edit_text(
-                    text='✏ Введите логин вк (номер телефона)\n\n'
+                    text='✏ Введи логин вк (номер телефона)\n\n'
                     + 'Для отмены напиши "Стоп"'
                 )
                 await Autopost.step3.set()
@@ -5557,7 +5557,7 @@ async def vk_autopost_step3(message: Message, state: FSMContext):
     else:
         await state.update_data(vk_login=message.text)
         await message.answer(
-            text='✏ Введите пароль от аккаунта вк\n\n'
+            text='✏ Введи пароль от аккаунта вк\n\n'
             + 'Для отмены напиши "Стоп"'
         )
         await Autopost.step4.set()
