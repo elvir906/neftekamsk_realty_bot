@@ -5661,8 +5661,21 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                         + f'Звоните: {rieltor.phone_number}, {rieltor_name}, АН "{rieltor.agency_name}"'
                         # + '✅ Больше объектов недвижимости С ЦЕНАМИ в телеграм-канале https://t.me/neftekamsk_reality.'
                     )
+                    if category == 'квартира':
+                        post_text = (
+                            f'🏠 Продаётся {obj.room_quantity}-комнатная {category}:\n'
+                            + f'адрес: г.Нефтекамск, {obj.street_name}, д. {obj.number_of_house};\n'
+                            + f'этаж: {obj.floor}/{obj.number_of_floors};\n'
+                            + f'площадь: {obj.area} кв.м.\n\n'
+                            + footer
+                        )
+                        await message.answer(
+                            text=f'Загружаю пост {category} {obj.street_name}, '
+                            + f'д. {obj.number_of_house} в сообщество https://vk.com/club{club}',
+                            disable_notification=True,
+                        )
 
-                    if category == 'квартира' or category == 'комната':
+                    if category == 'комната':
                         post_text = (
                             f'🏠 Продаётся {category}:\n'
                             + f'адрес: г.Нефтекамск, {obj.street_name}, д. {obj.number_of_house};\n'
