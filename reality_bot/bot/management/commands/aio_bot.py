@@ -1501,51 +1501,61 @@ async def base_updating(message: Message, state: FSMContext):
 
     rieltor = Rieltors.objects.get(user_id=user_id)
     photo = images.get(str(user_id))
-    images.pop(str(user_id))
-    await state.update_data(photo=photo)
-    await state.update_data(
-        user_id=user_id,
-        rieltor_name=rieltor.name,
-        agency_name=rieltor.agency_name,
-        rieltor_phone_number=rieltor.phone_number
-    )
-    data = await state.get_data()
-
-    # ЗАПИСЬ В БАЗУ И выдача
-    await asyncio.sleep(2)
-    if not DB_Worker.apartment_to_db(data):
-        await message.answer(
-            message_texts.on.get('sorry_about_error')
+    try:
+        print(images)
+        images.pop(str(user_id))
+        await state.update_data(photo=photo)
+        await state.update_data(
+            user_id=user_id,
+            rieltor_name=rieltor.name,
+            agency_name=rieltor.agency_name,
+            rieltor_phone_number=rieltor.phone_number
         )
-    else:
-        album = MediaGroup()
-        channel_album = MediaGroup()
-        photo_list = data.get('photo')
-        for photo_id in photo_list:
-            if photo_id == photo_list[-1]:
-                # альбом с подписью для отправки пользователям
-                album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.apartment_adding_result_text(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-                # альбом с подписью для отправки в канал
-                channel_album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.apartment_message_for_channel(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-            else:
-                album.attach_photo(photo_id)
-                channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        if data.get('visible') == 'True':
-            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
-    await state.finish()
+        data = await state.get_data()
+
+        # ЗАПИСЬ В БАЗУ И выдача
+        await asyncio.sleep(2)
+        if not DB_Worker.apartment_to_db(data):
+            await message.answer(
+                message_texts.on.get('sorry_about_error')
+            )
+        else:
+            album = MediaGroup()
+            channel_album = MediaGroup()
+            photo_list = data.get('photo')
+            for photo_id in photo_list:
+                if photo_id == photo_list[-1]:
+                    # альбом с подписью для отправки пользователям
+                    album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.apartment_adding_result_text(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                    # альбом с подписью для отправки в канал
+                    channel_album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.apartment_message_for_channel(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                else:
+                    album.attach_photo(photo_id)
+                    channel_album.attach_photo(photo_id)
+            await message.answer_media_group(media=album)
+            if data.get('visible') == 'True':
+                await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        await state.finish()
+    except Exception as e:
+        await message.answer(
+            text=f'К сожалению, создание объекта не удалось по причине: {e}. '
+            + 'Я вернул тебя к тому моменту, когда надо добавить фото. Попробуй '
+            + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
+        )
+        await CallbackOnStart.Q12.set()
+        logging.error(f'{e}')
 
 
 # --------------------------------------------------------------------------
@@ -1907,50 +1917,59 @@ async def room_base_updating(message: Message, state: FSMContext):
 
     rieltor = Rieltors.objects.get(user_id=user_id)
     photo = images.get(str(user_id))
-    images.pop(str(user_id))
-    await state.update_data(room_photo=photo)
-    await state.update_data(
-            room_user_id=user_id,
-            room_rieltor_name=rieltor.name,
-            room_agency_name=rieltor.agency_name,
-            room_rieltor_phone_number=rieltor.phone_number
-        )
+    try:
+        images.pop(str(user_id))
+        await state.update_data(room_photo=photo)
+        await state.update_data(
+                room_user_id=user_id,
+                room_rieltor_name=rieltor.name,
+                room_agency_name=rieltor.agency_name,
+                room_rieltor_phone_number=rieltor.phone_number
+            )
 
-    data = await state.get_data()
+        data = await state.get_data()
 
-    # ЗАПИСЬ В БАЗУ И выдача
-    await asyncio.sleep(2)
-    if not DB_Worker.room_to_db(data):
+        # ЗАПИСЬ В БАЗУ И выдача
+        await asyncio.sleep(2)
+        if not DB_Worker.room_to_db(data):
+            await message.answer(
+                message_texts.on.get('sorry_about_error')
+            )
+        else:
+            album = MediaGroup()
+            channel_album = MediaGroup()
+            photo_list = data.get('room_photo')
+            for photo_id in photo_list:
+                if photo_id == photo_list[-1]:
+                    album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.room_adding_result_text(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                    channel_album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.room_message_for_channel(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                else:
+                    album.attach_photo(photo_id)
+                    channel_album.attach_photo(photo_id)
+            await message.answer_media_group(media=album)
+            if data.get('visible') == 'True':
+                await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        await state.finish()
+    except Exception as e:
         await message.answer(
-            message_texts.on.get('sorry_about_error')
+            text=f'К сожалению, создание объекта не удалось по причине: {e}. '
+            + 'Я вернул тебя к тому моменту, когда надо добавить фото. Попробуй '
+            + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
-    else:
-        album = MediaGroup()
-        channel_album = MediaGroup()
-        photo_list = data.get('room_photo')
-        for photo_id in photo_list:
-            if photo_id == photo_list[-1]:
-                album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.room_adding_result_text(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-                channel_album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.room_message_for_channel(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-            else:
-                album.attach_photo(photo_id)
-                channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        if data.get('visible') == 'True':
-            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
-    await state.finish()
+        await RoomCallbackStates.R12.set()
+        logging.error(f'{e}')
 
 
 # --------------------------------------------------------------------------
@@ -2523,7 +2542,7 @@ async def house_entering_agency_name(callback: CallbackQuery, state: FSMContext)
     else:
         await state.update_data(visible=callback.data)
         await callback.message.edit_text(
-            '✏ Загрузите до 6 фото квартиры\n\n'
+            '✏ Загрузите до 6 фото дома\n\n'
         )
         await HouseCallbackStates.H22.set()
 
@@ -2550,50 +2569,59 @@ async def house_base_updating(message: Message, state: FSMContext):
 
     rieltor = Rieltors.objects.get(user_id=user_id)
     photo = images.get(str(user_id))
-    images.pop(str(user_id))
-    await state.update_data(house_photo=photo)
-    await state.update_data(
-            house_user_id=user_id,
-            house_rieltor_name=rieltor.name,
-            house_agency_name=rieltor.agency_name,
-            house_rieltor_phone_number=rieltor.phone_number
+    try:
+        images.pop(str(user_id))
+        await state.update_data(house_photo=photo)
+        await state.update_data(
+                house_user_id=user_id,
+                house_rieltor_name=rieltor.name,
+                house_agency_name=rieltor.agency_name,
+                house_rieltor_phone_number=rieltor.phone_number
+                )
+
+        data = await state.get_data()
+
+        # ЗАПИСЬ В БАЗУ И выдача
+        await asyncio.sleep(2)
+        if not DB_Worker.house_to_db(data):
+            await message.answer(
+                message_texts.on.get('sorry_about_error')
             )
-
-    data = await state.get_data()
-
-    # ЗАПИСЬ В БАЗУ И выдача
-    await asyncio.sleep(2)
-    if not DB_Worker.house_to_db(data):
+        else:
+            album = MediaGroup()
+            channel_album = MediaGroup()
+            photo_list = data.get('house_photo')
+            for photo_id in photo_list:
+                if photo_id == photo_list[-1]:
+                    album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.house_adding_result_text(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                    channel_album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.house_message_for_channel(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                else:
+                    album.attach_photo(photo_id)
+                    channel_album.attach_photo(photo_id)
+            await message.answer_media_group(media=album)
+            if data.get('visible') == 'True':
+                await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        await state.finish()
+    except Exception as e:
         await message.answer(
-            message_texts.on.get('sorry_about_error')
+            text=f'К сожалению, создание объекта не удалось по причине: {e}. '
+            + 'Я вернул тебя к тому моменту, когда надо добавить фото. Попробуй '
+            + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
-    else:
-        album = MediaGroup()
-        channel_album = MediaGroup()
-        photo_list = data.get('house_photo')
-        for photo_id in photo_list:
-            if photo_id == photo_list[-1]:
-                album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.house_adding_result_text(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-                channel_album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.house_message_for_channel(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-            else:
-                album.attach_photo(photo_id)
-                channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        if data.get('visible') == 'True':
-            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
-    await state.finish()
+        await HouseCallbackStates.H21.set()
+        logging.error(f'{e}')
 
 
 # --------------------------------------------------------------------------
@@ -3160,7 +3188,7 @@ async def townhouse_entering_agency_name(callback: CallbackQuery, state: FSMCont
     else:
         await state.update_data(visible=callback.data)
         await callback.message.edit_text(
-            '✏ Загрузите до 6 фото квартиры\n\n'
+            '✏ Загрузите до 6 фото таунхауса\n\n'
         )
         await TownHouseCallbackStates.T22.set()
 
@@ -3187,50 +3215,59 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
 
     rieltor = Rieltors.objects.get(user_id=user_id)
     photo = images.get(str(user_id))
-    images.pop(str(user_id))
-    await state.update_data(townhouse_photo=photo)
-    await state.update_data(
-            townhouse_user_id=user_id,
-            townhouse_rieltor_name=rieltor.name,
-            townhouse_agency_name=rieltor.agency_name,
-            townhouse_rieltor_phone_number=rieltor.phone_number
+    try:
+        images.pop(str(user_id))
+        await state.update_data(townhouse_photo=photo)
+        await state.update_data(
+                townhouse_user_id=user_id,
+                townhouse_rieltor_name=rieltor.name,
+                townhouse_agency_name=rieltor.agency_name,
+                townhouse_rieltor_phone_number=rieltor.phone_number
+                )
+
+        data = await state.get_data()
+
+        # ЗАПИСЬ В БАЗУ И выдача
+        await asyncio.sleep(2)
+        if not DB_Worker.townhouse_to_db(data):
+            await message.answer(
+                message_texts.on.get('sorry_about_error')
             )
-
-    data = await state.get_data()
-
-    # ЗАПИСЬ В БАЗУ И выдача
-    await asyncio.sleep(2)
-    if not DB_Worker.townhouse_to_db(data):
+        else:
+            album = MediaGroup()
+            channel_album = MediaGroup()
+            photo_list = data.get('townhouse_photo')
+            for photo_id in photo_list:
+                if photo_id == photo_list[-1]:
+                    album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.townhouse_adding_result_text(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                    channel_album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.townhouse_message_for_channel(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                else:
+                    album.attach_photo(photo_id)
+                    channel_album.attach_photo(photo_id)
+            await message.answer_media_group(media=album)
+            if data.get('visible') == 'True':
+                await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        await state.finish()
+    except Exception as e:
         await message.answer(
-            message_texts.on.get('sorry_about_error')
+            text=f'К сожалению, создание объекта не удалось по причине: {e}. '
+            + 'Я вернул тебя к тому моменту, когда надо добавить фото. Попробуй '
+            + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
-    else:
-        album = MediaGroup()
-        channel_album = MediaGroup()
-        photo_list = data.get('townhouse_photo')
-        for photo_id in photo_list:
-            if photo_id == photo_list[-1]:
-                album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.townhouse_adding_result_text(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-                channel_album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.townhouse_message_for_channel(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-            else:
-                album.attach_photo(photo_id)
-                channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        if data.get('visible') == 'True':
-            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
-    await state.finish()
+        await TownHouseCallbackStates.T21.set()
+        logging.error(f'{e}')
 
 
 # --------------------------------------------------------------------------
@@ -3736,7 +3773,7 @@ async def land_entering_agency_name(callback: CallbackQuery, state: FSMContext):
     else:
         await state.update_data(visible=callback.data)
         await callback.message.edit_text(
-            '✏ Загрузите до 6 фото квартиры\n\n'
+            '✏ Загрузите до 6 фото участка\n\n'
         )
         await LandCallbackStates.L20.set()
 
@@ -3763,50 +3800,59 @@ async def land_base_updating(message: Message, state: FSMContext):
 
     rieltor = Rieltors.objects.get(user_id=user_id)
     photo = images.get(str(user_id))
-    images.pop(str(user_id))
-    await state.update_data(land_photo=photo)
-    await state.update_data(
-            land_user_id=user_id,
-            land_rieltor_name=rieltor.name,
-            land_agency_name=rieltor.agency_name,
-            land_rieltor_phone_number=rieltor.phone_number
+    try:
+        images.pop(str(user_id))
+        await state.update_data(land_photo=photo)
+        await state.update_data(
+                land_user_id=user_id,
+                land_rieltor_name=rieltor.name,
+                land_agency_name=rieltor.agency_name,
+                land_rieltor_phone_number=rieltor.phone_number
+                )
+
+        data = await state.get_data()
+
+        # ЗАПИСЬ В БАЗУ И выдача
+        await asyncio.sleep(2)
+        if not DB_Worker.land_to_db(data):
+            await message.answer(
+                message_texts.on.get('sorry_about_error')
             )
-
-    data = await state.get_data()
-
-    # ЗАПИСЬ В БАЗУ И выдача
-    await asyncio.sleep(2)
-    if not DB_Worker.land_to_db(data):
+        else:
+            album = MediaGroup()
+            channel_album = MediaGroup()
+            photo_list = data.get('land_photo')
+            for photo_id in photo_list:
+                if photo_id == photo_list[-1]:
+                    album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.land_adding_result_text(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                    channel_album.attach_photo(
+                        photo_id,
+                        caption='\n'.join(
+                            message_texts.land_message_for_channel(data)
+                        ),
+                        parse_mode='Markdown'
+                    )
+                else:
+                    album.attach_photo(photo_id)
+                    channel_album.attach_photo(photo_id)
+            await message.answer_media_group(media=album)
+            if data.get('visible') == 'True':
+                await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+        await state.finish()
+    except Exception as e:
         await message.answer(
-            message_texts.on.get('sorry_about_error')
+            text=f'К сожалению, создание объекта не удалось по причине: {e}. '
+            + 'Я вернул тебя к тому моменту, когда надо добавить фото. Попробуй '
+            + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
-    else:
-        album = MediaGroup()
-        channel_album = MediaGroup()
-        photo_list = data.get('land_photo')
-        for photo_id in photo_list:
-            if photo_id == photo_list[-1]:
-                album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.land_adding_result_text(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-                channel_album.attach_photo(
-                    photo_id,
-                    caption='\n'.join(
-                        message_texts.land_message_for_channel(data)
-                    ),
-                    parse_mode='Markdown'
-                )
-            else:
-                album.attach_photo(photo_id)
-                channel_album.attach_photo(photo_id)
-        await message.answer_media_group(media=album)
-        if data.get('visible') == 'True':
-            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
-    await state.finish()
+        await LandCallbackStates.L181.set()
+        logging.error(f'{e}')
 # -----------------------------------------------------------------------------
 # -------------- МОИ ОБЪЕКТЫ --------------------------------------------------
 # -----------------------------------------------------------------------------
