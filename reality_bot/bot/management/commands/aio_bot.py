@@ -13,9 +13,9 @@ from code.states import (Adpost, ApartmentSearch, ArchiveObjects, Autopost,
                          RoomCallbackStates, RoomSearch, SendMessages, SendPic,
                          TownHouseCallbackStates, TownHouseSearch, Visible_off,
                          Visible_on, WorkersBuyers, WorkersObjects)
-from code.utils import (Output, apartment_category, checked_apartment_category,
-                        keyboards, object_city_microregions_for_checking,
-                        object_country_microregions_for_checking, vk_club_ids)
+from code.utils import (Output, apartment_category_checked,
+                        city_objects_checked, country_object_checked,
+                        keyboards, vk_club_ids, AUTOPOST_LIMIT)
 from functools import reduce
 
 import django
@@ -48,8 +48,6 @@ CHAT_ID = config('CHAT_ID')
 bot = Bot(token=config('TELEGRAM_TOKEN'))
 
 dp = Dispatcher(bot, storage=MemoryStorage())
-
-AUTOPOST_LIMIT = 5
 
 
 class Command(BaseCommand):
@@ -895,7 +893,7 @@ async def apartment_plan_category_choice(
 
 @dp.callback_query_handler(
     state=ApartmentSearch.step3,
-    text=checked_apartment_category
+    text=apartment_category_checked
 )
 async def apartment_plan_category_checking(
     callback: CallbackQuery,
@@ -4531,7 +4529,7 @@ async def add_microregion(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(
     state=Buyer.city_microregion,
-    text=object_city_microregions_for_checking
+    text=city_objects_checked
 )
 async def city_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
     answer = callback.data
@@ -4566,7 +4564,7 @@ async def city_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(
     state=Buyer.country_microregion,
-    text=object_country_microregions_for_checking
+    text=country_object_checked
 )
 async def country_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
     answer = callback.data
@@ -5807,6 +5805,9 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
             await state.finish()
             logging.error(f'{e}')
 
+#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+#/\/\/\/\ Автопостинг баннеров /\/\/\/\/\/\/\/\/\/\/\/
+#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
 @dp.message_handler(commands=['vk_adpost'])
 async def vk_adpost_step1(message: Message):
@@ -5852,7 +5853,7 @@ async def vk_adpost_step3(message: Message, state: FSMContext):
             text='✏ Введите логин от аккаунта вк\n\n'
             + 'Для отмены напиши "Стоп"'
         )
-        await Autopost.step4.set()
+        await Adpost.step4.set()
 
 
 @dp.message_handler(state=Adpost.step4)
@@ -5868,7 +5869,7 @@ async def vk_adpost_step4(message: Message, state: FSMContext):
             text='✏ Введите пароль от аккаунта вк\n\n'
             + 'Для отмены напиши "Стоп"'
         )
-        await Autopost.step5.set()
+        await Adpost.step5.set()
 
 
 @dp.message_handler(state=Adpost.step5)
@@ -5884,82 +5885,82 @@ async def vk_adpost_step5(message: Message, state: FSMContext):
             text='✏ Напиши один из резервных кодов\n\n'
             + 'Для отмены напиши "Стоп"'
         )
-        await Autopost.step6.set()
+        await Adpost.step6.set()
 
 
-# @dp.message_handler(state=Adpost.step6)
-# async def vk_adpost_step6(message: Message, state: FSMContext):
-#     if message.text == 'Стоп' or message.text == 'стоп':
-#         await message.answer(
-#             'Действие отменено'
-#         )
-#         await state.finish()
-#     else:
-#         try:
-#             vk_code = message.text
+@dp.message_handler(state=Adpost.step6)
+async def vk_adpost_step6(message: Message, state: FSMContext):
+    if message.text == 'Стоп' or message.text == 'стоп':
+        await message.answer(
+            'Действие отменено'
+        )
+        await state.finish()
+    else:
+        try:
+            vk_code = message.text
 
-#             def auth_handler():
-#                 code = vk_code
-#                 remember_device = True
-#                 return code, remember_device
+            def auth_handler():
+                code = vk_code
+                remember_device = True
+                return code, remember_device
 
-#             data = await state.get_data()
-#             vk_login = data.get('vk_login')
-#             vk_password = data.get('vk_password')
+            data = await state.get_data()
+            vk_login = data.get('vk_login')
+            vk_password = data.get('vk_password')
 
-#             vk_session = vk_api.VkApi(
-#                 login=vk_login,
-#                 password=vk_password,
-#                 auth_handler=auth_handler,
-#             )
+            vk_session = vk_api.VkApi(
+                login=vk_login,
+                password=vk_password,
+                auth_handler=auth_handler,
+            )
 
-#             try:
-#                 vk_session.auth()
-#             except vk_api.AuthError as error_msg:
-#                 captcha = vc.solve(sid=74838345480543, s=1)
-#                 print(captcha)
-#                 print(error_msg)
-#                 return
+            try:
+                vk_session.auth()
+            except vk_api.AuthError as error_msg:
+                captcha = vc.solve(sid=74838345480543, s=1)
+                print(captcha)
+                print(error_msg)
+                return
 
-#             vk = vk_session.get_api()
+            vk = vk_session.get_api()
 
-#             if len(vk_club_ids) == 1:
-#                 interval = 1
-#             else:
-#                 interval = 45
+            if len(vk_club_ids) == 1:
+                interval = 1
+            else:
+                interval = 45
 
-#             await message.answer(
-#                 text=f'Постинг займёт примерно {(len(vk_club_ids) * interval) / 60} минут (-ы). '
-#                 + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или, если вдруг, появится ошибка. '
-#                 + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
-#             )
+            await message.answer(
+                text=f'Постинг займёт примерно {(len(vk_club_ids) * interval) / 60} минут (-ы). '
+                + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или, если вдруг, появится ошибка. '
+                + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
+            )
 
-#             for club in vk_club_ids:
+            for club in vk_club_ids:
 
-#                 upload = vk_api.VkUpload(vk_session)
+                upload = vk_api.VkUpload(vk_session)
 
-#                 key = str(message.from_user.id)
-#                 images.setdefault(key, [])
-#                 images[key] = []
+                key = str(message.from_user.id)
+                images.setdefault(key, [])
+                images[key] = []
 
-#                 for image in obj.photo_id:
-#                     file_info = await bot.get_file(image)
-#                     downloaded_file = await bot.download_file(file_info.file_path)
-#                     photo = upload.photo_wall(downloaded_file, group_id=group_id)[0]
-#                     images[key].append(f'photo{photo["owner_id"]}_{photo["id"]}')
+                for image in obj.photo_id:
+                    file_info = await bot.get_file(image)
+                    downloaded_file = await bot.download_file(file_info.file_path)
+                    photo = upload.photo_wall(downloaded_file, group_id=group_id)[0]
+                    images[key].append(f'photo{photo["owner_id"]}_{photo["id"]}')
 
-#                 vk.wall.post(owner_id=-group_id, message=post_text, attachments=images[key])
+                vk.wall.post(owner_id=-group_id, message=post_text, attachments=images[key])
 
-#                 if not (club == vk_club_ids[-1]) and (item == db_items[-1]):
-#                     await asyncio.sleep(interval)
+                if not (club == vk_club_ids[-1]) and (item == db_items[-1]):
+                    await asyncio.sleep(interval)
 
-#             await message.answer(text='Автопостинг свершился!')
-#             await state.finish()
+            await message.answer(text='Автопостинг свершился!')
+            await state.finish()
 
-#         except Exception as e:
-#             await message.answer(
-#                 text='К сожалению, автопостинг не получился из-за ошибки:\n'
-#                 + f'{e}'
-#             )
-#             await state.finish()
-#             logging.error(f'{e}')
+        except Exception as e:
+            await message.answer(
+                text='К сожалению, автопостинг не получился из-за ошибки:\n'
+                + f'{e}'
+            )
+            await state.finish()
+            logging.error(f'{e}')
