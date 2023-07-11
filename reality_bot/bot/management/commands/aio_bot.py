@@ -5935,23 +5935,26 @@ async def vk_adpost_step6(message: Message, state: FSMContext):
                 + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
             )
 
+            data = await state.get_data()
+
             for club in vk_club_ids:
 
-                upload = vk_api.VkUpload(vk_session)
+                # upload = vk_api.VkUpload(vk_session)
 
                 key = str(message.from_user.id)
-                images.setdefault(key, [])
-                images[key] = []
 
-                for image in obj.photo_id:
-                    file_info = await bot.get_file(image)
-                    downloaded_file = await bot.download_file(file_info.file_path)
-                    photo = upload.photo_wall(downloaded_file, group_id=group_id)[0]
-                    images[key].append(f'photo{photo["owner_id"]}_{photo["id"]}')
+                # images.setdefault(key, [])
+                # images[key] = []
 
-                vk.wall.post(owner_id=-group_id, message=post_text, attachments=images[key])
+                # for image in obj.photo_id:
+                    # file_info = await bot.get_file(image)
+                    # downloaded_file = await bot.download_file(file_info.file_path)
+                    # photo = upload.photo_wall(downloaded_file, group_id=group_id)[0]
+                    # images[key].append(f'photo{photo["owner_id"]}_{photo["id"]}')
 
-                if not (club == vk_club_ids[-1]) and (item == db_items[-1]):
+                vk.wall.post(owner_id=-club, message=data.get('post_description'), attachments=images[key])
+
+                if not (club == vk_club_ids[-1]):
                     await asyncio.sleep(interval)
 
             await message.answer(text='Автопостинг свершился!')

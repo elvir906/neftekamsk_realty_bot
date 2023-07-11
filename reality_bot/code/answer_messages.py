@@ -323,7 +323,7 @@ class message_texts():
             + f'\n*Вода:* {item.water}'
             + f'\n*Подъезд к дому:* {item.road}'
             + f'\n*Наличие бани/сауны:* {item.sauna}'
-            + f'\n*Наличие гаража:* {item.garage}'
+            + f'\n*Наличие гаража:* {item.garage}'and (item == db_items[-1])
             + f'\n*Наличие ограждения:* {item.fence}'
             + f'\n*Описание:* {item.description}'
             + f'\n*Обременение:* {Output.false_or_true(item.encumbrance)}'
