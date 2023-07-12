@@ -260,9 +260,9 @@ class keyboards():
 
         buttons = [
             InlineKeyboardButton(
-                text=object_microregions[i],
-                callback_data=object_microregions[i]
-                ) for i in range(0, len(object_microregions))
+                text=country_objects[i],
+                callback_data=country_objects[i]
+                ) for i in range(0, len(country_objects))
         ]
 
         keyboard.add(*buttons)
@@ -296,7 +296,7 @@ class keyboards():
     def country_microregion_keyboard(checked_buttons: list):
         """Генерация клавиатуры на выбор района"""
         keyboard = InlineKeyboardMarkup()
-        new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in object_microregions_for_buyer]
+        new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in country_objects]
         buttons = [
             InlineKeyboardButton(
                 text=new_kbd_btns[i],

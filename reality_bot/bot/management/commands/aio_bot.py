@@ -13,7 +13,7 @@ from code.states import (Adpost, ApartmentSearch, ArchiveObjects, Autopost,
                          RoomCallbackStates, RoomSearch, SendMessages, SendPic,
                          TownHouseCallbackStates, TownHouseSearch, Visible_off,
                          Visible_on, WorkersBuyers, WorkersObjects)
-from code.utils import (Output, apartment_category_checked,
+from code.utils import (Output, apartment_category, apartment_category_checked,
                         city_objects_checked, country_object_checked,
                         keyboards, vk_club_ids, AUTOPOST_LIMIT)
 from functools import reduce
@@ -93,7 +93,7 @@ async def entering_name(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Registration.step1)
 async def agency_choice(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -130,7 +130,7 @@ async def phone_number_entering(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Registration.step3)
 async def registration_finish(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -432,7 +432,7 @@ async def rooms(message: Message, state: FSMContext):
             message_texts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
-        logging.error(f'{e}')
+        logging.error('%s', e)
         await RoomSearch.step2.set()
 
 
@@ -554,7 +554,7 @@ async def houses(message: Message, state: FSMContext):
             message_texts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
-        logging.error(f'{e}')
+        logging.error('%s', e)
         await HouseSearch.step2.set()
 
 
@@ -677,7 +677,7 @@ async def townhouses(message: Message, state: FSMContext):
             message_texts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
-        logging.error(f'{e}')
+        logging.error('%s', e)
         await TownHouseSearch.step2.set()
 
 
@@ -803,7 +803,7 @@ async def lands(message: Message, state: FSMContext):
             message_texts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
-        logging.error(f'{e}')
+        logging.error('%s', e)
         await LandSearch.step2.set()
 
 
@@ -1052,7 +1052,7 @@ async def apartment_search_result(
             message_texts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
-        logging.error(f'{e}')
+        logging.error('%s', e)
         await ApartmentSearch.step4.set()
 
 
@@ -1226,7 +1226,7 @@ async def entering_floors(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=CallbackOnStart.plan_category)
 async def plan_category(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1255,7 +1255,7 @@ async def plan_category(message: Message, state: FSMContext):
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.callback_query_handler(state=CallbackOnStart.Q5, text=[
@@ -1283,7 +1283,7 @@ async def entering_area(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=CallbackOnStart.Q6)
 async def entering_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1308,7 +1308,7 @@ async def entering_price(message: Message, state: FSMContext):
                 message_texts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=CallbackOnStart.Q7)
@@ -1406,7 +1406,7 @@ async def entering_mortage(callback: CallbackQuery, state: FSMContext):
 @dp.message_handler(state=CallbackOnStart.Q11)
 async def entering_phone_number(message: Message, state: FSMContext):
     """Запись номера телефона"""
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1435,7 +1435,7 @@ async def entering_phone_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=CallbackOnStart.Q111)
 async def visible_or_not(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1553,7 +1553,7 @@ async def base_updating(message: Message, state: FSMContext):
             + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
         await CallbackOnStart.Q12.set()
-        logging.error(f'{e}')
+        logging.error('%s', e)
 
 
 # --------------------------------------------------------------------------
@@ -1579,7 +1579,7 @@ async def add_room(callback: CallbackQuery, state: FSMContext):
 async def enetering_rooms_street_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1598,7 +1598,7 @@ async def enetering_rooms_street_name(
 async def enetering_rooms_house_number(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1674,7 +1674,7 @@ async def entering_room_floors(
 async def enetering_rooms_area(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1701,12 +1701,12 @@ async def enetering_rooms_area(
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=RoomCallbackStates.R6)
 async def entering_room_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1727,12 +1727,12 @@ async def entering_room_price(message: Message, state: FSMContext):
                 message_texts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=RoomCallbackStates.R7)
 async def entering_room_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1824,7 +1824,7 @@ async def entering_room_mortage(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=RoomCallbackStates.R11)
 async def entering_room_phone_number(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1855,7 +1855,7 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=RoomCallbackStates.R111)
 async def room_visible_or_not(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -1967,7 +1967,7 @@ async def room_base_updating(message: Message, state: FSMContext):
             + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
         await RoomCallbackStates.R12.set()
-        logging.error(f'{e}')
+        logging.error('%s', e)
 
 
 # --------------------------------------------------------------------------
@@ -2012,7 +2012,7 @@ async def entering_house_street_name(
 
 @dp.message_handler(state=HouseCallbackStates.H2)
 async def entering_house_purpose(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2274,7 +2274,7 @@ async def entering_house_area(
 
 @dp.message_handler(state=HouseCallbackStates.H12)
 async def entering_house_land_area(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2303,12 +2303,12 @@ async def entering_house_land_area(message: Message, state: FSMContext):
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=HouseCallbackStates.H13)
 async def entering_house_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2334,12 +2334,12 @@ async def entering_house_price(message: Message, state: FSMContext):
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=HouseCallbackStates.H14)
 async def entering_house_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2360,14 +2360,14 @@ async def entering_house_description(message: Message, state: FSMContext):
                 message_texts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=HouseCallbackStates.H15)
 async def entering_house_encumbrance(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2477,7 +2477,7 @@ async def entering_house_phone_number(
 async def entering_house_agency_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2501,13 +2501,13 @@ async def entering_house_agency_name(
                 message_texts.phone_number_entering_error(message.text),
                 parse_mode='Markdown'
             )
-            logging.error(f'Ошибка при вводе номера телефона {message.text}')
+            logging.error('Ошибка при вводе номера телефона %s', message.text)
             await HouseCallbackStates.H19.set()
 
 
 @dp.message_handler(state=HouseCallbackStates.H20)
 async def house_visible_or_not(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2619,7 +2619,7 @@ async def house_base_updating(message: Message, state: FSMContext):
             + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
         await HouseCallbackStates.H21.set()
-        logging.error(f'{e}')
+        logging.error('%s', e)
 
 
 # --------------------------------------------------------------------------
@@ -2664,7 +2664,7 @@ async def entering_townhouse_street_name(
 
 @dp.message_handler(state=TownHouseCallbackStates.T2)
 async def entering_townhouse_purpose(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2920,7 +2920,7 @@ async def entering_townhouse_area(
 
 @dp.message_handler(state=TownHouseCallbackStates.T12)
 async def entering_townhouse_land_area(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2949,12 +2949,12 @@ async def entering_townhouse_land_area(message: Message, state: FSMContext):
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=TownHouseCallbackStates.T13)
 async def entering_townhouse_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -2980,12 +2980,12 @@ async def entering_townhouse_price(message: Message, state: FSMContext):
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=TownHouseCallbackStates.T14)
 async def entering_townhouse_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3006,14 +3006,14 @@ async def entering_townhouse_description(message: Message, state: FSMContext):
                 message_texts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=TownHouseCallbackStates.T15)
 async def entering_townhouse_encumbrance(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3123,7 +3123,7 @@ async def entering_townhouse_phone_number(
 async def entering_townhouse_agency_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3153,7 +3153,7 @@ async def entering_townhouse_agency_name(
 
 @dp.message_handler(state=TownHouseCallbackStates.T20)
 async def townhouse_visible_or_not(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3265,7 +3265,7 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
             + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
         await TownHouseCallbackStates.T21.set()
-        logging.error(f'{e}')
+        logging.error('%s', e)
 
 
 # --------------------------------------------------------------------------
@@ -3310,7 +3310,7 @@ async def entering_land_street_name(
 
 @dp.message_handler(state=LandCallbackStates.L2)
 async def entering_land_number(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3328,7 +3328,7 @@ async def entering_land_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=LandCallbackStates.L3)
 async def entering_land_purpose(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3540,7 +3540,7 @@ async def entering_land_area(
 
 @dp.message_handler(state=LandCallbackStates.L11)
 async def entering_land_price(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3565,12 +3565,12 @@ async def entering_land_price(message: Message, state: FSMContext):
                 message_texts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=LandCallbackStates.L12)
 async def entering_land_description(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3591,14 +3591,14 @@ async def entering_land_description(message: Message, state: FSMContext):
                 message_texts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 @dp.message_handler(state=LandCallbackStates.L13)
 async def entering_land_encumbrance(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3708,7 +3708,7 @@ async def entering_land_phone_number(
 async def entering_land_agency_name(
     message: Message, state: FSMContext
 ):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3738,7 +3738,7 @@ async def entering_land_agency_name(
 
 @dp.message_handler(state=LandCallbackStates.L18)
 async def land_visible_or_not(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -3850,7 +3850,7 @@ async def land_base_updating(message: Message, state: FSMContext):
             + 'снова. Если ошибка повторится, сообщи об этом @davletelvir'
         )
         await LandCallbackStates.L181.set()
-        logging.error(f'{e}')
+        logging.error('%s', e)
 # -----------------------------------------------------------------------------
 # -------------- МОИ ОБЪЕКТЫ --------------------------------------------------
 # -----------------------------------------------------------------------------
@@ -4179,7 +4179,7 @@ async def visible_on_step3(
                 + 'Если ошибка повторится, напишиет об этом @davletelvir'
             )
             logging.error(
-                f'Ошибка изменения видимости объекта объекта, {e}'
+                'Ошибка изменения видимости объекта объекта, %s', e
             )
             await state.finish()
 
@@ -4250,7 +4250,7 @@ async def visible_off_step3(
                 + 'Если ошибка поторится, напишиет об этом @davletelvir'
             )
             logging.error(
-                f'Ошибка изменения видимости объекта объекта, {e}'
+                'Ошибка изменения видимости объекта объекта, %s', e
             )
             await state.finish()
 # -----------------------------------------------------------------------------
@@ -4370,7 +4370,7 @@ async def add_buyer(message: Message):
 
 @dp.message_handler(state=Buyer.buyer_phone_number)
 async def add_phone_number(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -4384,7 +4384,7 @@ async def add_phone_number(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Buyer.category)
 async def add_category(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -4405,7 +4405,7 @@ async def add_category(message: Message, state: FSMContext):
                 ),
                 parse_mode='Markdown'
             )
-            logging.error(f'Ошибка при вводе номера телефона {message.text}')
+            logging.error('Ошибка при вводе номера телефона %s', message.text)
             await Buyer.category.set()
 
 
@@ -4456,7 +4456,7 @@ async def add_limit(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Buyer.source)
 async def add_source(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -4477,7 +4477,7 @@ async def add_source(message: Message, state: FSMContext):
                 message_texts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 
 checked = {}
@@ -4598,7 +4598,7 @@ async def country_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Buyer.base_update)
 async def base_update(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer('Действие по добавлению покупателя отменено')
         await state.finish()
     else:
@@ -5202,7 +5202,7 @@ async def ceo_registration(message: Message):
 
 @dp.message_handler(state=CeoRegistration.step2)
 async def ceo_reg_step2(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
                 'Действие отменено'
             )
@@ -5321,7 +5321,7 @@ async def send_updates(message: Message):
 
 @dp.message_handler(state=SendMessages.step1)
 async def send_updates_step1(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
                 'Действие отменено'
             )
@@ -5593,7 +5593,7 @@ async def vk_autopost_step2(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(state=Autopost.step3)
 async def vk_autopost_step3(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5609,7 +5609,7 @@ async def vk_autopost_step3(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Autopost.step4)
 async def vk_autopost_step4(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5625,7 +5625,7 @@ async def vk_autopost_step4(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Autopost.step5)
 async def vk_autopost_step5(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5733,7 +5733,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                             disable_notification=True,
                         )
 
-                    elif category == 'частный дом' or category == 'таунхаус':
+                    elif category in ['частный дом', 'таунхаус']:
                         post_text = (
                             f'Продаётся {category}:\n'
                             + f'местположение: {obj.microregion};\n'
@@ -5803,7 +5803,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                 + f'{e}'
             )
             await state.finish()
-            logging.error(f'{e}')
+            logging.error('%s', e)
 
 #/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 #/\/\/\/\ Автопостинг баннеров /\/\/\/\/\/\/\/\/\/\/\/
@@ -5842,7 +5842,7 @@ async def vk_adpost_step2(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Adpost.step3)
 async def vk_adpost_step3(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5858,7 +5858,7 @@ async def vk_adpost_step3(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Adpost.step4)
 async def vk_adpost_step4(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5874,7 +5874,7 @@ async def vk_adpost_step4(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Adpost.step5)
 async def vk_adpost_step5(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5890,7 +5890,7 @@ async def vk_adpost_step5(message: Message, state: FSMContext):
 
 @dp.message_handler(state=Adpost.step6)
 async def vk_adpost_step6(message: Message, state: FSMContext):
-    if message.text == 'Стоп' or message.text == 'стоп':
+    if message.text in ['Стоп', 'стоп']:
         await message.answer(
             'Действие отменено'
         )
@@ -5954,7 +5954,7 @@ async def vk_adpost_step6(message: Message, state: FSMContext):
 
                 vk.wall.post(owner_id=-club, message=data.get('post_description'), attachments=images[key])
 
-                if not (club == vk_club_ids[-1]):
+                if not club == vk_club_ids[-1]:
                     await asyncio.sleep(interval)
 
             await message.answer(text='Автопостинг свершился!')
@@ -5966,4 +5966,4 @@ async def vk_adpost_step6(message: Message, state: FSMContext):
                 + f'{e}'
             )
             await state.finish()
-            logging.error(f'{e}')
+            logging.error('%s', e)
