@@ -4172,6 +4172,52 @@ async def visible_on_step3(
             await callback.message.edit_text(
                 'Сделано!'
             )
+
+#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+#/\/\/\/\/\/\/\/\/\/\/\/\/ Добавление в канал при изменении видимости \/\/\/\/\/\/\/\/\/\/\/
+#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+
+# Сделать вывод категорий недвижимости
+
+            # def output(item):
+            #     if item == '1':
+            #         return '1к.кв.'
+            #     if item == '2':
+            #         return '2к.кв.'
+            #     if item == '3':
+            #         return '3к.кв.'
+            #     if item == '4':
+            #         return '4к.кв.'
+            #     if item == '5':
+            #         return '5к.кв.'
+            #     if item == 'room':
+            #         return 'Комната или КГТ'
+            #     if item == 'house':
+            #         return 'Дом'
+            #     if item == 'townhouse':
+            #         return 'Таунхаус'
+            #     if item == 'land':
+            #         return 'Участок'
+            #     if item == 'apartment':
+            #         return 'Квартира'
+
+
+            channel_album = MediaGroup()
+            photo_list = obj.photo_id
+            for photo_id in photo_list:
+                if photo_id == photo_list[-1]:                
+                    channel_album.attach_photo(
+                        photo_id,
+                        caption=obj.description,
+                        parse_mode='Markdown'
+                    )
+                else:
+                    channel_album.attach_photo(photo_id)
+            await bot.send_media_group(TELEGRAM_CHANNEL_ID, channel_album)
+
+#/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
+
+
             await state.finish()
         except Exception as e:
             await callback.message.answer(
