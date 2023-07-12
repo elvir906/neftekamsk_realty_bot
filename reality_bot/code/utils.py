@@ -84,6 +84,7 @@ vk_club_ids = [196141794, ]  # тестовые сообщества
 # ]
 
 AUTOPOST_LIMIT = 7
+POST_DELAY = 45
 
 
 class keyboards():

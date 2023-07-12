@@ -15,7 +15,7 @@ from code.states import (Adpost, ApartmentSearch, ArchiveObjects, Autopost,
                          Visible_on, WorkersBuyers, WorkersObjects)
 from code.utils import (Output, apartment_category, apartment_category_checked,
                         city_objects_checked, country_object_checked,
-                        keyboards, vk_club_ids, AUTOPOST_LIMIT)
+                        keyboards, vk_club_ids, AUTOPOST_LIMIT, POST_DELAY)
 from functools import reduce
 
 import django
@@ -5677,14 +5677,13 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
             rieltor = Rieltors.objects.get(user_id=message.from_user.id)
 
             # if len(vk_club_ids) * len(db_items) == 1:
-            #     interval = 1
+            #     delay = 1
             # else:
-            interval = 45
 
-            delay_time = ((len(vk_club_ids) * len(db_items) - 1) * interval) / 60
+            delay_time = ((len(vk_club_ids) * len(db_items) - 1) * POST_DELAY) / 60
 
             def delay_message(dealay_time, t_format: str):
-                text = f'Постинг займёт примерно {delay_time} {t_format}. '
+                text = (f'Постинг займёт примерно {delay_time} {t_format}. '
                 + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или, если вдруг, появится ошибка. '
                 + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
                 )      
@@ -5801,7 +5800,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
                     vk.wall.post(owner_id=-group_id, message=post_text, attachments=images[key])
 
                     if not (club == vk_club_ids[-1] and item == db_items[-1]):
-                        await asyncio.sleep(interval)
+                        await asyncio.sleep(delay)
 
             await message.answer(text='Автопостинг свершился!')
             await state.finish()
@@ -5933,16 +5932,19 @@ async def vk_adpost_step6(message: Message, state: FSMContext):
 
             vk = vk_session.get_api()
 
-            if len(vk_club_ids) == 1:
-                delay = 1
-            else:
-                delay = 45
+            delay_time = ((len(vk_club_ids) - 1) * POST_DELAY) / 60
 
-            await message.answer(
-                text=f'Постинг займёт примерно {(len(vk_club_ids) * delay) / 60} минут (-ы). '
+            def delay_message(dealay_time, t_format: str):
+                text = (f'Постинг займёт примерно {delay_time} {t_format}. '
                 + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или, если вдруг, появится ошибка. '
                 + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
-            )
+                )      
+                return text
+
+            if delay_time < 1:
+                delay_message(delay_time * 60, 'секунд (-ы)')     
+            else:
+                delay_message(delay_time, 'минут (-ы)')
 
             data = await state.get_data()
 
