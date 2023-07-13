@@ -4348,13 +4348,13 @@ async def visible_off_step3(
                 'Сделано!'
             )
             await state.finish()
-        except Exception as e:
+        except Exception as ex:
             await callback.message.answer(
                 '❗ Во время изменения видимости возникла ошибка, попробуй снова.'
                 + 'Если ошибка поторится, напишиет об этом @davletelvir'
             )
             logging.error(
-                'Ошибка изменения видимости объекта объекта, %s', e
+                'Ошибка изменения видимости объекта объекта, %s', ex
             )
             await state.finish()
 # -----------------------------------------------------------------------------
@@ -4433,7 +4433,7 @@ async def price_updating_process(
             'Сделано!'
         )
         await state.finish()
-    except Exception as e:
+    except Exception as ex:
         await message.answer(
             '❗ Ошибка при вводе цены. \n\nВводимое значение должно '
             + 'быть числом. И не пиши "Р", "р", "руб". '
@@ -4441,7 +4441,7 @@ async def price_updating_process(
             parse_mode='Markdown'
         )
         logging.error(
-            f'Ошибка при вводе новой цены, {e}'
+            'Ошибка при вводе новой цены %s', ex
         )
         await PriceEditCallbackStates.EP3.set()
 
