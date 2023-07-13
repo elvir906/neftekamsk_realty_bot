@@ -931,3 +931,17 @@ class Output():
             return 'Участок'
         if item == 'apartment':
             return 'Квартира'
+
+    def category_to_text(category):
+        choice = {
+            '1': '1 к.кв.',
+            '2': '2 к.кв.',
+            '3': '3 к.кв.',
+            '4': '4 к.кв.',
+            '5': '5 к.кв.',
+            'Room': 'Комната',
+            'Townhouse': 'Таунхаус',
+            'House': 'Дом',
+            'Land': 'Участок'
+        }
+        return choice.get(category)

@@ -4174,33 +4174,17 @@ async def visible_on_step3(
             )
 
 #/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
-#/\/\/\/\/\/\/\/\/\/\/\/\/ Добавление в канал при изменении видимости \/\/\/\/\/\/\/\/\/\/\/
+#/\/\/\/\/\/\/\/\/\/\/\/\/ Добавление оюъекта в канал при изменении видимости \/\/\/\/\/\/\/\/\/\/\/
 #/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/
 
-# Сделать вывод категорий недвижимости
+# Сделал вывод категорий недвижимости
 
-            # def output(item):
-            #     if item == '1':
-            #         return '1к.кв.'
-            #     if item == '2':
-            #         return '2к.кв.'
-            #     if item == '3':
-            #         return '3к.кв.'
-            #     if item == '4':
-            #         return '4к.кв.'
-            #     if item == '5':
-            #         return '5к.кв.'
-            #     if item == 'room':
-            #         return 'Комната или КГТ'
-            #     if item == 'house':
-            #         return 'Дом'
-            #     if item == 'townhouse':
-            #         return 'Таунхаус'
-            #     if item == 'land':
-            #         return 'Участок'
-            #     if item == 'apartment':
-            #         return 'Квартира'
-
+            album_caption = (
+                'Продаётся '
+                + Output.category_to_text(category=category)
+                + ' \n'
+                + obj.description
+            )
 
             channel_album = MediaGroup()
             photo_list = obj.photo_id
@@ -4208,7 +4192,7 @@ async def visible_on_step3(
                 if photo_id == photo_list[-1]:                
                     channel_album.attach_photo(
                         photo_id,
-                        caption=obj.description,
+                        caption=album_caption,
                         parse_mode='Markdown'
                     )
                 else:
