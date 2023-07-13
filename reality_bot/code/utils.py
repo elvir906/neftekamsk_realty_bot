@@ -87,8 +87,8 @@ AUTOPOST_LIMIT = 7
 POST_DELAY = 45
 
 
-class keyboards():
-    def apartment_plan_category():
+class Keyboards():
+    def apartment_plan_category(self):
         keyboard = InlineKeyboardMarkup()
 
         for i in range(0, len(apartment_category)):
@@ -100,7 +100,7 @@ class keyboards():
             )
         return keyboard
 
-    def get_category_keyboard():
+    def get_category_keyboard(self):
         """генерация клавиатуры выбора по категориям"""
 
         mc_count = Room.objects.filter(visible=True).count()
@@ -128,7 +128,7 @@ class keyboards():
             )
         return keyboard
 
-    def get_rooms_count_keyboard():
+    def get_rooms_count_keyboard(self):
         """Генерация клавиатуры выбора по количеству комнат квартир"""
 
         one_room = Apartment.objects.filter(room_quantity=1, visible=True).count()
@@ -168,7 +168,7 @@ class keyboards():
         )
         return keyboard
 
-    def add_category_keyboard():
+    def add_category_keyboard(self):
         """Генерация клавиатуры для добавления объекта"""
 
         keyboard = InlineKeyboardMarkup()
@@ -189,7 +189,7 @@ class keyboards():
         )
         return keyboard
 
-    def add_rooms_count_keyboard():
+    def add_rooms_count_keyboard(self):
         """
         Генерация клавиатуры на выбор количества
         комнат при добавления квартиры.
@@ -209,19 +209,19 @@ class keyboards():
         )
         return keyboard
 
-    def floor_number_or_count_keyboard(object: str):
+    def floor_number_or_count_keyboard(self, item: str):
         """Генерация клавиатуры на выбор этажа или этажности дома"""
 
         #  Генерация названий кнопок и коллбэк_дат. Количество кнопок = 18
         keyboard = InlineKeyboardMarkup()
         buttons_text = [str(i) for i in range(1, 19)]
-        if object == 'apartment_floor':
+        if item == 'apartment_floor':
             callback_data = [str(i) + '_afloor' for i in range(1, 19)]
-        if object == 'apartment_house_floors':
+        if item == 'apartment_house_floors':
             callback_data = [str(i) + '_afloors' for i in range(1, 19)]
-        if object == 'room_floor':
+        if item == 'room_floor':
             callback_data = [str(i) + '_rfloor' for i in range(1, 19)]
-        if object == 'room_house_floors':
+        if item == 'room_house_floors':
             callback_data = [str(i) + '_rfloors' for i in range(1, 19)]
 
         # Генерация кнопок 18 этажей, шесть в три ряда.
@@ -238,7 +238,7 @@ class keyboards():
         )
         return keyboard
 
-    def yes_no_keyboard(item: str):
+    def yes_no_keyboard(self, item: str):
         """Генерация клавиатуры на да/нет по различным вопросам"""
         keyboard = InlineKeyboardMarkup()
         key_1 = InlineKeyboardButton(
@@ -257,7 +257,7 @@ class keyboards():
         )
         return keyboard
 
-    def microregion_keyboard(item: str):
+    def microregion_keyboard(self):
         """Генерация клавиатуры на выбор микрорайона при добавлении объекта"""
 
         keyboard = InlineKeyboardMarkup()
@@ -276,7 +276,7 @@ class keyboards():
         )
         return keyboard
 
-    def city_microregion_keyboard(checked_buttons: list):
+    def city_microregion_keyboard(self, checked_buttons: list):
         """Генерация клавиатуры на выбор микрорайона города"""
         keyboard = InlineKeyboardMarkup()
         new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in city_objects]
@@ -297,7 +297,7 @@ class keyboards():
         )
         return keyboard
 
-    def country_microregion_keyboard(checked_buttons: list):
+    def country_microregion_keyboard(self, checked_buttons: list):
         """Генерация клавиатуры на выбор района"""
         keyboard = InlineKeyboardMarkup()
         new_kbd_btns = ['✅ ' + x if x in checked_buttons else x for x in country_objects]
@@ -318,7 +318,7 @@ class keyboards():
         )
         return keyboard
 
-    def apartment_plan_category_choice(checked_buttons: list, room_count):
+    def apartment_plan_category_choice(self, checked_buttons: list, room_count: int):
 
         mjk_quantity = Apartment.objects.filter(category='МЖК', visible=True, room_quantity=room_count).count()
         stpl_quantity = Apartment.objects.filter(category='Старой планировки', visible=True, room_quantity=room_count).count()
@@ -357,7 +357,7 @@ class keyboards():
         )
         return keyboard
 
-    def purpose_choise_keyboard():
+    def purpose_choise_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         key_1 = InlineKeyboardButton(text='ИЖС', callback_data='ИЖС')
         key_2 = InlineKeyboardButton(text='СНТ, ДНТ', callback_data='СНТ, ДНТ')
@@ -371,7 +371,7 @@ class keyboards():
         )
         return keyboard
 
-    def gaz_choise_keyboard():
+    def gaz_choise_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         key_1 = InlineKeyboardButton(
             text='Газифицирован, дом отапливается',
@@ -396,7 +396,7 @@ class keyboards():
         )
         return keyboard
 
-    def material_choice_keyboard():
+    def material_choice_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         material_buttons_text = [
             'Кирпич',
@@ -423,7 +423,7 @@ class keyboards():
         )
         return keyboard
 
-    def water_choice_keyboard():
+    def water_choice_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         key_1 = InlineKeyboardButton(
             text='Да, центральное водоснабжение',
@@ -450,7 +450,7 @@ class keyboards():
         )
         return keyboard
 
-    def road_choice_keyboard():
+    def road_choice_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         key_1 = InlineKeyboardButton(
             text='Да, асфальт',
@@ -479,7 +479,7 @@ class keyboards():
         )
         return keyboard
 
-    def objects_list_keyboard(searching_user_id: int):
+    def objects_list_keyboard(self, searching_user_id: int):
         keyboard = InlineKeyboardMarkup()
 
         apartment_queryset = Apartment.objects.filter(
@@ -543,7 +543,7 @@ class keyboards():
         )
         return keyboard
 
-    def objects_list_autopost_keyboard(checked_buttons: list, searching_user_id: int):
+    def objects_list_autopost_keyboard(self, checked_buttons: list, searching_user_id: int):
 
         rieltor = Rieltors.objects.get(user_id=searching_user_id)
 
@@ -630,7 +630,7 @@ class keyboards():
 
         return keyboard, db_item
 
-    def objects_list_keyboard_for_change_visibleness(searching_user_id: int, visible: bool):
+    def objects_list_keyboard_for_change_visibleness(self, searching_user_id: int, visible: bool):
         keyboard = InlineKeyboardMarkup()
 
         apartment_queryset = Apartment.objects.filter(
@@ -694,7 +694,7 @@ class keyboards():
         )
         return keyboard
 
-    def pagination_keyboard(page, pages, category):
+    def pagination_keyboard(self, page, pages, category):
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
             InlineKeyboardButton(text='⬅', callback_data=f'{category}_prev'),
@@ -703,7 +703,7 @@ class keyboards():
         )
         return keyboard
 
-    def carousel_or_cascade_keyboard():
+    def carousel_or_cascade_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         keyboard.row(
             InlineKeyboardButton(text='Каскадная с фото', callback_data='cascade'),
@@ -711,7 +711,7 @@ class keyboards():
         )
         return keyboard
 
-    def cancel_button():
+    def cancel_button(self):
         keyboard = InlineKeyboardMarkup()
         cancel_button = 'Отменить внесение объекта'
         keyboard.row(
@@ -719,7 +719,7 @@ class keyboards():
         )
         return keyboard
 
-    def buyer_searching_category():
+    def buyer_searching_category(self):
         keyboard = InlineKeyboardMarkup()
         buttons_text = [
             '1к.кв.',
@@ -750,7 +750,7 @@ class keyboards():
         )
         return keyboard
 
-    def buyer_source_choice_keyboard():
+    def buyer_source_choice_keyboard(self):
         keyboard = InlineKeyboardMarkup()
         buttons_text = [
             'Наличные деньги',
@@ -773,7 +773,7 @@ class keyboards():
         )
         return keyboard
 
-    def buyer_list_keyboard(searching_user_id):
+    def buyer_list_keyboard(self, searching_user_id):
         buyer_queryset = Buyer.objects.filter(
             user_id=searching_user_id
         )
@@ -798,7 +798,7 @@ class keyboards():
         )
         return keyboard
 
-    def worker_list(ceo_user_id):
+    def worker_list(self, ceo_user_id):
         worker_queryset = Ceo.objects.filter(user_id=ceo_user_id)
         worker_list = worker_queryset.values('workers').get()
         buttons = []
@@ -822,7 +822,7 @@ class keyboards():
         )
         return keyboard
 
-    def agency_choice_kb():
+    def agency_choice_kb(self):
         buttons = []
         callback_data_string = []
         for item in agency_list:
@@ -864,7 +864,7 @@ class keyboards():
         )
         return keyboard
 
-    def visible_or_not_kb():
+    def visible_or_not_kb(self):
         keyboard = InlineKeyboardMarkup()
         buttons = [
             'Да, сделать видимым для всех',
@@ -879,25 +879,25 @@ class keyboards():
 
 
 class Output():
-    def false_or_true(item: bool) -> str:
+    def false_or_true(self, item: bool) -> str:
         if item:
             return 'Есть'
         return 'Нет'
 
-    def false_or_true2(item: str) -> bool:
+    def false_or_true2(self, item: str) -> bool:
         if item == 'True':
             return True
         return False
 
     # Строку в название класса
-    def str_to_class(str):
+    def str_to_class(self, str):
         if str in ['1', '2', '3', '4', '5']:
             str = 'Apartment'
         if str == 'Townhouse':
             str = 'TownHouse'
         return getattr(sys.modules[__name__], str)
 
-    def search_category_output(item):
+    def search_category_output(self, item):
         choice = {
             '1': '1к.кв.',
             '2': '2к.кв.',
@@ -912,7 +912,7 @@ class Output():
         }
         return choice.get(item)
 
-    def category_to_text(category):
+    def category_to_text(self, category):
         choice = {
             '1': '1-х комнатная квартира',
             '2': '2-х комнатная квартира',

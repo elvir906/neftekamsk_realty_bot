@@ -33,7 +33,7 @@ class DBWorker():
                 code_word=state_data.get('code_word'),
                 user_id=state_data.get('user_id'),
                 pub_date=dt.datetime.now(),
-                visible=Output.false_or_true2(state_data.get('visible'))
+                visible=Output.false_or_true2(item=state_data.get('visible'))
             )
             return True
         except Exception as ex:
@@ -62,7 +62,7 @@ class DBWorker():
                 code_word=state_data.get('room_code_word'),
                 user_id=state_data.get('room_user_id'),
                 pub_date=dt.datetime.now(),
-                visible=Output.false_or_true2(state_data.get('visible'))
+                visible=Output.false_or_true2(item=state_data.get('visible'))
             )
             return True
         except Exception as ex:
@@ -99,7 +99,7 @@ class DBWorker():
                 code_word=state_data.get('house_code_word'),
                 user_id=state_data.get('house_user_id'),
                 pub_date=dt.datetime.now(),
-                visible=Output.false_or_true2(state_data.get('visible'))
+                visible=Output.false_or_true2(item=state_data.get('visible'))
             )
             return True
         except Exception as ex:
@@ -136,7 +136,7 @@ class DBWorker():
                 code_word=state_data.get('townhouse_code_word'),
                 user_id=state_data.get('townhouse_user_id'),
                 pub_date=dt.datetime.now(),
-                visible=Output.false_or_true2(state_data.get('visible'))
+                visible=Output.false_or_true2(item=state_data.get('visible'))
             )
             return True
         except Exception as ex:
@@ -171,7 +171,7 @@ class DBWorker():
                 code_word=state_data.get('land_code_word'),
                 user_id=state_data.get('land_user_id'),
                 pub_date=dt.datetime.now(),
-                visible=Output.false_or_true2(state_data.get('visible'))
+                visible=Output.false_or_true2(item=state_data.get('visible'))
             )
             return True
         except Exception as ex:

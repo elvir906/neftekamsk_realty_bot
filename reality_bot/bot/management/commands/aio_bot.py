@@ -3,7 +3,7 @@ import logging
 import operator
 import os
 import re
-from code.answer_messages import message_texts
+from code.answer_messages import MessageTexts
 from code.db_worker import DBWorker
 from code.states import (Adpost, ApartmentSearch, ArchiveObjects, Autopost,
                          Buyer, CallbackOnStart, CeoRegistration, DeleteBuyer,
@@ -15,7 +15,7 @@ from code.states import (Adpost, ApartmentSearch, ArchiveObjects, Autopost,
                          Visible_on, WorkersBuyers, WorkersObjects)
 from code.utils import (Output, apartment_category, apartment_category_checked,
                         city_objects_checked, country_object_checked,
-                        keyboards, vk_club_ids, AUTOPOST_LIMIT, POST_DELAY)
+                        Keyboards, vk_club_ids, AUTOPOST_LIMIT, POST_DELAY)
 from functools import reduce
 
 import django
@@ -50,6 +50,9 @@ bot = Bot(token=config('TELEGRAM_TOKEN'))
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
+#floor_number_or_count_keyboard
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         executor.start_polling(dp, skip_updates=True)
@@ -60,7 +63,7 @@ class Command(BaseCommand):
 
 @dp.message_handler(commands=['start'])
 async def start(message: Message):
-    await message.answer(message_texts.on.get('start'), parse_mode='Markdown')
+    await message.answer(MessageTexts.on.get('start'), parse_mode='Markdown')
 # -----------------------------------------------------------------------------
 # --------------------РЕГИСТРАЦИЯ----------------------------------------------
 # -----------------------------------------------------------------------------
@@ -106,7 +109,7 @@ async def agency_choice(message: Message, state: FSMContext):
         )
         await message.answer(
             'В каком агентстве ты работаешь?',
-            reply_markup=keyboards.agency_choice_kb()
+            reply_markup=Keyboards.agency_choice_kb()
         )
         await Registration.step2.set()
 
@@ -122,7 +125,7 @@ async def phone_number_entering(callback: CallbackQuery, state: FSMContext):
         await state.update_data(agency_name=callback.data)
 
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text_for_editing'),
+            MessageTexts.on.get('phone_number_entering_text_for_editing'),
             parse_mode='Markdown'
         )
         await Registration.step3.set()
@@ -142,7 +145,7 @@ async def registration_finish(message: Message, state: FSMContext):
             data = await state.get_data()
             if not DBWorker.rieltor_to_db(data):
                 await message.answer(
-                    message_texts.on.get('sorry_about_error')
+                    MessageTexts.on.get('sorry_about_error')
                 )
             else:
                 rieltor = Rieltors.objects.get(user_id=message.from_user.id)
@@ -178,7 +181,7 @@ async def registration_finish(message: Message, state: FSMContext):
             await state.finish()
         else:
             await message.answer(
-                message_texts.phone_number_entering_error(
+                MessageTexts.phone_number_entering_error(
                     phone_number=message.text
                 ),
                 parse_mode='Markdown'
@@ -195,7 +198,7 @@ async def registration_finish(message: Message, state: FSMContext):
 @dp.message_handler(commands=['about'])
 async def about(message: Message):
     await message.answer(
-        '\n'.join(message_texts.on.get('about')),
+        '\n'.join(MessageTexts.on.get('about')),
         parse_mode='markdown'
     )
 # -----------------------------------------------------------------------------
@@ -229,13 +232,12 @@ async def get_statistics(message: Message):
         'command_counter': command_counter
     }
     await message.answer(
-        text=message_texts.statistics_text(data=data),
+        text=MessageTexts.statistics_text(data=data),
         parse_mode='Markdown'
     )
 # -----------------------------------------------------------------------------
 # -----------------------ПОИСК ОБЪЕКТА-----------------------------------------
 # -----------------------------------------------------------------------------
-
 
 """
 Раскоментить для платной подписки и нижнюю удалить
@@ -257,7 +259,7 @@ async def get_statistics(message: Message):
 #             '✏ Выбери один из двух форматов просмотра объектов:\n'
 #             + '*Каскадная* - все объекты вываливаются в чат, *с фото*.\n'
 #             + '*Карусель* - лаконичное перелистывание, но *без фото*.',
-#             reply_markup=keyboards.carousel_or_cascade_keyboard(),
+#             reply_markup=Keyboards.carousel_or_cascade_keyboard(),
 #             parse_mode='Markdown'
 #         )
 
@@ -278,7 +280,7 @@ async def search_objects(message: Message):
             '✏ Выбери один из двух форматов просмотра объектов:\n'
             + '*Каскадная* - все объекты "вываливаются" в чат, *с фото*.\n'
             + '*Карусель* - лаконичное перелистывание, но *без фото*.',
-            reply_markup=keyboards.carousel_or_cascade_keyboard(),
+            reply_markup=Keyboards.carousel_or_cascade_keyboard(),
             parse_mode='Markdown'
         )
 
@@ -290,7 +292,7 @@ async def cascade(callback: CallbackQuery, state: FSMContext):
     await state.update_data(view_form=callback.data)
     await callback.message.edit_text(
         '✏ Выбери категорию объектов для поиска',
-        reply_markup=keyboards.get_category_keyboard()
+        reply_markup=Keyboards.get_category_keyboard()
     )
 
 
@@ -312,7 +314,7 @@ async def cascade(callback: CallbackQuery, state: FSMContext):
 #     else:
 #         await message.answer(
 #                 '✏ Что желаешь добавить?',
-#                 reply_markup=keyboards.add_category_keyboard()
+#                 reply_markup=Keyboards.add_category_keyboard()
 #             )
 
 # !!!Закоменьтить перед внедрением платной подписки
@@ -333,7 +335,7 @@ async def add_object(message: Message):
     else:
         await message.answer(
                 '✏ Что желаешь добавить?',
-                reply_markup=keyboards.add_category_keyboard()
+                reply_markup=Keyboards.add_category_keyboard()
             )
 # -----------------------------------------------------------------------------
 # --------------------ПОИСК ОБЪЕКТА--------------------------------------------
@@ -392,7 +394,7 @@ async def rooms(message: Message, state: FSMContext):
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.room_search_result_text(item=item),
+                                caption=MessageTexts.room_search_result_text(item=item),
                                 parse_mode='Markdown'
                             )
                         else:
@@ -404,10 +406,10 @@ async def rooms(message: Message, state: FSMContext):
                 if query_set:
                     page = 1
                     await message.answer(
-                        message_texts.room_search_result_text(
+                        MessageTexts.room_search_result_text(
                             item=query_set[page - 1]
                         ),
-                        reply_markup=keyboards.pagination_keyboard(
+                        reply_markup=Keyboards.pagination_keyboard(
                             page=page,
                             pages=pages_count,
                             category='room'
@@ -429,7 +431,7 @@ async def rooms(message: Message, state: FSMContext):
             sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error'),
+            MessageTexts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
         logging.error('%s', e)
@@ -449,10 +451,10 @@ async def rooms_next(callback: CallbackQuery, state: FSMContext):
         if (page > 0) and (page <= data.get('pages_count')):
             await state.update_data(page=page)
             await callback.message.edit_text(
-                message_texts.room_search_result_text(
+                MessageTexts.room_search_result_text(
                     item=data.get('query_set')[page - 1]
                 ),
-                reply_markup=keyboards.pagination_keyboard(
+                reply_markup=Keyboards.pagination_keyboard(
                     page=page,
                     pages=data.get('pages_count'),
                     category='room'
@@ -512,7 +514,7 @@ async def houses(message: Message, state: FSMContext):
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.house_search_result_text(
+                                caption=MessageTexts.house_search_result_text(
                                     item=item
                                 ),
                                 parse_mode='Markdown'
@@ -526,10 +528,10 @@ async def houses(message: Message, state: FSMContext):
                 if query_set:
                     page = 1
                     await message.answer(
-                        message_texts.house_search_result_text(
+                        MessageTexts.house_search_result_text(
                             item=query_set[page - 1]
                         ),
-                        reply_markup=keyboards.pagination_keyboard(
+                        reply_markup=Keyboards.pagination_keyboard(
                             page=page,
                             pages=pages_count,
                             category='house'
@@ -551,7 +553,7 @@ async def houses(message: Message, state: FSMContext):
             sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error'),
+            MessageTexts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
         logging.error('%s', e)
@@ -572,10 +574,10 @@ async def houses_next(callback: CallbackQuery, state: FSMContext):
         if (page > 0) and (page <= data.get('pages_count')):
             await state.update_data(page=page)
             await callback.message.edit_text(
-                message_texts.house_search_result_text(
+                MessageTexts.house_search_result_text(
                     item=data.get('query_set')[page - 1]
                 ),
-                reply_markup=keyboards.pagination_keyboard(
+                reply_markup=Keyboards.pagination_keyboard(
                     page=page,
                     pages=data.get('pages_count'),
                     category='house'
@@ -635,7 +637,7 @@ async def townhouses(message: Message, state: FSMContext):
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.townhouse_search_result_text(
+                                caption=MessageTexts.townhouse_search_result_text(
                                     item=item
                                 ),
                                 parse_mode='Markdown'
@@ -649,10 +651,10 @@ async def townhouses(message: Message, state: FSMContext):
                 if query_set:
                     page = 1
                     await message.answer(
-                        message_texts.townhouse_search_result_text(
+                        MessageTexts.townhouse_search_result_text(
                             item=query_set[page - 1]
                         ),
-                        reply_markup=keyboards.pagination_keyboard(
+                        reply_markup=Keyboards.pagination_keyboard(
                             page=page,
                             pages=pages_count,
                             category='townhouse'
@@ -674,7 +676,7 @@ async def townhouses(message: Message, state: FSMContext):
             sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error'),
+            MessageTexts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
         logging.error('%s', e)
@@ -694,11 +696,13 @@ async def townhouses_next(callback: CallbackQuery, state: FSMContext):
         if (page > 0) and (page <= data.get('pages_count')):
             await state.update_data(page=page)
             await callback.message.edit_text(
-                message_texts.townhouse_search_result_text(
+                MessageTexts.townhouse_search_result_text(
                     data.get('query_set')[page - 1]
                 ),
-                reply_markup=keyboards.pagination_keyboard(
-                    page, data.get('pages_count'), 'townhouse'
+                reply_markup=Keyboards.pagination_keyboard(
+                    page=page,
+                    pages=data.get('pages_count'),
+                    category='townhouse'
                 ),
                 parse_mode='Markdown'
             )
@@ -757,7 +761,7 @@ async def lands(message: Message, state: FSMContext):
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.lands_search_result_text(
+                                caption=MessageTexts.lands_search_result_text(
                                     item=item
                                 ),
                                 parse_mode='Markdown'
@@ -773,10 +777,10 @@ async def lands(message: Message, state: FSMContext):
                     page = 1
                     await message.answer(
                         # вывод на экран первого элемента (инфы об объекте) кверисета
-                        message_texts.lands_search_result_text(
+                        MessageTexts.lands_search_result_text(
                             item=query_set[page - 1]
                         ),
-                        reply_markup=keyboards.pagination_keyboard(
+                        reply_markup=Keyboards.pagination_keyboard(
                             page=page,
                             pages=pages_count,
                             category='land'
@@ -800,7 +804,7 @@ async def lands(message: Message, state: FSMContext):
             sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error'),
+            MessageTexts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
         logging.error('%s', e)
@@ -828,11 +832,11 @@ async def lands_next(callback: CallbackQuery, state: FSMContext):
             await callback.message.edit_text(
 
                 # вывод на экран через кастомный метод
-                message_texts.lands_search_result_text(
+                MessageTexts.lands_search_result_text(
                     item=data.get('query_set')[page - 1]
                 ),
                 # кейборд из кастомного метода
-                reply_markup=keyboards.pagination_keyboard(
+                reply_markup=Keyboards.pagination_keyboard(
                     page=page,
                     pages=data.get('pages_count'),
                     category='land'
@@ -850,7 +854,7 @@ async def lands_next(callback: CallbackQuery, state: FSMContext):
 async def apartments(callback: CallbackQuery):
     await callback.message.edit_text(
         '✏ Выбери по количеству комнат',
-        reply_markup=keyboards.get_rooms_count_keyboard()
+        reply_markup=Keyboards.get_rooms_count_keyboard()
     )
 
 
@@ -858,7 +862,7 @@ async def apartments(callback: CallbackQuery):
 async def back_button_action(callback: CallbackQuery):
     await callback.message.edit_text(
         '✏ Выбери категорию объектов для поиска',
-        reply_markup=keyboards.get_category_keyboard()
+        reply_markup=Keyboards.get_category_keyboard()
     )
 
 checked_category = {}
@@ -884,7 +888,7 @@ async def apartment_plan_category_choice(
 
     await callback.message.edit_text(
         '✏ Выберите категорию по планировке',
-        reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[], room_count=room_quantity)
+        reply_markup=Keyboards.apartment_plan_category_choice(checked_buttons=[], room_count=room_quantity)
     )
     checked_category[key] = []
 
@@ -931,7 +935,7 @@ async def apartment_plan_category_checking(
         if not checked_category[key]:
             await callback.message.edit_text(
                 '❗ Необходимо выбрать категорию',
-                reply_markup=keyboards.apartment_plan_category_choice(checked_buttons=[], room_count=room_quantity)
+                reply_markup=Keyboards.apartment_plan_category_choice(checked_buttons=[], room_count=room_quantity)
             )
         else:
             await state.update_data(category=checked_category[key])
@@ -960,7 +964,7 @@ async def apartment_plan_category_checking(
             checked_category[key].append(answer)
         await callback.message.edit_text(
             '✏ Выберите категорию по планировке',
-            reply_markup=keyboards.apartment_plan_category_choice(
+            reply_markup=Keyboards.apartment_plan_category_choice(
                 checked_buttons=checked_category[key],
                 room_count=room_quantity
             )
@@ -1006,7 +1010,7 @@ async def apartment_search_result(
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.apartments_search_result_text(
+                                caption=MessageTexts.apartments_search_result_text(
                                         room_count=room_count,
                                         item=item
                                     ),
@@ -1023,11 +1027,11 @@ async def apartment_search_result(
                 if query_set:
                     page = 1
                     await message.answer(
-                        message_texts.apartments_search_result_text(
+                        MessageTexts.apartments_search_result_text(
                             int(room_count),
                             query_set[page - 1]
                         ),
-                        reply_markup=keyboards.pagination_keyboard(
+                        reply_markup=Keyboards.pagination_keyboard(
                             page=page,
                             pages=pages_count,
                             category='apartment'
@@ -1049,7 +1053,7 @@ async def apartment_search_result(
             sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
         )
         await message.answer(
-            message_texts.on.get('limit_entering_error'),
+            MessageTexts.on.get('limit_entering_error'),
             parse_mode='Markdown'
         )
         logging.error('%s', e)
@@ -1072,11 +1076,11 @@ async def apartment_next(callback: CallbackQuery, state: FSMContext):
 
             await state.update_data(page=page)
             await callback.message.edit_text(
-                message_texts.apartments_search_result_text(
+                MessageTexts.apartments_search_result_text(
                     int(data.get('room_count')),
                     data.get('query_set')[page - 1]
                 ),
-                reply_markup=keyboards.pagination_keyboard(
+                reply_markup=Keyboards.pagination_keyboard(
                     page=page,
                     pages=data.get('pages_count'),
                     category='apartment'
@@ -1101,7 +1105,7 @@ async def add_apartment(callback: CallbackQuery, state: FSMContext):
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.'
         + '\n'
         + '\n✏ *Введи количество комнат*',
-        reply_markup=keyboards.add_rooms_count_keyboard(),
+        reply_markup=Keyboards.add_rooms_count_keyboard(),
         parse_mode='Markdown'
     )
 
@@ -1168,8 +1172,8 @@ async def entering_house_number(message: Message, state: FSMContext):
         await state.update_data(house_number=answer.upper())
         await message.answer(
             '✏ Введите этаж квартиры',
-            reply_markup=keyboards.floor_number_or_count_keyboard(
-                object='apartment_floor'
+            reply_markup=Keyboards.floor_number_or_count_keyboard(
+                item='apartment_floor'
             )
         )
         await CallbackOnStart.next()
@@ -1192,8 +1196,8 @@ async def entering_floor(callback: CallbackQuery, state: FSMContext):
         await state.update_data(floor=callback.data.removesuffix('_afloor'))
         await callback.message.edit_text(
             '✏ Введи количество этажей',
-            reply_markup=keyboards.floor_number_or_count_keyboard(
-                object='apartment_house_floors'
+            reply_markup=Keyboards.floor_number_or_count_keyboard(
+                item='apartment_house_floors'
             )
         )
         await CallbackOnStart.next()
@@ -1241,7 +1245,7 @@ async def plan_category(message: Message, state: FSMContext):
             await state.update_data(area=answer)
             await message.answer(
                 '✏ К какой категории по планировке относится квартира?',
-                reply_markup=keyboards.apartment_plan_category()
+                reply_markup=Keyboards.apartment_plan_category()
             )
             await CallbackOnStart.Q5.set()
 
@@ -1252,7 +1256,7 @@ async def plan_category(message: Message, state: FSMContext):
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -1275,7 +1279,7 @@ async def entering_area(callback: CallbackQuery, state: FSMContext):
     else:
         await state.update_data(category=callback.data)
         await callback.message.edit_text(
-            message_texts.on.get('enter_price'),
+            MessageTexts.on.get('enter_price'),
             parse_mode='Markdown'
         )
         await CallbackOnStart.Q6.set()
@@ -1293,7 +1297,7 @@ async def entering_price(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(price=answer)
             await message.answer(
-                message_texts.entering_description_text(category='квартиры'),
+                MessageTexts.entering_description_text(category='квартиры'),
                 parse_mode='Markdown'
             )
             await CallbackOnStart.next()
@@ -1305,7 +1309,7 @@ async def entering_price(message: Message, state: FSMContext):
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.on.get('price_entering_error'),
+                MessageTexts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -1324,12 +1328,12 @@ async def entering_description(message: Message, state: FSMContext):
             await state.update_data(description=answer)
             await message.answer(
                 '✏ На недвижимости есть обременение?',
-                reply_markup=keyboards.yes_no_keyboard('encumbrance')
+                reply_markup=Keyboards.yes_no_keyboard(item='encumbrance')
             )
             await CallbackOnStart.next()
         else:
             await message.answer(
-                message_texts.character_limit(len(message.text))
+                MessageTexts.character_limit(len(message.text))
             )
             logging.error('Превышение лимита знаков')
             await CallbackOnStart.Q7.set()
@@ -1352,7 +1356,7 @@ async def entering_encumbrance(callback: CallbackQuery, state: FSMContext):
             await state.update_data(encumbrance=False)
         await callback.message.edit_text(
             '✏ В собственности есть дети?',
-            reply_markup=keyboards.yes_no_keyboard('children')
+            reply_markup=Keyboards.yes_no_keyboard(item='children')
         )
         await CallbackOnStart.next()
 
@@ -1375,7 +1379,7 @@ async def entering_children(callback: CallbackQuery, state: FSMContext):
             await state.update_data(children=False)
         await callback.message.edit_text(
             '✏ Недвижимость возможно купить по иптоеке?',
-            reply_markup=keyboards.yes_no_keyboard('mortage')
+            reply_markup=Keyboards.yes_no_keyboard(item='mortage')
         )
         await CallbackOnStart.next()
 
@@ -1397,7 +1401,7 @@ async def entering_mortage(callback: CallbackQuery, state: FSMContext):
         if callback.data == 'no_mortage':
             await state.update_data(mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text'),
+            MessageTexts.on.get('phone_number_entering_text'),
             parse_mode='Markdown'
         )
         await CallbackOnStart.next()
@@ -1426,7 +1430,7 @@ async def entering_phone_number(message: Message, state: FSMContext):
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text),
+                MessageTexts.phone_number_entering_error(message.text),
                 parse_mode='Markdown'
             )
             logging.error(f'Ошибка при вводе номера телефона {message.text}')
@@ -1452,7 +1456,7 @@ async def visible_or_not(message: Message, state: FSMContext):
             + 'У вас он будет храниться в таблице "Объекты-черновики". '
             + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
             + 'соответствующим пунктом меню.',
-            reply_markup=keyboards.visible_or_not_kb(),
+            reply_markup=Keyboards.visible_or_not_kb(),
             parse_mode='Markdown'
         )
         await CallbackOnStart.Q12.set()
@@ -1485,7 +1489,7 @@ async def report_photo(message: Message, state: FSMContext):
 
     if len(images[key]) == 0:
         images[key].append(message.photo[-1].file_id)
-        await message.answer(message_texts.on.get('code_word_text'))
+        await message.answer(MessageTexts.on.get('code_word_text'))
         await CallbackOnStart.Q15.set()
     else:
         images[key].append(message.photo[-1].file_id)
@@ -1515,7 +1519,7 @@ async def base_updating(message: Message, state: FSMContext):
         await asyncio.sleep(2)
         if not DBWorker.apartment_to_db(data):
             await message.answer(
-                message_texts.on.get('sorry_about_error')
+                MessageTexts.on.get('sorry_about_error')
             )
         else:
             album = MediaGroup()
@@ -1527,7 +1531,7 @@ async def base_updating(message: Message, state: FSMContext):
                     album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.apartment_adding_result_text(data)
+                            MessageTexts.apartment_adding_result_text(data)
                         ),
                         parse_mode='Markdown'
                     )
@@ -1535,7 +1539,7 @@ async def base_updating(message: Message, state: FSMContext):
                     channel_album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.apartment_message_for_channel(data)
+                            MessageTexts.apartment_message_for_channel(data)
                         ),
                         parse_mode='Markdown'
                     )
@@ -1616,7 +1620,7 @@ async def enetering_rooms_house_number(
         await state.update_data(room_house_number=answer.upper())
         await message.answer(
             '✏ Введи этаж комнаты',
-            reply_markup=keyboards.floor_number_or_count_keyboard('room_floor')
+            reply_markup=Keyboards.floor_number_or_count_keyboard(item='room_floor')
         )
         await RoomCallbackStates.next()
 
@@ -1638,8 +1642,8 @@ async def entering_room_floor(callback: CallbackQuery, state: FSMContext):
         await state.update_data(room_floor=callback.data.removesuffix('_rfloor'))
         await callback.message.edit_text(
             '✏ Введи количество этажей',
-            reply_markup=keyboards.floor_number_or_count_keyboard(
-                object='room_house_floors'
+            reply_markup=Keyboards.floor_number_or_count_keyboard(
+                item='room_house_floors'
             )
         )
         await RoomCallbackStates.next()
@@ -1690,7 +1694,7 @@ async def enetering_rooms_area(
                 answer = float(message.text)
             await state.update_data(room_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price'),
+                MessageTexts.on.get('enter_price'),
                 parse_mode='Markdown'
             )
             await RoomCallbackStates.next()
@@ -1698,7 +1702,7 @@ async def enetering_rooms_area(
         except (ValueError) as e:
             await RoomCallbackStates.R5.set()
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -1716,7 +1720,7 @@ async def entering_room_price(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(room_price=answer)
             await message.answer(
-                message_texts.entering_description_text(category='комнаты'),
+                MessageTexts.entering_description_text(category='комнаты'),
                 parse_mode='Markdown'
             )
             await RoomCallbackStates.next()
@@ -1724,7 +1728,7 @@ async def entering_room_price(message: Message, state: FSMContext):
         except (ValueError) as e:
             await RoomCallbackStates.R6.set()
             await message.answer(
-                message_texts.on.get('price_entering_error'),
+                MessageTexts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -1743,12 +1747,12 @@ async def entering_room_description(message: Message, state: FSMContext):
             await state.update_data(room_description=answer)
             await message.answer(
                 '✏ На недвижимости есть обременение?',
-                reply_markup=keyboards.yes_no_keyboard(item='room_encumbrance')
+                reply_markup=Keyboards.yes_no_keyboard(item='room_encumbrance')
                 )
             await RoomCallbackStates.next()
         else:
             await message.answer(
-                message_texts.character_limit(len(message.text))
+                MessageTexts.character_limit(len(message.text))
             )
             logging.error('Превышение лимита знаков')
             await RoomCallbackStates.R7.set()
@@ -1773,7 +1777,7 @@ async def entering_room_encumbrance(
             await state.update_data(room_encumbrance=False)
         await callback.message.edit_text(
             '✏ В собственности есть дети?',
-            reply_markup=keyboards.yes_no_keyboard(item='room_children')
+            reply_markup=Keyboards.yes_no_keyboard(item='room_children')
         )
         await RoomCallbackStates.next()
 
@@ -1795,7 +1799,7 @@ async def entering_room_children(callback: CallbackQuery, state: FSMContext):
             await state.update_data(room_children=False)
         await callback.message.edit_text(
             '✏ Недвижимость возможно купить по иптоеке?',
-            reply_markup=keyboards.yes_no_keyboard(item='room_mortage')
+            reply_markup=Keyboards.yes_no_keyboard(item='room_mortage')
         )
         await RoomCallbackStates.next()
 
@@ -1816,7 +1820,7 @@ async def entering_room_mortage(callback: CallbackQuery, state: FSMContext):
         if callback.data == 'no_room_mortage':
             await state.update_data(room_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text'),
+            MessageTexts.on.get('phone_number_entering_text'),
             parse_mode='Markdown'
         )
         await RoomCallbackStates.next()
@@ -1844,7 +1848,7 @@ async def entering_room_phone_number(message: Message, state: FSMContext):
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(
+                MessageTexts.phone_number_entering_error(
                     phone_number=message.text
                 ),
                 parse_mode='Markdown'
@@ -1872,7 +1876,7 @@ async def room_visible_or_not(message: Message, state: FSMContext):
             + 'У вас он будет храниться в таблице "Объекты-черновики". '
             + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
             + 'соответствующим пунктом меню.',
-            reply_markup=keyboards.visible_or_not_kb(),
+            reply_markup=Keyboards.visible_or_not_kb(),
             parse_mode='Markdown'
         )
         await RoomCallbackStates.R12.set()
@@ -1901,7 +1905,7 @@ async def report_room_photo(message: Message):
 
     if len(images[key]) == 0:
         images[key].append(message.photo[-1].file_id)
-        await message.answer(message_texts.on.get('code_word_text'))
+        await message.answer(MessageTexts.on.get('code_word_text'))
         await RoomCallbackStates.R15.set()
     else:
         images[key].append(message.photo[-1].file_id)
@@ -1931,7 +1935,7 @@ async def room_base_updating(message: Message, state: FSMContext):
         await asyncio.sleep(2)
         if not DBWorker.room_to_db(data):
             await message.answer(
-                message_texts.on.get('sorry_about_error')
+                MessageTexts.on.get('sorry_about_error')
             )
         else:
             album = MediaGroup()
@@ -1942,14 +1946,14 @@ async def room_base_updating(message: Message, state: FSMContext):
                     album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.room_adding_result_text(data)
+                            MessageTexts.room_adding_result_text(data)
                         ),
                         parse_mode='Markdown'
                     )
                     channel_album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.room_message_for_channel(data)
+                            MessageTexts.room_message_for_channel(data)
                         ),
                         parse_mode='Markdown'
                     )
@@ -1982,7 +1986,7 @@ async def add_house(callback: CallbackQuery, state: FSMContext):
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Укажи Местоположение дома:*\n\n'
         + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.',
-        reply_markup=keyboards.microregion_keyboard('object'),
+        reply_markup=Keyboards.microregion_keyboard(),
         parse_mode='Markdown'
     )
     await HouseCallbackStates.H1.set()
@@ -2022,7 +2026,7 @@ async def entering_house_purpose(message: Message, state: FSMContext):
         await state.update_data(house_street_name=answer)
         await message.answer(
             '✏ Укажи назначение участка',
-            reply_markup=keyboards.purpose_choise_keyboard()
+            reply_markup=Keyboards.purpose_choise_keyboard()
         )
         await HouseCallbackStates.next()
 
@@ -2048,7 +2052,7 @@ async def entering_house_finish(
         await state.update_data(house_purpose=callback.data)
         await callback.message.edit_text(
             '✏ Это завершённое строительство',
-            reply_markup=keyboards.yes_no_keyboard(item='house_finish')
+            reply_markup=Keyboards.yes_no_keyboard(item='house_finish')
         )
         await HouseCallbackStates.next()
 
@@ -2077,7 +2081,7 @@ async def entering_house_material(
 
         await callback.message.edit_text(
             '✏ Укажи материал стен дома',
-            reply_markup=keyboards.material_choice_keyboard()
+            reply_markup=Keyboards.material_choice_keyboard()
         )
         await HouseCallbackStates.next()
 
@@ -2106,7 +2110,7 @@ async def entering_house_gas(
         await state.update_data(house_material=callback.data)
         await callback.message.edit_text(
             '✏ Укажи степень газификации дома',
-            reply_markup=keyboards.gaz_choise_keyboard()
+            reply_markup=Keyboards.gaz_choise_keyboard()
         )
         await HouseCallbackStates.next()
 
@@ -2131,7 +2135,7 @@ async def entering_house_waters(
         await state.update_data(house_gaz=callback.data)
         await callback.message.edit_text(
             '✏ В доме есть вода?',
-            reply_markup=keyboards.water_choice_keyboard()
+            reply_markup=Keyboards.water_choice_keyboard()
         )
         await HouseCallbackStates.next()
 
@@ -2157,7 +2161,7 @@ async def entering_house_sauna(
         await state.update_data(house_water=callback.data)
         await callback.message.edit_text(
             '✏ На териитории участка/в доме есть баня или сауна',
-            reply_markup=keyboards.yes_no_keyboard(item='house_sauna')
+            reply_markup=Keyboards.yes_no_keyboard(item='house_sauna')
         )
         await HouseCallbackStates.next()
 
@@ -2185,7 +2189,7 @@ async def entering_house_garage(
 
         await callback.message.edit_text(
             '✏ На териитории участка есть гараж?',
-            reply_markup=keyboards.yes_no_keyboard(item='house_garage')
+            reply_markup=Keyboards.yes_no_keyboard(item='house_garage')
         )
         await HouseCallbackStates.next()
 
@@ -2212,7 +2216,7 @@ async def entering_house_fence(
             await state.update_data(house_garage='Нет')
         await callback.message.edit_text(
             '✏ Участок огорожен?',
-            reply_markup=keyboards.yes_no_keyboard(item='house_fence')
+            reply_markup=Keyboards.yes_no_keyboard(item='house_fence')
         )
         await HouseCallbackStates.next()
 
@@ -2239,7 +2243,7 @@ async def entering_house_road(
             await state.update_data(house_fence='Нет')
         await callback.message.edit_text(
             '✏ К участку есть проезд?',
-            reply_markup=keyboards.road_choice_keyboard()
+            reply_markup=Keyboards.road_choice_keyboard()
         )
         await HouseCallbackStates.next()
 
@@ -2300,7 +2304,7 @@ async def entering_house_land_area(message: Message, state: FSMContext):
         except (ValueError) as e:
             await HouseCallbackStates.H12.set()
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -2323,7 +2327,7 @@ async def entering_house_price(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(house_land_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price'),
+                MessageTexts.on.get('enter_price'),
                 parse_mode='Markdown'
             )
             await HouseCallbackStates.next()
@@ -2331,7 +2335,7 @@ async def entering_house_price(message: Message, state: FSMContext):
         except (ValueError) as e:
             await HouseCallbackStates.H13.set()
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -2349,7 +2353,7 @@ async def entering_house_description(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(house_price=answer)
             await message.answer(
-                message_texts.entering_description_text('дома'),
+                MessageTexts.entering_description_text('дома'),
                 parse_mode='Markdown'
             )
             await HouseCallbackStates.next()
@@ -2357,7 +2361,7 @@ async def entering_house_description(message: Message, state: FSMContext):
         except (ValueError) as e:
             await HouseCallbackStates.H14.set()
             await message.answer(
-                message_texts.on.get('price_entering_error'),
+                MessageTexts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -2378,12 +2382,12 @@ async def entering_house_encumbrance(
             await state.update_data(house_description=answer)
             await message.answer(
                 '✏ На доме есть обременение?',
-                reply_markup=keyboards.yes_no_keyboard('house_encumbrance')
+                reply_markup=Keyboards.yes_no_keyboard(item='house_encumbrance')
             )
             await HouseCallbackStates.next()
         else:
             await message.answer(
-                message_texts.character_limit(len(message.text))
+                MessageTexts.character_limit(len(message.text))
             )
             logging.error('Превышение лимита знаков')
             await HouseCallbackStates.H15.set()
@@ -2412,7 +2416,7 @@ async def entering_house_children(
             await state.update_data(house_encumbrance=False)
         await callback.message.edit_text(
             '✏ В собственности есть дети?',
-            reply_markup=keyboards.yes_no_keyboard('house_children')
+            reply_markup=Keyboards.yes_no_keyboard(item='house_children')
         )
         await HouseCallbackStates.next()
 
@@ -2440,7 +2444,7 @@ async def entering_house_mortage(
             await state.update_data(house_children=False)
         await callback.message.edit_text(
             '✏ Дом возможно купить по иптоеке?',
-            reply_markup=keyboards.yes_no_keyboard('house_mortage')
+            reply_markup=Keyboards.yes_no_keyboard(item='house_mortage')
         )
         await HouseCallbackStates.next()
 
@@ -2467,7 +2471,7 @@ async def entering_house_phone_number(
         if callback.data == 'no_house_mortage':
             await state.update_data(house_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text'),
+            MessageTexts.on.get('phone_number_entering_text'),
             parse_mode='Markdown'
         )
         await HouseCallbackStates.next()
@@ -2498,7 +2502,7 @@ async def entering_house_agency_name(
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text),
+                MessageTexts.phone_number_entering_error(message.text),
                 parse_mode='Markdown'
             )
             logging.error('Ошибка при вводе номера телефона %s', message.text)
@@ -2524,7 +2528,7 @@ async def house_visible_or_not(message: Message, state: FSMContext):
             + 'У вас он будет храниться в таблице "Объекты-черновики". '
             + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
             + 'соответствующим пунктом меню.',
-            reply_markup=keyboards.visible_or_not_kb(),
+            reply_markup=Keyboards.visible_or_not_kb(),
             parse_mode='Markdown'
         )
         await HouseCallbackStates.H21.set()
@@ -2553,7 +2557,7 @@ async def house_report_photo(message: Message):
 
     if len(images[key]) == 0:
         images[key].append(message.photo[-1].file_id)
-        await message.answer(message_texts.on.get('code_word_text'))
+        await message.answer(MessageTexts.on.get('code_word_text'))
         await HouseCallbackStates.H23.set()
     else:
         images[key].append(message.photo[-1].file_id)
@@ -2583,7 +2587,7 @@ async def house_base_updating(message: Message, state: FSMContext):
         await asyncio.sleep(2)
         if not DBWorker.house_to_db(data):
             await message.answer(
-                message_texts.on.get('sorry_about_error')
+                MessageTexts.on.get('sorry_about_error')
             )
         else:
             album = MediaGroup()
@@ -2594,14 +2598,14 @@ async def house_base_updating(message: Message, state: FSMContext):
                     album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.house_adding_result_text(data)
+                            MessageTexts.house_adding_result_text(data)
                         ),
                         parse_mode='Markdown'
                     )
                     channel_album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.house_message_for_channel(data)
+                            MessageTexts.house_message_for_channel(data)
                         ),
                         parse_mode='Markdown'
                     )
@@ -2635,7 +2639,7 @@ async def add_townhouse(callback: CallbackQuery, state: FSMContext):
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Укажи Местоположение таунхауса.*\n\n'
         + 'Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n',
-        reply_markup=keyboards.microregion_keyboard('object'),
+        reply_markup=Keyboards.microregion_keyboard(),
         parse_mode='Markdown'
     )
     await TownHouseCallbackStates.T1.set()
@@ -2674,7 +2678,7 @@ async def entering_townhouse_purpose(message: Message, state: FSMContext):
         await state.update_data(townhouse_street_name=answer)
         await message.answer(
             '✏ Укажи назначение участка',
-            reply_markup=keyboards.purpose_choise_keyboard()
+            reply_markup=Keyboards.purpose_choise_keyboard()
         )
         await TownHouseCallbackStates.next()
 
@@ -2699,7 +2703,7 @@ async def entering_townhouse_finish(
         await state.update_data(townhouse_purpose=callback.data)
         await callback.message.edit_text(
             '✏ Это завершённое строительство',
-            reply_markup=keyboards.yes_no_keyboard(item='townhouse_finish')
+            reply_markup=Keyboards.yes_no_keyboard(item='townhouse_finish')
         )
         await TownHouseCallbackStates.next()
 
@@ -2725,7 +2729,7 @@ async def entering_townhouse_material(
 
         await callback.message.edit_text(
             '✏ Укажите материал стен',
-            reply_markup=keyboards.material_choice_keyboard()
+            reply_markup=Keyboards.material_choice_keyboard()
         )
         await TownHouseCallbackStates.next()
 
@@ -2754,7 +2758,7 @@ async def entering_townhouse_gas(
         await state.update_data(townhouse_material=callback.data)
         await callback.message.edit_text(
             '✏ Укажите степень газификации',
-            reply_markup=keyboards.gaz_choise_keyboard()
+            reply_markup=Keyboards.gaz_choise_keyboard()
         )
         await TownHouseCallbackStates.next()
 
@@ -2779,7 +2783,7 @@ async def entering_townhouse_waters(
         await state.update_data(townhouse_gaz=callback.data)
         await callback.message.edit_text(
             '✏ В таунхаус проведена вода?',
-            reply_markup=keyboards.water_choice_keyboard()
+            reply_markup=Keyboards.water_choice_keyboard()
         )
         await TownHouseCallbackStates.next()
 
@@ -2805,7 +2809,7 @@ async def entering_townhouse_sauna(
         await state.update_data(townhouse_water=callback.data)
         await callback.message.edit_text(
             '✏ На териитории участка или внутри есть баня или сауна',
-            reply_markup=keyboards.yes_no_keyboard(item='townhouse_sauna')
+            reply_markup=Keyboards.yes_no_keyboard(item='townhouse_sauna')
         )
         await TownHouseCallbackStates.next()
 
@@ -2833,7 +2837,7 @@ async def entering_townhouse_garage(
 
         await callback.message.edit_text(
             '✏ На териитории участка есть гараж?',
-            reply_markup=keyboards.yes_no_keyboard(item='townhouse_garage')
+            reply_markup=Keyboards.yes_no_keyboard(item='townhouse_garage')
         )
         await TownHouseCallbackStates.next()
 
@@ -2860,7 +2864,7 @@ async def entering_townhouse_fence(
             await state.update_data(townhouse_garage='Нет')
         await callback.message.edit_text(
             '✏ Участок огорожен?',
-            reply_markup=keyboards.yes_no_keyboard(item='townhouse_fence')
+            reply_markup=Keyboards.yes_no_keyboard(item='townhouse_fence')
         )
         await TownHouseCallbackStates.next()
 
@@ -2887,7 +2891,7 @@ async def entering_townhouse_road(
             await state.update_data(townhouse_fence='Нет')
         await callback.message.edit_text(
             '✏ К участку есть проезд?',
-            reply_markup=keyboards.road_choice_keyboard()
+            reply_markup=Keyboards.road_choice_keyboard()
         )
         await TownHouseCallbackStates.next()
 
@@ -2912,7 +2916,7 @@ async def entering_townhouse_area(
     else:
         await state.update_data(townhouse_road=callback.data)
         await callback.message.edit_text(
-            message_texts.on.get('area_entering_text'),
+            MessageTexts.on.get('area_entering_text'),
             parse_mode='Markdown'
         )
         await TownHouseCallbackStates.next()
@@ -2946,7 +2950,7 @@ async def entering_townhouse_land_area(message: Message, state: FSMContext):
         except (ValueError) as e:
             await TownHouseCallbackStates.T12.set()
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -2969,7 +2973,7 @@ async def entering_townhouse_price(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(townhouse_land_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price'),
+                MessageTexts.on.get('enter_price'),
                 parse_mode='Markdown'
             )
             await TownHouseCallbackStates.next()
@@ -2977,7 +2981,7 @@ async def entering_townhouse_price(message: Message, state: FSMContext):
         except (ValueError) as e:
             await TownHouseCallbackStates.T13.set()
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -2995,7 +2999,7 @@ async def entering_townhouse_description(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(townhouse_price=answer)
             await message.answer(
-                message_texts.entering_description_text('таунхауса'),
+                MessageTexts.entering_description_text('таунхауса'),
                 parse_mode='Markdown'
             )
             await TownHouseCallbackStates.next()
@@ -3003,7 +3007,7 @@ async def entering_townhouse_description(message: Message, state: FSMContext):
         except (ValueError) as e:
             await TownHouseCallbackStates.T14.set()
             await message.answer(
-                message_texts.on.get('price_entering_error'),
+                MessageTexts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -3024,12 +3028,12 @@ async def entering_townhouse_encumbrance(
             await state.update_data(townhouse_description=answer)
             await message.answer(
                 '✏ На таунхаусе есть обременение?',
-                reply_markup=keyboards.yes_no_keyboard('townhouse_encumbrance')
+                reply_markup=Keyboards.yes_no_keyboard(item='townhouse_encumbrance')
             )
             await TownHouseCallbackStates.next()
         else:
             await message.answer(
-                message_texts.character_limit(len(message.text))
+                MessageTexts.character_limit(len(message.text))
             )
             logging.error('Превышение лимита знаков')
             await TownHouseCallbackStates.T15.set()
@@ -3058,7 +3062,7 @@ async def entering_townhouse_children(
             await state.update_data(townhouse_encumbrance=False)
         await callback.message.edit_text(
             '✏ В собственности есть дети?',
-            reply_markup=keyboards.yes_no_keyboard('townhouse_children')
+            reply_markup=Keyboards.yes_no_keyboard(item='townhouse_children')
         )
         await TownHouseCallbackStates.next()
 
@@ -3086,7 +3090,7 @@ async def entering_townhouse_mortage(
             await state.update_data(townhouse_children=False)
         await callback.message.edit_text(
             '✏ Таунхаусы возможно купить по иптоеке?',
-            reply_markup=keyboards.yes_no_keyboard('townhouse_mortage')
+            reply_markup=Keyboards.yes_no_keyboard(item='townhouse_mortage')
         )
         await TownHouseCallbackStates.next()
 
@@ -3113,7 +3117,7 @@ async def entering_townhouse_phone_number(
         if callback.data == 'no_townhouse_mortage':
             await state.update_data(townhouse_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text'),
+            MessageTexts.on.get('phone_number_entering_text'),
             parse_mode='Markdown'
         )
         await TownHouseCallbackStates.next()
@@ -3144,7 +3148,7 @@ async def entering_townhouse_agency_name(
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text),
+                MessageTexts.phone_number_entering_error(message.text),
                 parse_mode='Markdown'
             )
             logging.error(f'🧐 Ошибка при вводе номера телефона {message.text}')
@@ -3170,7 +3174,7 @@ async def townhouse_visible_or_not(message: Message, state: FSMContext):
             + 'У вас он будет храниться в таблице "Объекты-черновики". '
             + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
             + 'соответствующим пунктом меню.',
-            reply_markup=keyboards.visible_or_not_kb(),
+            reply_markup=Keyboards.visible_or_not_kb(),
             parse_mode='Markdown'
         )
         await TownHouseCallbackStates.T21.set()
@@ -3199,7 +3203,7 @@ async def townhouse_report_photo(message: Message):
 
     if len(images[key]) == 0:
         images[key].append(message.photo[-1].file_id)
-        await message.answer(message_texts.on.get('code_word_text'))
+        await message.answer(MessageTexts.on.get('code_word_text'))
         await TownHouseCallbackStates.T23.set()
     else:
         images[key].append(message.photo[-1].file_id)
@@ -3229,7 +3233,7 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
         await asyncio.sleep(2)
         if not DBWorker.townhouse_to_db(data):
             await message.answer(
-                message_texts.on.get('sorry_about_error')
+                MessageTexts.on.get('sorry_about_error')
             )
         else:
             album = MediaGroup()
@@ -3240,14 +3244,14 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
                     album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.townhouse_adding_result_text(data)
+                            MessageTexts.townhouse_adding_result_text(data)
                         ),
                         parse_mode='Markdown'
                     )
                     channel_album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.townhouse_message_for_channel(data)
+                            MessageTexts.townhouse_message_for_channel(data)
                         ),
                         parse_mode='Markdown'
                     )
@@ -3281,7 +3285,7 @@ async def add_land(callback: CallbackQuery, state: FSMContext):
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
         + '✏ *Укажите Местоположение участка.*\n\n'
         + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n',
-        reply_markup=keyboards.microregion_keyboard('object'),
+        reply_markup=Keyboards.microregion_keyboard(),
         parse_mode='Markdown'
     )
     await LandCallbackStates.L1.set()
@@ -3347,7 +3351,7 @@ async def entering_land_purpose(message: Message, state: FSMContext):
         await state.update_data(land_number_name=answer)
         await message.answer(
             '✏ Укажи назначение участка',
-            reply_markup=keyboards.purpose_choise_keyboard()
+            reply_markup=Keyboards.purpose_choise_keyboard()
         )
         await LandCallbackStates.next()
 
@@ -3368,7 +3372,7 @@ async def entering_land_gas(
         await state.update_data(land_purpose=callback.data)
         await callback.message.edit_text(
             '✏ По улице проходит газ',
-            reply_markup=keyboards.yes_no_keyboard('land_gaz')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_gaz')
         )
         await LandCallbackStates.next()
 
@@ -3395,7 +3399,7 @@ async def entering_land_waters(
             await state.update_data(land_gaz='Нет')
         await callback.message.edit_text(
             '✏ По улице проходит вода?',
-            reply_markup=keyboards.yes_no_keyboard('land_water')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_water')
         )
         await LandCallbackStates.next()
 
@@ -3423,7 +3427,7 @@ async def entering_land_sauna(
 
         await callback.message.edit_text(
             '✏ На териитории участка баня или сауна',
-            reply_markup=keyboards.yes_no_keyboard(item='land_sauna')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_sauna')
         )
         await LandCallbackStates.next()
 
@@ -3451,7 +3455,7 @@ async def entering_land_garage(
 
         await callback.message.edit_text(
             '✏ На териитории участка есть гараж?',
-            reply_markup=keyboards.yes_no_keyboard(item='land_garage')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_garage')
         )
         await LandCallbackStates.next()
 
@@ -3478,7 +3482,7 @@ async def entering_land_fence(
             await state.update_data(land_garage='Нет')
         await callback.message.edit_text(
             '✏ Участок огорожен?',
-            reply_markup=keyboards.yes_no_keyboard(item='land_fence')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_fence')
         )
         await LandCallbackStates.next()
 
@@ -3505,7 +3509,7 @@ async def entering_land_road(
             await state.update_data(land_fence='Нет')
         await callback.message.edit_text(
             '✏ К участку есть проезд?',
-            reply_markup=keyboards.road_choice_keyboard()
+            reply_markup=Keyboards.road_choice_keyboard()
         )
         await LandCallbackStates.next()
 
@@ -3555,14 +3559,14 @@ async def entering_land_price(message: Message, state: FSMContext):
                 answer = float(message.text)
             await state.update_data(land_area=answer)
             await message.answer(
-                message_texts.on.get('enter_price'),
+                MessageTexts.on.get('enter_price'),
                 parse_mode='Markdown'
             )
             await LandCallbackStates.next()
         except (ValueError) as e:
             await LandCallbackStates.L11.set()
             await message.answer(
-                message_texts.on.get('area_entering_error'),
+                MessageTexts.on.get('area_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -3580,7 +3584,7 @@ async def entering_land_description(message: Message, state: FSMContext):
             answer = int(message.text)
             await state.update_data(land_price=answer)
             await message.answer(
-                message_texts.entering_description_text('участка'),
+                MessageTexts.entering_description_text('участка'),
                 parse_mode='Markdown'
             )
             await LandCallbackStates.next()
@@ -3588,7 +3592,7 @@ async def entering_land_description(message: Message, state: FSMContext):
         except (ValueError) as e:
             await LandCallbackStates.L12.set()
             await message.answer(
-                message_texts.on.get('price_entering_error'),
+                MessageTexts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -3609,12 +3613,12 @@ async def entering_land_encumbrance(
             await state.update_data(land_description=answer)
             await message.answer(
                 '✏ На объекте есть обременение?',
-                reply_markup=keyboards.yes_no_keyboard('land_encumbrance')
+                reply_markup=Keyboards.yes_no_keyboard(item=land_encumbrance')
             )
             await LandCallbackStates.next()
         else:
             await message.answer(
-                message_texts.character_limit(len(message.text))
+                MessageTexts.character_limit(len(message.text))
             )
             logging.error('Превышение лимита знаков')
             await LandCallbackStates.L13.set()
@@ -3643,7 +3647,7 @@ async def entering_land_children(
             await state.update_data(land_encumbrance=False)
         await callback.message.edit_text(
             '✏ В собственности есть дети?',
-            reply_markup=keyboards.yes_no_keyboard('land_children')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_children')
         )
         await LandCallbackStates.next()
 
@@ -3671,7 +3675,7 @@ async def entering_land_mortage(
             await state.update_data(land_children=False)
         await callback.message.edit_text(
             '✏ Дом возможно купить по иптоеке?',
-            reply_markup=keyboards.yes_no_keyboard('land_mortage')
+            reply_markup=Keyboards.yes_no_keyboard(item='land_mortage')
         )
         await LandCallbackStates.next()
 
@@ -3698,7 +3702,7 @@ async def entering_land_phone_number(
         if callback.data == 'no_land_mortage':
             await state.update_data(land_mortage=False)
         await callback.message.edit_text(
-            message_texts.on.get('phone_number_entering_text'),
+            MessageTexts.on.get('phone_number_entering_text'),
             parse_mode='Markdown'
         )
         await LandCallbackStates.next()
@@ -3729,7 +3733,7 @@ async def entering_land_agency_name(
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.phone_number_entering_error(message.text),
+                MessageTexts.phone_number_entering_error(message.text),
                 parse_mode='Markdown'
             )
             logging.error(f'🧐 Ошибка при вводе номера телефона {message.text}')
@@ -3755,7 +3759,7 @@ async def land_visible_or_not(message: Message, state: FSMContext):
             + 'У вас он будет храниться в таблице "Объекты-черновики". '
             + 'В любой момент вы можете сделать его видимым для других, воспользовавшись '
             + 'соответствующим пунктом меню.',
-            reply_markup=keyboards.visible_or_not_kb(),
+            reply_markup=Keyboards.visible_or_not_kb(),
             parse_mode='Markdown'
         )
         await LandCallbackStates.L181.set()
@@ -3784,7 +3788,7 @@ async def land_report_photo(message: Message):
 
     if len(images[key]) == 0:
         images[key].append(message.photo[-1].file_id)
-        await message.answer(message_texts.on.get('code_word_text'))
+        await message.answer(MessageTexts.on.get('code_word_text'))
         await LandCallbackStates.L21.set()
     else:
         images[key].append(message.photo[-1].file_id)
@@ -3814,7 +3818,7 @@ async def land_base_updating(message: Message, state: FSMContext):
         await asyncio.sleep(2)
         if not DBWorker.land_to_db(data):
             await message.answer(
-                message_texts.on.get('sorry_about_error')
+                MessageTexts.on.get('sorry_about_error')
             )
         else:
             album = MediaGroup()
@@ -3825,14 +3829,14 @@ async def land_base_updating(message: Message, state: FSMContext):
                     album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.land_adding_result_text(data)
+                            MessageTexts.land_adding_result_text(data)
                         ),
                         parse_mode='Markdown'
                     )
                     channel_album.attach_photo(
                         photo_id,
                         caption='\n'.join(
-                            message_texts.land_message_for_channel(data)
+                            MessageTexts.land_message_for_channel(data)
                         ),
                         parse_mode='Markdown'
                     )
@@ -3889,7 +3893,7 @@ async def entering_phone_number_for_searching(message: Message):
         }
 
         await message.answer(
-            message_texts.my_objects_text(data),
+            MessageTexts.my_objects_text(data),
             disable_notification=True,
             parse_mode='Markdown'
         )
@@ -3978,7 +3982,7 @@ async def searching_blacklists_obj(message: Message):
         }
 
         await message.answer(
-            message_texts.my_objects_text(data),
+            MessageTexts.my_objects_text(data),
             disable_notification=True,
             parse_mode='Markdown'
         )
@@ -4056,7 +4060,7 @@ async def delete_object(message: Message):
         if big_cond:
             await message.answer(
                 'Выбери объект для удаления:',
-                reply_markup=keyboards.objects_list_keyboard(user_id)
+                reply_markup=Keyboards.objects_list_keyboard(searching_user_id=user_id)
             )
             await DeleteCallbackStates.D2.set()
         else:
@@ -4086,7 +4090,7 @@ async def deleting_object(
                     return obj.number_of_land
                 return obj.number_of_house
 
-            class_name = Output.str_to_class(category)
+            class_name = Output.str_to_class(str=category)
             obj = class_name.objects.get(pk=id)
             rieltor = Rieltors.objects.get(user_id=callback.from_user.id)
             Archive.objects.create(
@@ -4141,7 +4145,10 @@ async def visible_on(message: Message):
         if big_cond:
             await message.answer(
                 'Выбери черновой объект, который хочешь сделать видимым:',
-                reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, False)
+                reply_markup=Keyboards.objects_list_keyboard_for_change_visibleness(
+                    searching_user_id=user_id,
+                    visible=False
+                )
             )
             await Visible_on.step2.set()
         else:
@@ -4163,7 +4170,7 @@ async def visible_on_step3(
         category = callback.data.split()[1]
         id = callback.data.split()[0]
         try:
-            class_name = Output.str_to_class(category)
+            class_name = Output.str_to_class(str=category)
             obj = class_name.objects.get(pk=id)
             obj.visible = True
             obj.save()
@@ -4306,7 +4313,10 @@ async def visible_off(message: Message):
         if big_cond:
             await message.answer(
                 'Выбери объект, который хочешь сделать невидимым:',
-                reply_markup=keyboards.objects_list_keyboard_for_change_visibleness(user_id, True)
+                reply_markup=Keyboards.objects_list_keyboard_for_change_visibleness(
+                    searching_user_id=user_id,
+                    visible=False
+                )
             )
             await Visible_off.step2.set()
         else:
@@ -4329,7 +4339,7 @@ async def visible_off_step3(
         id = callback.data.split()[0]
 
         try:
-            class_name = Output.str_to_class(category)
+            class_name = Output.str_to_class(str=category)
             obj = class_name.objects.get(pk=id)
             obj.visible = False
             obj.save()
@@ -4375,7 +4385,7 @@ async def edit_price(message: Message):
         if big_cond:
             await message.answer(
                 '✏ Выберите объект, цену которого вы хотите изменить',
-                reply_markup=keyboards.objects_list_keyboard(user_id)
+                reply_markup=Keyboards.objects_list_keyboard(searching_user_id=user_id)
             )
             await PriceEditCallbackStates.EP2.set()
         else:
@@ -4415,7 +4425,7 @@ async def price_updating_process(
 ):
     try:
         data = await state.get_data()
-        class_name = Output.str_to_class(data.get('searching_category'))
+        class_name = Output.str_to_class(str=data.get('searching_category'))
         queryset = class_name.objects.get(pk=data.get('searching_id'))
         queryset.price = int(message.text)
         queryset.save()
@@ -4470,7 +4480,7 @@ async def add_phone_number(message: Message, state: FSMContext):
     else:
         await state.update_data(buyer_name=message.text)
         await message.answer(
-            message_texts.on.get('buyer_phone_number_entering_text'),
+            MessageTexts.on.get('buyer_phone_number_entering_text'),
             parse_mode='Markdown'
         )
         await Buyer.category.set()
@@ -4488,13 +4498,13 @@ async def add_category(message: Message, state: FSMContext):
                 'В какой категории покупатель осуществляет поиск?\n\n'
                 + 'Если ваш покупатель ищет в нескольких категориях, '
                 + 'то заведи его требуемое количество раз с соответствующими категориями.',
-                reply_markup=keyboards.buyer_searching_category(),
+                reply_markup=Keyboards.buyer_searching_category(),
                 parse_mode='Markdown'
             )
             await Buyer.limit.set()
         else:
             await message.answer(
-                message_texts.phone_number_entering_error(
+                MessageTexts.phone_number_entering_error(
                     phone_number=message.text
                 ),
                 parse_mode='Markdown'
@@ -4558,7 +4568,7 @@ async def add_source(message: Message, state: FSMContext):
             await state.update_data(buyer_limit=int(message.text))
             await message.answer(
                 '✏ Выбери форму расчёта покупателя',
-                reply_markup=keyboards.buyer_source_choice_keyboard()
+                reply_markup=Keyboards.buyer_source_choice_keyboard()
             )
             await Buyer.microregion.set()
         except (ValueError) as e:
@@ -4568,7 +4578,7 @@ async def add_source(message: Message, state: FSMContext):
                 sticker="CAACAgIAAxkBAAEHTQdjxlQRBRdVErSLTW969ee8S0hH1wACqiUAAvY9yUli7kZ2M0wiGC0E"
             )
             await message.answer(
-                message_texts.on.get('price_entering_error'),
+                MessageTexts.on.get('price_entering_error'),
                 parse_mode='Markdown'
             )
             logging.error('%s', e)
@@ -4606,7 +4616,7 @@ async def add_microregion(callback: CallbackQuery, state: FSMContext):
         ) == 'room':
             await callback.message.edit_text(
                 '✏ Укажи один или несколько микрорайонов поиска',
-                reply_markup=keyboards.city_microregion_keyboard(checked_buttons=[])
+                reply_markup=Keyboards.city_microregion_keyboard(checked_buttons=[])
             )
             checked[key] = []
             await Buyer.city_microregion.set()
@@ -4615,7 +4625,7 @@ async def add_microregion(callback: CallbackQuery, state: FSMContext):
         ) in ['house', 'townhouse', 'land']:
             await callback.message.edit_text(
                 '✏ Укажи один или несколько микрорайонов поиска',
-                reply_markup=keyboards.country_microregion_keyboard(checked_buttons=[])
+                reply_markup=Keyboards.country_microregion_keyboard(checked_buttons=[])
             )
             checked[key] = []
             await Buyer.country_microregion.set()
@@ -4651,7 +4661,7 @@ async def city_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
                 checked[key].append(answer)
             await callback.message.edit_text(
                 '✏ Укажи один или несколько микрорайонов поиска',
-                reply_markup=keyboards.city_microregion_keyboard(checked_buttons=checked[key])
+                reply_markup=Keyboards.city_microregion_keyboard(checked_buttons=checked[key])
             )
             await Buyer.city_microregion.set()
 
@@ -4685,7 +4695,7 @@ async def country_microreg_checkbox(callback: CallbackQuery, state: FSMContext):
                 checked[key].append(answer)
             await callback.message.edit_text(
                 '✏ Укажи один или несколько микрорайонов поиска',
-                reply_markup=keyboards.country_microregion_keyboard(checked_buttons=checked[key])
+                reply_markup=Keyboards.country_microregion_keyboard(checked_buttons=checked[key])
             )
             await Buyer.country_microregion.set()
 
@@ -4702,11 +4712,11 @@ async def base_update(message: Message, state: FSMContext):
             # добавление в базу субъекта
             if not DBWorker.buyer_to_db(data):
                 await message.answer(
-                    message_texts.on.get('sorry_about_error')
+                    MessageTexts.on.get('sorry_about_error')
                 )
             else:
-                await message.answer('\n'.join(message_texts.buyer_adding_result_text(data=data)))
-                class_name = Output.str_to_class(data.get('buyer_search_category').title())
+                await message.answer('\n'.join(MessageTexts.buyer_adding_result_text(data=data)))
+                class_name = Output.str_to_class(str=data.get('buyer_search_category').title())
                 if class_name == Apartment:
                     queryset = class_name.objects.filter(
                         price__lte=data.get('buyer_limit'),
@@ -4723,7 +4733,7 @@ async def base_update(message: Message, state: FSMContext):
                             chat_id=item.user_id, text='🚀 У пользователя '
                             + f'@{message.from_user.username}, АН "{rieltor.agency_name}" '
                             + 'есть возможный покупатель на твой объект:\n'
-                            + f'*{Output.search_category_output(data.get("buyer_search_category"))},* '
+                            + f'*{Output.search_category_output(item=data.get("buyer_search_category"))},* '
                             + f'*ул.{item.street_name}.*\n\n'
                             + f'Район поиска этого клиента указан как: *{microregions}*.\n'
                             + f'Источник оплаты у этого клиента указан как: *{buyer_source}*\n\n'
@@ -4757,7 +4767,7 @@ async def delete_buyer(message: Message):
         if BuyerDB.objects.filter(user_id=user_id).exists():
             await message.answer(
                 '✏ Выбери покупатея, которого вы хотите удалить',
-                reply_markup=keyboards.buyer_list_keyboard(searching_user_id=user_id)
+                reply_markup=Keyboards.buyer_list_keyboard(searching_user_id=user_id)
             )
             await DeleteBuyer.step2.set()
         else:
@@ -4812,7 +4822,7 @@ async def my_buyers(message: Message):
                 f'❇ _Дата внесения: {item.pub_date.date().strftime("%d.%m.%Y")}_\n'
                 f'*Имя:* {item.buyer_name}\n'
                 + f'*Тел:* {item.phone_number}\n\n'
-                + f'*Объект поиска:* {Output.search_category_output(item.category)}\n'
+                + f'*Объект поиска:* {Output.search_category_output(item=item.category)}\n'
                 + f'*Область поиска:* {item.microregion}\n\n'
                 + f'*Денежный лимит:* {item.limit} ₽\n'
                 + f'*Источник оплаты:* {item.source}\n\n'
@@ -4842,7 +4852,7 @@ async def obj_for_my_buyer(message: Message):
         if queryset.exists():
             await message.answer(
                 '✏ Выбери покупатея, для которого ты хочешь посмотреть подходящие объекты',
-                reply_markup=keyboards.buyer_list_keyboard(searching_user_id=user_id)
+                reply_markup=Keyboards.buyer_list_keyboard(searching_user_id=user_id)
             )
             await ObjForBuyer.step2.set()
         else:
@@ -4866,7 +4876,7 @@ async def searching_for_buyer(
         buyer_category = await buyer.values('category').aget()
         buyer_limit = await buyer.values('limit').aget()
 
-        class_name = Output.str_to_class(buyer_category.get('category').title())
+        class_name = Output.str_to_class(str=buyer_category.get('category').title())
         if class_name == Apartment:
             queryset = class_name.objects.filter(
                 price__lte=(buyer_limit.get('limit')),
@@ -4887,7 +4897,7 @@ async def searching_for_buyer(
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.house_search_result_text(
+                                caption=MessageTexts.house_search_result_text(
                                     item=item
                                 ),
                                 parse_mode='Markdown'
@@ -4905,7 +4915,7 @@ async def searching_for_buyer(
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.townhouse_search_result_text(
+                                caption=MessageTexts.townhouse_search_result_text(
                                     item=item
                                 ),
                                 parse_mode='Markdown'
@@ -4923,7 +4933,7 @@ async def searching_for_buyer(
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.lands_search_result_text(
+                                caption=MessageTexts.lands_search_result_text(
                                     item=item
                                 ),
                                 parse_mode='Markdown'
@@ -4941,7 +4951,7 @@ async def searching_for_buyer(
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.apartments_search_result_text(
+                                caption=MessageTexts.apartments_search_result_text(
                                         room_count=int(buyer_category.get('category')),
                                         item=item
                                     ),
@@ -4960,7 +4970,7 @@ async def searching_for_buyer(
                         if photo_id == photo_list[-1]:
                             album.attach_photo(
                                 photo_id,
-                                caption=message_texts.room_search_result_text(item=item),
+                                caption=MessageTexts.room_search_result_text(item=item),
                                 parse_mode='Markdown'
                             )
                         else:
@@ -4988,7 +4998,7 @@ async def my_company_buyers(message: Message):
         if Ceo.objects.filter(user_id=user_id).exists():
             await message.answer(
                 'Выбери сотрудника',
-                reply_markup=keyboards.worker_list(user_id)
+                reply_markup=Keyboards.worker_list(ceo_user_id=user_id)
             )
             await WorkersBuyers.step2.set()
         else:
@@ -5030,7 +5040,7 @@ async def worker_buyers(
                     f'❇ _Дата внесения: {item.pub_date.date().strftime("%d-%m-%Y")}_\n'
                     f'*Имя:* {item.buyer_name},\n'
                     + f'*Тел:* {phone_str_with_star},\n\n'
-                    + f'*Объект поиска:* {Output.search_category_output(item.category)},\n'
+                    + f'*Объект поиска:* {Output.search_category_output(item=item.category)},\n'
                     + f'*Область поиска:* {item.microregion},\n\n'
                     + f'*Денежный лимит:* {item.limit} ₽,\n'
                     + f'*Денежный ресурс:* {item.source},\n\n'
@@ -5061,7 +5071,7 @@ async def my_company_obj(message: Message):
         if Ceo.objects.filter(user_id=user_id).exists():
             await message.answer(
                 'Выбери сотрудника',
-                reply_markup=keyboards.worker_list(user_id)
+                reply_markup=Keyboards.worker_list(ceo_user_id=user_id)
             )
             await WorkersObjects.step2.set()
         else:
@@ -5106,7 +5116,7 @@ async def worker_objects(
         }
 
         await callback.message.answer(
-            message_texts.rieltors_objects_text(data, rieltor.name),
+            MessageTexts.rieltors_objects_text(data, rieltor.name),
             disable_notification=True,
             parse_mode='Markdown'
         )
@@ -5224,7 +5234,7 @@ async def archive(message: Message):
         if Ceo.objects.filter(user_id=user_id).exists():
             await message.answer(
                 'Выбери сотрудника',
-                reply_markup=keyboards.worker_list(user_id)
+                reply_markup=Keyboards.worker_list(ceo_user_id=user_id)
             )
             await ArchiveObjects.step2.set()
         else:
@@ -5391,12 +5401,12 @@ async def my_coworkers(message: Message):
 
 @dp.message_handler(commands=['aqidel'])
 async def history_is_lie(message: Message):
-    await message.answer(text=message_texts.aqidel(), parse_mode='Markdown')
+    await message.answer(text=MessageTexts.aqidel(), parse_mode='Markdown')
 
 
 @dp.message_handler(commands=['speech'])
 async def speech(message: Message):
-    for item in message_texts.speech():
+    for item in MessageTexts.speech():
         await message.answer(item)
 
 # -----------------------------------------------------------------------------
@@ -5620,8 +5630,8 @@ async def vk_autopost_step1(message: Message):
 
         if big_cond:
             await message.answer(
-                text=message_texts.on.get('vk_autopost_instruction'),
-                reply_markup=keyboards.objects_list_autopost_keyboard(
+                text=MessageTexts.on.get('vk_autopost_instruction'),
+                reply_markup=Keyboards.objects_list_autopost_keyboard(
                     checked_buttons=[], searching_user_id=user_id
                 )[0],
                 parse_mode='Markdown'
@@ -5644,7 +5654,7 @@ async def vk_autopost_step2(callback: CallbackQuery, state: FSMContext):
         await state.finish()
     else:
         key = str(callback.from_user.id)
-        db_items = keyboards.objects_list_autopost_keyboard(
+        db_items = Keyboards.objects_list_autopost_keyboard(
                 checked_buttons=checked[key],
                 searching_user_id=callback.from_user.id
         )[1]
@@ -5675,8 +5685,8 @@ async def vk_autopost_step2(callback: CallbackQuery, state: FSMContext):
             else:
                 checked[key].append(answer)
             await callback.message.edit_text(
-                text=message_texts.on.get('vk_autopost_instruction'),
-                reply_markup=keyboards.objects_list_autopost_keyboard(
+                text=MessageTexts.on.get('vk_autopost_instruction'),
+                reply_markup=Keyboards.objects_list_autopost_keyboard(
                     checked_buttons=checked[key],
                     searching_user_id=callback.from_user.id
                 )[0],
@@ -5791,7 +5801,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
             for club in vk_club_ids:
                 for item in db_items:
-                    class_name = Output.str_to_class(item.split()[1])
+                    class_name = Output.str_to_class(str=item.split()[1])
                     obj = class_name.objects.get(pk=item.split()[0])
 
                     category = category_in_post.get(item.split()[1])
@@ -5921,7 +5931,7 @@ async def vk_adpost_step1(message: Message):
         )
     else:
         await message.answer(
-            text=message_texts.on.get('vk_adpost_instruction')
+            text=MessageTexts.on.get('vk_adpost_instruction')
         )
         await Adpost.step2.set()
 
@@ -5936,7 +5946,7 @@ async def vk_adpost_step2(message: Message, state: FSMContext):
 
     if len(images[key]) == 0:
         images[key].append(message.photo[-1].file_id)
-        await message.answer(message_texts.on.get('ad_post_description'))
+        await message.answer(MessageTexts.on.get('ad_post_description'))
         await Adpost.step3.set()
     else:
         images[key].append(message.photo[-1].file_id)

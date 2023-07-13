@@ -5,7 +5,7 @@ from bot.models import Apartment, House, Land, Room, TownHouse
 from .utils import Output, vk_club_ids, AUTOPOST_LIMIT
 
 
-class message_texts():
+class MessageTexts():
     on = {
         'delete':
         '❗ Не забудь удалить объект, когда он будет продан. '
@@ -259,7 +259,7 @@ class message_texts():
         + '✏ *Загрузи не более 6-ти изображений* для постинга.'
         }
 
-    def character_limit(text_len: int) -> str:
+    def character_limit(self, text_len: int) -> str:
         text = (
             f'❎ Текст описания состоит из {text_len} знаков и тем самым '
             + 'превышает ограничение в 555 знаков. '
@@ -269,7 +269,7 @@ class message_texts():
         )
         return text
 
-    def entering_description_text(category: str) -> str:
+    def entering_description_text(self, category: str) -> str:
         text = (
             f'✏ *Добавь небольшое описание {category}*.\n\nУ тебя, '
             + ' на это есть 555 знаков." '
@@ -281,26 +281,26 @@ class message_texts():
         )
         return text
 
-    def phone_number_entering_error(phone_number: str) -> str:
+    def phone_number_entering_error(self, phone_number: str) -> str:
         text = (
             '❎ Ошибка ввода номера телефона. '
-            + f'Введённый тобой номер телефона {phone_number} '
+            + f'Введённый тобой номер телефона {self, phone_number} '
             + 'не подходит по формату 89********.'
             + '\n\n*Введи 11 цифр номера, начиная с 8 без пробелов и тире.*\n\n'
             + '🙅‍♂️ Чтобы отменить внесение объекта, напиши "Стоп"'
         )
         return text
 
-    def room_search_result_text(item: Room) -> str:
+    def room_search_result_text(self, item: Room) -> str:
         """Шаблон тексата выдачи поиска по комнатам"""
         text = (
             f'🏠 _Комната {item.street_name} д.{item.number_of_house}_'
             + f'\n*Этаж:* {item.floor}/{item.number_of_floors}'
             + f'\n*Площадь квартиры:* {item.area} кв.м.'
             + f'\n*Описание:* {item.description}'
-            + f'\n*Обременение:* {Output.false_or_true(item.encumbrance)}'
-            + f'\n*Дети в собственности:* {Output.false_or_true(item.children)}'
-            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item.mortage)}'
+            + f'\n*Обременение:* {Output.false_or_true(item=item.encumbrance)}'
+            + f'\n*Дети в собственности:* {Output.false_or_true(item=item.children)}'
+            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item=item.mortage)}'
             + f'\n*Цена:* {int(item.price)} ₽'
             + f'\n*Агентство:* {item.agency_name}'
             + f'\n*Имя риелтора:* {item.author}'
@@ -309,7 +309,7 @@ class message_texts():
         )
         return text
 
-    def house_search_result_text(item: House) -> str:
+    def house_search_result_text(self, item: House) -> str:
         """Шаблон тексата выдачи поиска по домам """
 
         text = (
@@ -337,7 +337,7 @@ class message_texts():
         )
         return text
 
-    def townhouse_search_result_text(item: TownHouse) -> str:
+    def townhouse_search_result_text(self, item: TownHouse) -> str:
         """Шаблон текста выдачи поиска по таунхаусам"""
 
         text = (
@@ -354,9 +354,9 @@ class message_texts():
             + f'\n*Наличие гаража:* {item.garage}'
             + f'\n*Наличие ограждения:* {item.fence}'
             + f'\n*Описание:* {item.description}'
-            + f'\n*Обременение:* {Output.false_or_true(item.encumbrance)}'
-            + f'\n*Дети в собственности:* {Output.false_or_true(item.children)}'
-            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item.mortage)}'
+            + f'\n*Обременение:* {Output.false_or_true(item=item.encumbrance)}'
+            + f'\n*Дети в собственности:* {Output.false_or_true(item=item.children)}'
+            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item=item.mortage)}'
             + f'\n*Цена:* {int(item.price)} ₽'
             + f'\n*Агентство:* {item.agency_name}'
             + f'\n*Имя риелтора:* {item.author}'
@@ -365,7 +365,7 @@ class message_texts():
         )
         return text
 
-    def lands_search_result_text(item: Land) -> str:
+    def lands_search_result_text(self, item: Land) -> str:
         """Шаблон текста выдачи поиска по участкам"""
 
         text = (
@@ -377,9 +377,9 @@ class message_texts():
             + f'\n*Подъезд к участку:* {item.road}'
             + f'\n*Наличие ограждения:* {item.fence}'
             + f'\n*Описание:* {item.description}'
-            + f'\n*Обременение:* {Output.false_or_true(item.encumbrance)}'
-            + f'\n*Дети в собственности:* {Output.false_or_true(item.children)}'
-            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item.mortage)}'
+            + f'\n*Обременение:* {Output.false_or_true(item=item.encumbrance)}'
+            + f'\n*Дети в собственности:* {Output.false_or_true(item=item.children)}'
+            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item=item.mortage)}'
             + f'\n*Цена:* {int(item.price)} ₽'
             + f'\n*Агентство:* {item.agency_name}'
             + f'\n*Имя риелтора:* {item.author}'
@@ -388,7 +388,7 @@ class message_texts():
         )
         return text
 
-    def apartments_search_result_text(room_count: int, item: Apartment) -> str:
+    def apartments_search_result_text(self, room_count: int, item: Apartment) -> str:
         """Шаблон текста выдачи поиска по квартирам"""
 
         text = (
@@ -397,9 +397,9 @@ class message_texts():
             + f'\n*Площадь квартиры:* {item.area} кв.м.'
             + f'\n*Категория по планировке:* {item.category}'
             + f'\n*Описание:* {item.description}'
-            + f'\n*Обременение:* {Output.false_or_true(item.encumbrance)}'
-            + f'\n*Дети в собственности:* {Output.false_or_true(item.children)}'
-            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item.mortage)}'
+            + f'\n*Обременение:* {Output.false_or_true(item=item.encumbrance)}'
+            + f'\n*Дети в собственности:* {Output.false_or_true(item=item.children)}'
+            + f'\n*Возможность приобрести в ипотеку:* {Output.false_or_true(item=item.mortage)}'
             + f'\n*Цена:* {int(item.price)} ₽'
             + f'\n*Агентство:* {item.agency}'
             + f'\n*Имя риелтора:* {item.author}'
@@ -408,7 +408,7 @@ class message_texts():
         )
         return text
 
-    def apartment_adding_result_text(data: dict) -> list:
+    def apartment_adding_result_text(self, data: dict) -> list:
         """Шаблон текста после добавления квартиры"""
 
         text = [
@@ -421,20 +421,18 @@ class message_texts():
             f'*Площадь:* {data.get("area")} кв.м.',
             f'*Категория по планировке:* {data.get("category")}',
             f'*Краткое описание:* {data.get("description")}',
-            f'*Обременение:* {Output.false_or_true(data.get("encumbrance"))}',
-            f'*Дети в собственности:* {Output.false_or_true(data.get("children"))}',
-            f'*Оформить в ипотеку:* {Output.false_or_true(data.get("mortage"))}',
+            f'*Обременение:* {Output.false_or_true(item=data.get("encumbrance"))}',
+            f'*Дети в собственности:* {Output.false_or_true(item=data.get("children"))}',
+            f'*Оформить в ипотеку:* {Output.false_or_true(item=data.get("mortage"))}',
             f'*Цена:* {data.get("price")} ₽',
             # f'*Имя риелтора:* {data.get("rieltor_name")}',
             # f'*Название агентства:* {data.get("agency_name")}',
             f'*Имя продавца:* {data.get("owner_name")}',
             f'*Контактный телефон продавца:* {data.get("owner_phone_number")}',
-            '',
-            message_texts.on.get('delete')
         ]
         return text
 
-    def apartment_message_for_channel(data: dict):
+    def apartment_message_for_channel(self, data: dict):
         text = [
             f'❇ *{data.get("room_count")}-х комнатная квартира*',
             f'*{data.get("street_name")}, д.{data.get("house_number")}*',
@@ -449,7 +447,7 @@ class message_texts():
         ]
         return text
 
-    def room_adding_result_text(data: dict) -> list:
+    def room_adding_result_text(self, data: dict) -> list:
         """Шаблон текста после добавления квартиры"""
 
         text = [
@@ -460,19 +458,16 @@ class message_texts():
             f'*Этаж:* {data.get("room_floor")}/{data.get("room_floors")}',
             f'*Площадь:* {data.get("room_area")} кв.м.',
             f'*Краткое описание:* {data.get("room_description")}',
-            f'*Обременение:* {Output.false_or_true(data.get("room_encumbrance"))}',
-            f'*Дети в собственности:* {Output.false_or_true(data.get("room_children"))}',
-            f'*Оформить в ипотеку:* {Output.false_or_true(data.get("room_mortage"))}',
+            f'*Обременение:* {Output.false_or_true(item=data.get("room_encumbrance"))}',
+            f'*Дети в собственности:* {Output.false_or_true(item=data.get("room_children"))}',
+            f'*Оформить в ипотеку:* {Output.false_or_true(item=data.get("room_mortage"))}',
             f'*Цена:* {data.get("room_price")} ₽',
             f'*Имя продавца:* {data.get("room_owner_name")}',
             f'*Контактный телефон продавца:* {data.get("room_owner_phone_number")}',
-
-            '',
-            message_texts.on.get('delete')
         ]
         return text
 
-    def room_message_for_channel(data: dict):
+    def room_message_for_channel(self, data: dict):
         text = [
             '❇ *Комната*',
             f'*{data.get("room_street_name")} д.{data.get("room_house_number")}*',
@@ -486,7 +481,7 @@ class message_texts():
         ]
         return text
 
-    def house_adding_result_text(data: dict) -> list:
+    def house_adding_result_text(self, data: dict) -> list:
         """Шаблон текста после добавления дома"""
 
         text = [
@@ -506,21 +501,18 @@ class message_texts():
             f'*Проезд к дому:* {data.get("house_road")}',
             f'*Площадь дома:* {data.get("house_area")} кв.м.',
             f'*Краткое описание:* {data.get("house_description")}',
-            f'*Обременение:* {Output.false_or_true(data.get("house_encumbrance"))}',
-            f'*Дети в собственности:* {Output.false_or_true(data.get("house_children"))}',
-            f'*Возможность оформить в ипотеку:* {Output.false_or_true(data.get("house_mortage"))}',
+            f'*Обременение:* {Output.false_or_true(item=data.get("house_encumbrance"))}',
+            f'*Дети в собственности:* {Output.false_or_true(item=data.get("house_children"))}',
+            f'*Возможность оформить в ипотеку:* {Output.false_or_true(item=data.get("house_mortage"))}',
             f'*Цена:* {data.get("house_price")} ₽',
             # f'*Имя риелтора:* {data.get("house_rieltor_name")}',
             # f'*Название агентства:* {data.get("house_agency_name")}',
             f'*Имя продавца:* {data.get("house_owner_name")}',
             f'*Контактный телефон продавца:* {data.get("house_owner_phone_number")}',
-
-            '',
-            message_texts.on.get('delete')
         ]
         return text
 
-    def house_message_for_channel(data: dict):
+    def house_message_for_channel(self, data: dict):
         text = [
             '❇ *Дом*',
             f'*Местоположение:* {data.get("house_microregion")}',
@@ -544,7 +536,7 @@ class message_texts():
         ]
         return text
 
-    def townhouse_adding_result_text(data: dict) -> list:
+    def townhouse_adding_result_text(self, data: dict) -> list:
         """Шаблон текста после добавления таунхауса"""
 
         text = [
@@ -564,20 +556,18 @@ class message_texts():
             f'*Проезд к дому:* {data.get("townhouse_road")}',
             f'*Площадь таунхауса:* {data.get("townhouse_area")} кв.м.',
             f'*Краткое описание:* {data.get("townhouse_description")}',
-            f'*Обременение:* {Output.false_or_true(data.get("townhouse_encumbrance"))}',
-            f'*Дети в собственности:* {Output.false_or_true(data.get("townhouse_children"))}',
-            f'*Возможность оформить в ипотеку:* {Output.false_or_true(data.get("townhouse_mortage"))}',
+            f'*Обременение:* {Output.false_or_true(item=data.get("townhouse_encumbrance"))}',
+            f'*Дети в собственности:* {Output.false_or_true(item=data.get("townhouse_children"))}',
+            f'*Возможность оформить в ипотеку:* {Output.false_or_true(item=data.get("townhouse_mortage"))}',
             f'*Цена:* {data.get("townhouse_price")} ₽',
             # f'*Имя риелтора:* {data.get("townhouse_rieltor_name")}',
             # f'*Название агентства:* {data.get("townhouse_agency_name")}',
             f'*Имя продавца:* {data.get("townhouse_owner_name")}',
             f'*Контактный телефон продавца:* {data.get("townhouse_owner_phone_number")}',
-            '',
-            message_texts.on.get('delete')
         ]
         return text
 
-    def townhouse_message_for_channel(data: dict):
+    def townhouse_message_for_channel(self, data: dict):
         text = [
             '❇ *Таунхаус*',
             f'*Местоположение:* {data.get("townhouse_microregion")}',
@@ -601,7 +591,7 @@ class message_texts():
         ]
         return text
 
-    def land_adding_result_text(data: dict) -> list:
+    def land_adding_result_text(self, data: dict) -> list:
         """Шаблон текста после добавления участка"""
 
         text = [
@@ -619,20 +609,18 @@ class message_texts():
             f'*Наличие забора:* {data.get("land_fence")}',
             f'*Проезд к участку:* {data.get("land_road")}',
             f'*Краткое описание:* {data.get("land_description")}',
-            f'*Обременение:* {Output.false_or_true(data.get("land_encumbrance"))}',
-            f'*Дети в собственности:* {Output.false_or_true(data.get("land_children"))}',
-            f'*Возможность оформить в ипотеку:* {Output.false_or_true(data.get("land_mortage"))}',
+            f'*Обременение:* {Output.false_or_true(item=data.get("land_encumbrance"))}',
+            f'*Дети в собственности:* {Output.false_or_true(item=data.get("land_children"))}',
+            f'*Возможность оформить в ипотеку:* {Output.false_or_true(item=data.get("land_mortage"))}',
             f'*Цена:* {data.get("land_price")} ₽',
             # f'*Имя риелтора:* {data.get("land_rieltor_name")}',
             # f'*Название агентства:* {data.get("land_agency_name")}',
             f'*Имя продавца:* {data.get("land_owner_name")}',
             f'*Контактный телефон продавца:* {data.get("land_owner_phone_number")}',
-            '',
-            message_texts.on.get('delete')
         ]
         return text
 
-    def land_message_for_channel(data: dict):
+    def land_message_for_channel(self, data: dict):
         text = [
             '❇ *Участок*',
             f'*Местоположение:* {data.get("land_microregion")}',
@@ -654,7 +642,7 @@ class message_texts():
         ]
         return text
 
-    def my_objects_text(data: dict) -> str:
+    def my_objects_text(self, data: dict) -> str:
         if data.get("total_count") == 0:
             text = 'У тебя нет объектов в этой таблице'
             return text
@@ -668,7 +656,7 @@ class message_texts():
                 + '*Ниже список твоих объектов:*')
         return text
 
-    def rieltors_objects_text(data: dict, rieltor_name: str) -> str:
+    def rieltors_objects_text(self, data: dict, rieltor_name: str) -> str:
         if data.get("total_count") == 0:
             text = (f'У *{rieltor_name}* нет объектов в базе')
             return text
@@ -682,7 +670,7 @@ class message_texts():
                 + 'Ниже список объектов:')
         return text
 
-    def buyer_adding_result_text(data):
+    def buyer_adding_result_text(self, data):
         text = [
             '✅ Готово! Ты внёс покупателя в свою базу:',
             f'Имя: {data.get("buyer_name")}',
@@ -697,7 +685,7 @@ class message_texts():
         ]
         return text
 
-    def statistics_text(data):
+    def statistics_text(self, data):
         text = (f'*Статистика пользования ботом на {str(dt.datetime.now().strftime("%d.%m.%Y"))}:*\n'
                 + f'агентств: *{data.get("agency_count")}*\n'
                 + f'пользователей: *{data.get("rieltors_count")}*\n'
