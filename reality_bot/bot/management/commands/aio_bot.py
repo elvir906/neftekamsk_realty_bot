@@ -4,7 +4,7 @@ import operator
 import os
 import re
 from code.answer_messages import message_texts
-from code.db_worker import DB_Worker
+from code.db_worker import DBWorker
 from code.states import (Adpost, ApartmentSearch, ArchiveObjects, Autopost,
                          Buyer, CallbackOnStart, CeoRegistration, DeleteBuyer,
                          DeleteCallbackStates, HouseCallbackStates,
@@ -140,7 +140,7 @@ async def registration_finish(message: Message, state: FSMContext):
         if re.match(r"^[0-9]+$", message.text):
             await state.update_data(phone_number='+7' + message.text[1:])
             data = await state.get_data()
-            if not DB_Worker.rieltor_to_db(data):
+            if not DBWorker.rieltor_to_db(data):
                 await message.answer(
                     message_texts.on.get('sorry_about_error')
                 )
@@ -267,7 +267,7 @@ async def get_statistics(message: Message):
 
 @dp.message_handler(commands=['searchobjects'])
 async def search_objects(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -324,7 +324,7 @@ async def cascade(callback: CallbackQuery, state: FSMContext):
 
 @dp.message_handler(commands=['addobject'])
 async def add_object(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -1513,7 +1513,7 @@ async def base_updating(message: Message, state: FSMContext):
 
         # ЗАПИСЬ В БАЗУ И выдача
         await asyncio.sleep(2)
-        if not DB_Worker.apartment_to_db(data):
+        if not DBWorker.apartment_to_db(data):
             await message.answer(
                 message_texts.on.get('sorry_about_error')
             )
@@ -1929,7 +1929,7 @@ async def room_base_updating(message: Message, state: FSMContext):
 
         # ЗАПИСЬ В БАЗУ И выдача
         await asyncio.sleep(2)
-        if not DB_Worker.room_to_db(data):
+        if not DBWorker.room_to_db(data):
             await message.answer(
                 message_texts.on.get('sorry_about_error')
             )
@@ -2581,7 +2581,7 @@ async def house_base_updating(message: Message, state: FSMContext):
 
         # ЗАПИСЬ В БАЗУ И выдача
         await asyncio.sleep(2)
-        if not DB_Worker.house_to_db(data):
+        if not DBWorker.house_to_db(data):
             await message.answer(
                 message_texts.on.get('sorry_about_error')
             )
@@ -3227,7 +3227,7 @@ async def townhouse_base_updating(message: Message, state: FSMContext):
 
         # ЗАПИСЬ В БАЗУ И выдача
         await asyncio.sleep(2)
-        if not DB_Worker.townhouse_to_db(data):
+        if not DBWorker.townhouse_to_db(data):
             await message.answer(
                 message_texts.on.get('sorry_about_error')
             )
@@ -3812,7 +3812,7 @@ async def land_base_updating(message: Message, state: FSMContext):
 
         # ЗАПИСЬ В БАЗУ И выдача
         await asyncio.sleep(2)
-        if not DB_Worker.land_to_db(data):
+        if not DBWorker.land_to_db(data):
             await message.answer(
                 message_texts.on.get('sorry_about_error')
             )
@@ -3858,7 +3858,7 @@ async def land_base_updating(message: Message, state: FSMContext):
 
 @dp.message_handler(commands=['myobjects'])
 async def entering_phone_number_for_searching(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -3947,7 +3947,7 @@ async def entering_phone_number_for_searching(message: Message):
 # -----------------------------------------------------------------------------
 @dp.message_handler(commands=['blacklist'])
 async def searching_blacklists_obj(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -4036,7 +4036,7 @@ async def searching_blacklists_obj(message: Message):
 
 @dp.message_handler(commands=['deleteobject'])
 async def delete_object(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -4121,7 +4121,7 @@ async def deleting_object(
 @dp.message_handler(commands=['visible_on'])
 async def visible_on(message: Message):
 
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -4286,7 +4286,7 @@ async def visible_on_step3(
 @dp.message_handler(commands=['visible_off'])
 async def visible_off(message: Message):
 
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -4355,7 +4355,7 @@ async def visible_off_step3(
 @dp.message_handler(commands=['editprice'])
 async def edit_price(message: Message):
 
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -4448,7 +4448,7 @@ async def cancel(callback: CallbackQuery, state: FSMContext):
 @dp.message_handler(commands=['addbuyer'])
 async def add_buyer(message: Message):
 
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
@@ -4700,7 +4700,7 @@ async def base_update(message: Message, state: FSMContext):
             await state.update_data(buyer_comment=message.text, buyer_user_id=message.from_user.id)
             data = await state.get_data()
             # добавление в базу субъекта
-            if not DB_Worker.buyer_to_db(data):
+            if not DBWorker.buyer_to_db(data):
                 await message.answer(
                     message_texts.on.get('sorry_about_error')
                 )
@@ -4752,7 +4752,7 @@ async def delete_buyer(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         user_id = message.from_user.id
         if BuyerDB.objects.filter(user_id=user_id).exists():
             await message.answer(
@@ -4799,7 +4799,7 @@ async def deleting_buyer(
 
 @dp.message_handler(commands=['mybuyers'])
 async def my_buyers(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
     user_id = message.from_user.id
     queryset = BuyerDB.objects.filter(user_id=user_id)
     if queryset.exists():
@@ -4836,7 +4836,7 @@ async def obj_for_my_buyer(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         user_id = message.from_user.id
         queryset = BuyerDB.objects.filter(user_id=user_id)
         if queryset.exists():
@@ -4983,7 +4983,7 @@ async def my_company_buyers(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         user_id = message.from_user.id
         if Ceo.objects.filter(user_id=user_id).exists():
             await message.answer(
@@ -5056,7 +5056,7 @@ async def my_company_obj(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         user_id = message.from_user.id
         if Ceo.objects.filter(user_id=user_id).exists():
             await message.answer(
@@ -5219,7 +5219,7 @@ async def archive(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         user_id = message.from_user.id
         if Ceo.objects.filter(user_id=user_id).exists():
             await message.answer(
@@ -5278,7 +5278,7 @@ async def ceo_registration(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         if Ceo.objects.filter(user_id=message.from_user.id).exists():
             await message.answer(
                 '❗ Ты уже зарегистрирован как руководитель'
@@ -5313,7 +5313,7 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
             cond_ceo = False
             cond_workers = False
 
-            if DB_Worker.ceo_create(rieltor):
+            if DBWorker.ceo_create(rieltor):
                 cond_ceo = True
 
             if rieltors.exists():
@@ -5322,7 +5322,7 @@ async def ceo_reg_step2(message: Message, state: FSMContext):
                     if item.user_id != rieltor.user_id:
                         rieltors_list.append(item.name)
                 rieltors_string = ', '.join(rieltors_list)
-                if DB_Worker.workers_create(ceo_id=rieltor.user_id, rieltors=rieltors.exclude(user_id=rieltor.user_id)):
+                if DBWorker.workers_create(ceo_id=rieltor.user_id, rieltors=rieltors.exclude(user_id=rieltor.user_id)):
                     cond_workers = True
 
             if cond_ceo and cond_workers:
@@ -5359,7 +5359,7 @@ async def my_coworkers(message: Message):
             '❗ Сначала надо зарегистрироваться. Для этого нажми на команду /registration'
         )
     else:
-        DB_Worker.command_counting()
+        DBWorker.command_counting()
         user_id = message.from_user.id
         if Ceo.objects.filter(user_id=user_id).exists():
             ceo = Ceo.objects.get(user_id=user_id)
@@ -5599,7 +5599,7 @@ checked = {}
 
 @dp.message_handler(commands=['vk_autopost'])
 async def vk_autopost_step1(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(
@@ -5913,7 +5913,7 @@ async def vk_autopost_step5(message: Message, state: FSMContext):
 
 @dp.message_handler(commands=['vk_adpost'])
 async def vk_adpost_step1(message: Message):
-    DB_Worker.command_counting()
+    DBWorker.command_counting()
 
     if not Rieltors.objects.filter(user_id=message.from_user.id):
         await message.answer(

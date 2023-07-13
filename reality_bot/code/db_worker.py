@@ -8,8 +8,8 @@ from bot.models import (Apartment, Buyer, Ceo, Counter, House, Land, Rieltors,
 from .utils import Output
 
 
-class DB_Worker():
-    def apartment_to_db(state_data: FSMContext) -> bool:
+class DBWorker():
+    def apartment_to_db(self, state_data: FSMContext) -> bool:
         try:
             Apartment.objects.create(
                 room_quantity=state_data.get('room_count'),
@@ -36,11 +36,11 @@ class DB_Worker():
                 visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def room_to_db(state_data: FSMContext) -> bool:
+    def room_to_db(self, state_data: FSMContext) -> bool:
         try:
             Room.objects.create(
                 street_name=state_data.get('room_street_name'),
@@ -65,11 +65,11 @@ class DB_Worker():
                 visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def house_to_db(state_data: FSMContext) -> bool:
+    def house_to_db(self, state_data: FSMContext) -> bool:
         try:
             House.objects.create(
                 microregion=state_data.get('house_microregion'),
@@ -102,11 +102,11 @@ class DB_Worker():
                 visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def townhouse_to_db(state_data: FSMContext) -> bool:
+    def townhouse_to_db(self, state_data: FSMContext) -> bool:
         try:
             TownHouse.objects.create(
                 microregion=state_data.get('townhouse_microregion'),
@@ -139,11 +139,11 @@ class DB_Worker():
                 visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def land_to_db(state_data: FSMContext) -> bool:
+    def land_to_db(self, state_data: FSMContext) -> bool:
         try:
             Land.objects.create(
                 microregion=state_data.get('land_microregion'),
@@ -174,11 +174,11 @@ class DB_Worker():
                 visible=Output.false_or_true2(state_data.get('visible'))
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def buyer_to_db(state_data: FSMContext) -> bool:
+    def buyer_to_db(self, state_data: FSMContext) -> bool:
         try:
             Buyer.objects.create(
                 user_id=state_data.get('buyer_user_id'),
@@ -192,11 +192,11 @@ class DB_Worker():
                 pub_date=dt.datetime.now()
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def rieltor_to_db(state_data: FSMContext) -> bool:
+    def rieltor_to_db(self, state_data: FSMContext) -> bool:
         try:
             Rieltors.objects.create(
                 user_id=state_data.get('user_id'),
@@ -218,11 +218,11 @@ class DB_Worker():
             else:
                 print('not exist')
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def ceo_create(rieltor):
+    def ceo_create(self, rieltor):
         try:
             Ceo.objects.create(
                 user_id=rieltor.user_id,
@@ -231,11 +231,11 @@ class DB_Worker():
                 workers=['']
             )
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def workers_create(ceo_id, rieltors):
+    def workers_create(self, ceo_id, rieltors):
         try:
             ids = []
             for item in rieltors:
@@ -244,15 +244,15 @@ class DB_Worker():
             ceo.workers = ids
             ceo.save()
             return True
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)
             return False
 
-    def command_counting():
+    def command_counting(self):
         try:
             query_set = Counter.objects.get(pk=1)
             count = query_set.counter + 1
             query_set.counter = count
             query_set.save()
-        except Exception as e:
-            logging.error(f'{e}')
+        except Exception as ex:
+            logging.error('%s', ex)

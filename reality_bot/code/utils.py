@@ -7,9 +7,9 @@ from bot.models import (Apartment, Buyer, Ceo, House, Land, Rieltors, Room,
 
 
 country_objects = [
-    'Актанышбаш', 'Амзя', 'Арлан',
+    'Актанышбаш', 'Амзя', 'Арлан', 'Айбуляк',
     'Барьязибаш',
-    'Восточный 1,2,3,4,5',
+    'Восточный 1,2', 'Восточный 3,4', 'Восточный 5',
     'Зубовка',
     'Илистанбетово',
     'Калегино', 'Калтаево', 'Калтасы', 'Кариево', 'Карманово', 'Касёво',
@@ -131,11 +131,11 @@ class keyboards():
     def get_rooms_count_keyboard():
         """Генерация клавиатуры выбора по количеству комнат квартир"""
 
-        one_room_quantity = Apartment.objects.filter(room_quantity=1, visible=True).count()
-        two_room_quantity = Apartment.objects.filter(room_quantity=2, visible=True).count()
-        three_room_quantity = Apartment.objects.filter(room_quantity=3, visible=True).count()
-        four_room_quantity = Apartment.objects.filter(room_quantity=4, visible=True).count()
-        five_room_quantity = Apartment.objects.filter(room_quantity=5, visible=True).count()
+        one_room = Apartment.objects.filter(room_quantity=1, visible=True).count()
+        two_room = Apartment.objects.filter(room_quantity=2, visible=True).count()
+        three_room = Apartment.objects.filter(room_quantity=3, visible=True).count()
+        four_room = Apartment.objects.filter(room_quantity=4, visible=True).count()
+        five_room = Apartment.objects.filter(room_quantity=5, visible=True).count()
 
         keyboard = InlineKeyboardMarkup()
 
@@ -145,8 +145,11 @@ class keyboards():
         ]
 
         quantity = [
-            one_room_quantity, two_room_quantity,
-            three_room_quantity, four_room_quantity, five_room_quantity
+            one_room,
+            two_room,
+            three_room,
+            four_room,
+            five_room
         ]
         # кнопки количества квартир
         for i in range(0, len(buttons)-1):
