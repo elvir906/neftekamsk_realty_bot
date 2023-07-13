@@ -544,22 +544,6 @@ class keyboards():
 
         rieltor = Rieltors.objects.get(user_id=searching_user_id)
 
-        # apartment_queryset = Apartment.objects.filter(
-        #     user_id=searching_user_id
-        # )
-        # room_queryset = Room.objects.filter(
-        #     user_id=searching_user_id
-        # )
-        # house_queryset = House.objects.filter(
-        #     user_id=searching_user_id
-        # )
-        # townhouse_queryset = TownHouse.objects.filter(
-        #     user_id=searching_user_id
-        # )
-        # land_queryset = Land.objects.filter(
-        #     user_id=searching_user_id
-        # )
-
         apartment_queryset = Apartment.objects.filter(
             agency=rieltor.agency_name, visible=True
         )
@@ -911,26 +895,19 @@ class Output():
         return getattr(sys.modules[__name__], str)
 
     def search_category_output(item):
-        if item == '1':
-            return '1к.кв.'
-        if item == '2':
-            return '2к.кв.'
-        if item == '3':
-            return '3к.кв.'
-        if item == '4':
-            return '4к.кв.'
-        if item == '5':
-            return '5к.кв.'
-        if item == 'room':
-            return 'Комнату или КГТ'
-        if item == 'house':
-            return 'Дом'
-        if item == 'townhouse':
-            return 'Таунхаус'
-        if item == 'land':
-            return 'Участок'
-        if item == 'apartment':
-            return 'Квартира'
+        choice = {
+            '1': '1к.кв.',
+            '2': '2к.кв.',
+            '3': '3к.кв.',
+            '4': '4к.кв.',
+            '5': '5к.кв.',
+            'room': 'Комнату или КГТ',
+            'house': 'Дом',
+            'townhouse': 'Таунхаус',
+            'land': 'Участок',
+            'apartment': 'Квартира'
+        }
+        return choice.get(item)
 
     def category_to_text(category):
         choice = {

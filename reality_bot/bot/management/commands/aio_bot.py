@@ -352,8 +352,8 @@ async def rooms_search(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         '✏ *До какой цены вывести объекты?*\n'
-        + f'min. {min_of_all["price__min"]}₽ - '
-        + f'max. {max_of_all["price__max"]}₽',
+        + f'Укажи порог полным числом в диапазоне от {min_of_all["price__min"]}₽ '
+        + f'до {max_of_all["price__max"]}₽',
         parse_mode='Markdown'
     )
     await RoomSearch.step2.set()
@@ -6029,10 +6029,12 @@ async def vk_adpost_step6(message: Message, state: FSMContext):
             delay_time = ((len(vk_club_ids) - 1) * POST_DELAY) / 60
 
             def delay_message(dealay_time, t_format: str):
-                text = (f'Постинг займёт примерно {delay_time} {t_format}. '
-                + 'Не командуйте боту, пока он не выдаст сообщение о том, что автопостинг свершился или, если вдруг, появится ошибка. '
-                + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
-                )      
+                text = (
+                    f'Постинг займёт примерно {delay_time} {t_format}. '
+                    + 'Не командуйте боту, пока он не выдаст сообщение о том, '
+                    + 'что автопостинг свершился или, если вдруг, появится ошибка. '
+                    + 'При возникновении ошибки сообщи, пожалуйста, разработчику @davletelvir об этом.'
+                )
                 return text
 
             if delay_time < 1:
