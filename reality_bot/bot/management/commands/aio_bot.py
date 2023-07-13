@@ -1980,7 +1980,7 @@ async def add_house(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ *Укажи микрорайон расположения дома:*\n\n'
+        + '✏ *Укажи Местоположение дома:*\n\n'
         + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.',
         reply_markup=keyboards.microregion_keyboard('object'),
         parse_mode='Markdown'
@@ -2633,7 +2633,7 @@ async def add_townhouse(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовься ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ *Укажи микрорайон расположения таунхауса.*\n\n'
+        + '✏ *Укажи Местоположение таунхауса.*\n\n'
         + 'Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n',
         reply_markup=keyboards.microregion_keyboard('object'),
         parse_mode='Markdown'
@@ -3279,7 +3279,7 @@ async def add_land(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(
         'Приготовьтесь ответить на несколько вопросов про ваш объект '
         + 'недвижимости. 😏 Это займёт не более 2-3х минут.\n\n'
-        + '✏ *Укажите микрорайон расположения участка.*\n\n'
+        + '✏ *Укажите Местоположение участка.*\n\n'
         + '✏ Если нужного микрорайона/села/деревни нет, напиши @davletelvir, добавлю.\n\n',
         reply_markup=keyboards.microregion_keyboard('object'),
         parse_mode='Markdown'
@@ -4179,12 +4179,78 @@ async def visible_on_step3(
 
 # Сделал вывод категорий недвижимости
 
-            album_caption = (
-                'Продаётся '
-                + Output.category_to_text(category=category)
-                + ' \n'
-                + obj.description
-            )
+            if category in ('1', '2', '3', '4', '5'):
+                album_caption = (
+                    f'❇ *{Output.category_to_text(category=category)}*\n' +
+                    f'*{obj.street_name}, д.{obj.number_of_house}*\n' +
+                    f'*Этаж:* {obj.floor }/{obj.number_of_floors}\n' +
+                    f'*Площадь:* {obj.area} кв.м.\n' +
+                    f'*Категория по планировке:* {obj.category}\n' +
+                    f'*Краткое описание:* {obj.description}\n' +
+                    f'*Цена:* {obj.price}\n' +
+                    f'*Имя риелтора:* {obj.author }\n' +
+                    f'*Название агентства:* {obj.agency}\n' +
+                    f'*Контактный телефон:* {obj.rieltor_phone_number}'
+                )
+
+            elif category == 'Room':
+                album_caption = (
+                    f'❇ *{Output.category_to_text(category=category)}*\n' +
+                    f'*{obj.street_name}, д.{obj.number_of_house}*\n' +
+                    f'*Этаж:* {obj.floor }/{obj.number_of_floors}\n' +
+                    f'*Площадь:* {obj.area} кв.м.\n' +
+                    f'*Краткое описание:* {obj.description}\n' +
+                    f'*Цена:* {obj.price}\n' +
+                    f'*Имя риелтора:* {obj.author }\n' +
+                    f'*Название агентства:* {obj.agency_name}\n' +
+                    f'*Контактный телефон:* {obj.rieltor_phone_number}'
+                )
+
+            elif category in ('Townhouse', 'House'):
+                album_caption = (
+                    f'❇ *{Output.category_to_text(category=category)}*\n' +
+                    f'*Местоположение:* {obj.microregion}\n' +
+                    f'*Название улицы:* {obj.street_name}\n' +
+                    f'*Назначениие земли:* {obj.purpose}\n' +
+                    f'*Площадь участка:* {obj.area_of_land} сот.\n' +
+                    f'*Завершённое строительство:* {obj.finish}\n' +
+                    f'*Материал:* {obj.material}\n' +
+                    f'*Степень газификации:* {obj.gaz}\n' +
+                    f'*Степень водоснабжения:* {obj.water}\n' +
+                    f'*Наличие гаража* {obj.garage}\n' +
+                    f'*Наличие бани/сауны* {obj.sauna}\n' +
+                    f'*Наличие забора* {obj.fence}\n' +
+                    f'*Проезд к дому* {obj.road}\n' +
+                    f'*Площадь дома:* {obj.area} кв.м.\n' +
+                    f'*Краткое описание:* {obj.description}\n' +
+                    f'*Цена:* {obj.price}\n' +
+                    f'*Имя риелтора:* {obj.author }\n' +
+                    f'*Название агентства:* {obj.agency_name}\n' +
+                    f'*Контактный телефон:* {obj.rieltor_phone_number}'
+                )
+
+            elif category == 'Land':
+                album_caption = (
+                    f'❇ *{Output.category_to_text(category=category)}*\n' +
+                    f'*Местоположение:* {obj.microregion}\n' +
+                    f'*Название улицы:* {obj.street_name}\n' +
+                    f'*Номер участка* {obj.number_of_land}\n' +
+                    f'*Назначениие земли:* {obj.purpose}\n' +
+                    f'*Площадь участка:* {obj.area_of_land} сот.\n' +
+                    f'*Завершённое строительство:* {obj.finish}\n' +
+                    f'*Материал:* {obj.material}\n' +
+                    f'*Газ по улице:* {obj.gaz}\n' +
+                    f'*Вода по улице:* {obj.water}\n' +
+                    f'*Наличие гаража* {obj.garage}\n' +
+                    f'*Наличие бани/сауны* {obj.sauna}\n' +
+                    f'*Наличие забора* {obj.fence}\n' +
+                    f'*Проезд к участку* {obj.road}\n' +
+                    f'*Краткое описание:* {obj.description}\n' +
+                    f'*Цена:* {obj.price}\n' +
+                    f'*Имя риелтора:* {obj.author }\n' +
+                    f'*Название агентства:* {obj.agency_name}\n' +
+                    f'*Контактный телефон:* {obj.rieltor_phone_number}'
+                )
 
             channel_album = MediaGroup()
             photo_list = obj.photo_id

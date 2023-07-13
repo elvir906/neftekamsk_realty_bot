@@ -492,7 +492,7 @@ class message_texts():
         text = [
             '✅ Готово! Ты внёс объект в базу:',
             f'*{data.get("house_reality_category")}*',
-            f'*Микрорайон расположения:* {data.get("house_microregion")}',
+            f'*Местоположение:* {data.get("house_microregion")}',
             f'*Название улицы:* {data.get("house_street_name")}',
             f'*Назначение земли:* {data.get("house_purpose")}',
             f'*Площадь участка:* {data.get("house_land_area")} сот.',
@@ -523,7 +523,7 @@ class message_texts():
     def house_message_for_channel(data: dict):
         text = [
             '❇ *Дом*',
-            f'*Микрорайон расположения:* {data.get("house_microregion")}',
+            f'*Местоположение:* {data.get("house_microregion")}',
             f'*Название улицы:* {data.get("house_street_name")}',
             f'*Назначение земли:* {data.get("house_purpose")}',
             f'*Площадь участка:* {data.get("house_land_area")} сот.',
@@ -550,7 +550,7 @@ class message_texts():
         text = [
             '✅ Готово! Ты внёс объект в базу:',
             f'*{data.get("townhouse_reality_category")}*',
-            f'*Микрорайон расположения:* {data.get("townhouse_microregion")}',
+            f'*Местоположение:* {data.get("townhouse_microregion")}',
             f'*Название улицы:* {data.get("townhouse_street_name")}',
             f'*Назначение земли:* {data.get("townhouse_purpose")}',
             f'*Площадь участка:* {data.get("townhouse_land_area")} сот.',
@@ -580,7 +580,7 @@ class message_texts():
     def townhouse_message_for_channel(data: dict):
         text = [
             '❇ *Таунхаус*',
-            f'*Микрорайон расположения:* {data.get("townhouse_microregion")}',
+            f'*Местоположение:* {data.get("townhouse_microregion")}',
             f'*Название улицы:* {data.get("townhouse_street_name")}',
             f'*Назначение земли:* {data.get("townhouse_purpose")}',
             f'*Площадь участка:* {data.get("townhouse_land_area")} сот.',
@@ -607,12 +607,12 @@ class message_texts():
         text = [
             '✅ Готово! Ты внёс объект в базу:',
             f'*{data.get("land_reality_category")}*',
-            f'*Микрорайон расположения:* {data.get("land_microregion")}',
+            f'*Местоположение:* {data.get("land_microregion")}',
             f'*Название улицы:* {data.get("land_street_name")}',
             f'*Номер участка:* {data.get("land_number_name")}',
             f'*Назначение земли:* {data.get("land_purpose")}',
             f'*Площадь участка:* {data.get("land_area")} сот.',
-            f'*Газа по улице:* {data.get("land_gaz")}',
+            f'*Газ по улице:* {data.get("land_gaz")}',
             f'*Вода по улице:* {data.get("land_water")}',
             f'*Наличие бани/сауны:* {data.get("land_sauna")}',
             f'*Наличие гаража:* {data.get("land_garage")}',
@@ -635,12 +635,12 @@ class message_texts():
     def land_message_for_channel(data: dict):
         text = [
             '❇ *Участок*',
-            f'*Микрорайон расположения:* {data.get("land_microregion")}',
+            f'*Местоположение:* {data.get("land_microregion")}',
             f'*Название улицы:* {data.get("land_street_name")}',
             f'*Номер участка:* {data.get("land_number_name")}',
             f'*Назначение земли:* {data.get("land_purpose")}',
             f'*Площадь участка:* {data.get("land_area")} сот.',
-            f'*Газа по улице:* {data.get("land_gaz")}',
+            f'*Газ по улице:* {data.get("land_gaz")}',
             f'*Вода по улице:* {data.get("land_water")}',
             f'*Наличие бани/сауны:* {data.get("land_sauna")}',
             f'*Наличие гаража:* {data.get("land_garage")}',
