@@ -4162,13 +4162,11 @@ async def visible_on_step3(
     else:
         category = callback.data.split()[1]
         id = callback.data.split()[0]
-
         try:
             class_name = Output.str_to_class(category)
             obj = class_name.objects.get(pk=id)
             obj.visible = True
             obj.save()
-
             await callback.message.edit_text(
                 'Сделано!'
             )
