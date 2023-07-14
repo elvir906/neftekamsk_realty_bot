@@ -4441,7 +4441,7 @@ async def price_updating_process(
             parse_mode='Markdown'
         )
         logging.error(
-            'Ошибка при вводе новой цены %s', ex
+            'Ошибка при вводе новой цены, %s', ex
         )
         await PriceEditCallbackStates.EP3.set()
 
@@ -4509,7 +4509,7 @@ async def add_category(message: Message, state: FSMContext):
                 ),
                 parse_mode='Markdown'
             )
-            logging.error('Ошибка при вводе номера телефона %s', message.text)
+            logging.error('Ошибка при вводе номера телефона, %s', message.text)
             await Buyer.category.set()
 
 
@@ -5124,12 +5124,13 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[2] = 'х'
-            phone_str[3] = 'х'
-            phone_str[4] = 'х'
-            phone_str[5] = 'х'
-            phone_str[6] = 'х'
-            phone_str_with_star = ''.join(phone_str)
+            # phone_str[2] = 'х'
+            # phone_str[3] = 'х'
+            # phone_str[4] = 'х'
+            # phone_str[5] = 'х'
+            # phone_str[6] = 'х'
+            phone_str_with_star = ['x' if phone_str.index(x) > 5 else x for x in phone_str]
+            phone_str_with_star = ''.join(phone_str_with_star)
 
             await callback.message.answer(
                 f'✳ *{item.room_quantity} к.кв.* '
@@ -5146,14 +5147,15 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[2] = 'х'
-            phone_str[3] = 'х'
-            phone_str[4] = 'х'
-            phone_str[5] = 'х'
-            phone_str[6] = 'х'
-            phone_str_with_star = ''.join(phone_str)
+            # phone_str[2] = 'х'
+            # phone_str[3] = 'х'
+            # phone_str[4] = 'х'
+            # phone_str[5] = 'х'
+            # phone_str[6] = 'х'
+            phone_str_with_star = ['x' if phone_str.index(x) > 5 else x for x in phone_str]
+            phone_str_with_star = ''.join(phone_str_with_star)
 
-            print(phone_str_with_star)
+            # print(phone_str_with_star)
 
             await callback.message.answer(
                 f'✳ *Комната* {item.street_name} '
@@ -5167,12 +5169,13 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[2] = 'х'
-            phone_str[3] = 'х'
-            phone_str[4] = 'х'
-            phone_str[5] = 'х'
-            phone_str[6] = 'х'
-            phone_str_with_star = ''.join(phone_str)
+            # phone_str[2] = 'х'
+            # phone_str[3] = 'х'
+            # phone_str[4] = 'х'
+            # phone_str[5] = 'х'
+            # phone_str[6] = 'х'
+            phone_str_with_star = ['x' if phone_str.index(x) > 5 else x for x in phone_str]
+            phone_str_with_star = ''.join(phone_str_with_star)
 
             await callback.message.answer(
                 f'✳ *Дом* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
@@ -5185,12 +5188,13 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[2] = 'х'
-            phone_str[3] = 'х'
-            phone_str[4] = 'х'
-            phone_str[5] = 'х'
-            phone_str[6] = 'х'
-            phone_str_with_star = ''.join(phone_str)
+            # phone_str[2] = 'х'
+            # phone_str[3] = 'х'
+            # phone_str[4] = 'х'
+            # phone_str[5] = 'х'
+            # phone_str[6] = 'х'
+            phone_str_with_star = ['x' if phone_str.index(x) > 5 else x for x in phone_str]
+            phone_str_with_star = ''.join(phone_str_with_star)
 
             await callback.message.answer(
                 f'✳ *Таунхаус* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
@@ -5203,12 +5207,13 @@ async def worker_objects(
             await asyncio.sleep(0.5)
 
             phone_str = list(item.owner_phone_number)
-            phone_str[2] = 'х'
-            phone_str[3] = 'х'
-            phone_str[4] = 'х'
-            phone_str[5] = 'х'
-            phone_str[6] = 'х'
-            phone_str_with_star = ''.join(phone_str)
+            # phone_str[2] = 'х'
+            # phone_str[3] = 'х'
+            # phone_str[4] = 'х'
+            # phone_str[5] = 'х'
+            # phone_str[6] = 'х'
+            phone_str_with_star = ['x' if phone_str.index(x) > 5 else x for x in phone_str]
+            phone_str_with_star = ''.join(phone_str_with_star)
 
             await callback.message.answer(
                 f'✳ *Участок* {item.microregion}, {item.street_name} - *{int(item.price)} ₽*\n'
