@@ -3613,7 +3613,7 @@ async def entering_land_encumbrance(
             await state.update_data(land_description=answer)
             await message.answer(
                 '✏ На объекте есть обременение?',
-                reply_markup=Keyboards.yes_no_keyboard(item=land_encumbrance')
+                reply_markup=Keyboards.yes_no_keyboard(item='land_encumbrance')
             )
             await LandCallbackStates.next()
         else:
